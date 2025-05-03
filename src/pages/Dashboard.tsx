@@ -145,7 +145,18 @@ export default function Dashboard() {
   };
 
   const columns: GridColDef[] = [
-    { field: "bidder", headerName: "Bidders", flex: 0.7 },
+    {
+      field: "bidder",
+      headerName: "Bidders",
+      renderCell: ({ value }) => {
+        return (
+          <span className={`${value === "No Bid" && "text-[#DC1313]"}`}>
+            {value}
+          </span>
+        );
+      },
+      flex: 0.7,
+    },
     {
       field: "product",
       headerName: "Product",
@@ -239,10 +250,10 @@ export default function Dashboard() {
       <div className="px-10 w-full mt-8">
         <h1 className="text-3xl text-darkBlue font-bold">Dashboard</h1>
 
-        <div className="w-full p-6 grid gap-x-4 grid-cols-3 bg-white shadow-md rounded-lg my-7">
+        <div className="w-full p-6 grid gap-x-4 grid-col-1 md:grid-cols-3 bg-white shadow-md rounded-lg my-7">
           <div className="bg-darkBlue rounded-lg p-2 text-white">
-            <div className="flex flex-col gap-y-2 border rounded-lg border-white p-2">
-              <div className="flex gap-x-3 items-center">
+            <div className="flex flex-col gap-y-1 border rounded-lg border-white p-2">
+              <div className="flex gap-x-3 mb-5 items-center">
                 <img src={TEarnings} alt="DB Image" />
                 <p className="font-bold">Total Earnings</p>
               </div>
@@ -262,14 +273,14 @@ export default function Dashboard() {
           </div>
 
           <div className="bg-defaultOrange rounded-lg p-2 text-white">
-            <div className="flex flex-col gap-y-2 border rounded-lg border-white p-2">
-              <div className="flex gap-x-3 items-center">
+            <div className="flex flex-col gap-y-1 border rounded-lg border-white p-2">
+              <div className="flex mb-5 gap-x-3 items-center">
                 <img src={TSales} alt="Sales Image" />
                 <p className="font-bold">Total Sales</p>
               </div>
               <p className="text-xs">Last 7 days</p>
               <p className="flex items-baseline text-2xl font-bold">
-                N250 <span className="text-xs mr-2">Qty</span>
+                250 <span className="text-xs mr-2">Qty</span>
                 <span className="text-sm px-2 py-1 flex gap-1 items-center rounded-3xl bg-white text-black">
                   <BsArrowUp className="font-bold" />
                   10.4%
@@ -282,10 +293,10 @@ export default function Dashboard() {
           </div>
 
           <div className="bg-lightBlue rounded-lg p-2 text-white">
-            <div className="flex flex-col gap-y-2 border rounded-lg border-white p-2">
-              <div className="flex gap-x-3 items-center">
+            <div className="flex flex-col gap-y-1 border rounded-lg border-white p-2">
+              <div className="flex mb-5 gap-x-3 items-center">
                 <img src={TUser} alt="DB Image" />
-                <p className="font-bold">Total Earnings</p>
+                <p className="font-bold">Total Users</p>
               </div>
               <p className="text-xs">Last 7 days</p>
               <p className="flex gap-x-2 text-2xl font-bold">
@@ -491,7 +502,7 @@ export default function Dashboard() {
                   dotShow: false,
                 },
               ]}
-              tooltipBgColor="#6A2900"
+              tooltipBgColor="#E65800"
               tooltipTextColor="#fff"
             />
           </div>
@@ -501,7 +512,7 @@ export default function Dashboard() {
         <div className="mt-7 flex gap-x-10">
           <div className="basis-[50%] rounded-lg ">
             <div className="flex justify-between rounded-t-lg px-2.5 bg-white">
-              <h5 className="font-bold py-2.5">Sales Order</h5>
+              <h5 className="font-bold py-4">Sales Order</h5>
               <select className="bg-transparent outline-none text-sm">
                 <option>This month</option>
               </select>
@@ -539,6 +550,9 @@ export default function Dashboard() {
                   nameKey="name"
                   innerRadius={50}
                   outerRadius={80}
+                  cornerRadius={10} // rounded edges
+                  stroke="#ffffff" // Optional: white space between arcs
+                  strokeWidth={2} // Thickness of the gap
                   fill="#121488"
                   labelLine={false}
                   label={({ cx, cy }) => (
