@@ -1,5 +1,4 @@
 import DashboardSearchBar from "../components/DashboardSearchBar";
-import Car from "../assets/Dashboard-Car-1.png";
 import { CompactTable } from "@table-library/react-table-library/compact";
 import { useTheme } from "@table-library/react-table-library/theme";
 import { getTheme } from "@table-library/react-table-library/baseline";
@@ -7,10 +6,6 @@ import LineChartComponent from "../components/LineChart";
 import {
   generateLineChartData1SellerDashboard,
   generateLineChartData2SellerDashboard,
-  productColumnSellerDashoard,
-  productTableSellerDashboard,
-  purchaseColumnSellerDashoard,
-  purchaseTableSellerDashboard,
   salesColumnSellerDashoard,
   salesTableSellerDashboard,
 } from "../helper/generateFillData";
@@ -35,48 +30,11 @@ import { GridColDef } from "@mui/x-data-grid";
 import MuiTableComponent from "../components/TableComponent";
 import Car2 from "../assets/Dashboard-listing-car.png";
 import { Props } from "recharts/types/component/DefaultLegendContent";
+import { useWindowResizer } from "../hooks/useWindowResize";
+import { ProgressUI } from "../components/common/progressUi";
 
 export default function Dashboard() {
-  const data01 = [
-    {
-      name: "Units",
-      value: 780,
-      color: "#141695",
-    },
-    {
-      name: "Other",
-      value: 286,
-      color: "#F5F5F5",
-    },
-  ];
-
-  const RADIAN = Math.PI / 180;
-  const renderCustomizedLabel = ({
-    cx,
-    cy,
-    midAngle,
-    innerRadius,
-    outerRadius,
-    percent,
-  }: any) => {
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.3;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-    return (
-      <text
-        x={x}
-        y={y}
-        fill="white"
-        fontSize={30}
-        fontWeight={600}
-        textAnchor={x > cx ? "start" : "end"}
-        dominantBaseline="central"
-      >
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-    );
-  };
+  const { isMobile } = useWindowResizer();
 
   const tableTheme = useTheme([
     getTheme(),
@@ -94,21 +52,6 @@ export default function Dashboard() {
       BaseCell: `
       border-bottom: none;
     `,
-    },
-  ]);
-
-  const tableTheme2 = useTheme([
-    getTheme(),
-    {
-      HeaderRow: `
-                font-size: 14px;
-                background-color: #F0F0F0;
-                text-align: center;
-            `,
-      Row: `
-                font-size: 12px;
-                text-align: center;
-            `,
     },
   ]);
 
@@ -242,15 +185,15 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto custom-scrollbar pb-10">
-      <div className="w-full py-5 px-24">
+    <div className="w-full h-full overflow-y-auto custom-scrollbar py-20">
+      <div className="w-full fixed z-10 left-2 top-0 py-5 px-5 border-b md:px-10">
         <DashboardSearchBar />
       </div>
 
-      <div className="px-10 w-full mt-8">
+      <div className="md:px-10 px-5 w-full mt-8">
         <h1 className="text-3xl text-darkBlue font-bold">Dashboard</h1>
 
-        <div className="w-full p-6 grid gap-x-4 grid-col-1 md:grid-cols-3 bg-white shadow-md rounded-lg my-7">
+        <div className="w-full p-6 grid gap-y-4 md:gap-x-4 grid-col-1 md:grid-cols-3 bg-white shadow-md rounded-lg my-7">
           <div className="bg-darkBlue rounded-lg p-2 text-white">
             <div className="flex flex-col gap-y-1 border rounded-lg border-white p-2">
               <div className="flex gap-x-3 mb-5 items-center">
@@ -315,10 +258,10 @@ export default function Dashboard() {
         </div>
 
         {/* Top selling products */}
-        <div className="bg-white shadow-md rounded-lg p-6 flex justify-between text-darkBlue gap-10">
+        <div className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row justify-between text-darkBlue gap-10">
           <div className="flex flex-col gap-x-6">
             <div className="flex gap-6 justify-between mb-4">
-              <h2 className="text-xl font-bold text-darkBlue">
+              <h2 className="md:text-xl font-bold text-darkBlue">
                 Top Selling Products
               </h2>{" "}
               <span className="bg-defaultOrange rounded-lg p-1 px-2 text-white">
@@ -336,18 +279,27 @@ export default function Dashboard() {
                 <span>Toyota Camery</span>{" "}
                 <span className="text-darkBlue font-semibold">1st</span>
               </p>
-              <div className="relative w-full bg-gray-200 h-2 rounded-3xl">
-                <div className="absolute w-[70%] bg-defaultOrange h-2 left-0 rounded-3xl"></div>
-              </div>
+              <ProgressUI
+                rangeColor="#e65800"
+                rangePercent="80%"
+                height="8px"
+                rounded="24px"
+                wholeColor="#e5e7eb"
+              />
             </div>
+
             <div className="mb-4">
               <p className="flex justify-between">
                 <span>Mercedes Benz</span>{" "}
                 <span className="text-darkBlue font-semibold">2nd</span>
               </p>
-              <div className="relative w-full bg-gray-200 h-2 rounded-3xl">
-                <div className="absolute w-[50%] bg-lightBlue h-2 left-0 rounded-3xl"></div>
-              </div>
+              <ProgressUI
+                rangeColor="#14199c"
+                rangePercent="50%"
+                height="8px"
+                rounded="24px"
+                wholeColor="#e5e7eb"
+              />
             </div>
 
             <div className="mb-4">
@@ -355,9 +307,14 @@ export default function Dashboard() {
                 <span>2 Bed room Apartment </span>{" "}
                 <span className="text-darkBlue font-semibold">3rd</span>
               </p>
-              <div className="relative w-full bg-gray-200 h-2 rounded-3xl">
-                <div className="absolute w-[40%] bg-darkBlue h-2 left-0 rounded-3xl"></div>
-              </div>
+
+              <ProgressUI
+                rangeColor="#040421"
+                rangePercent="40%"
+                height="8px"
+                rounded="24px"
+                wholeColor="#e5e7eb"
+              />
             </div>
 
             <div className="mb-4">
@@ -365,39 +322,59 @@ export default function Dashboard() {
                 <span>Toyota Corolla </span>{" "}
                 <span className="text-darkBlue font-semibold">4th</span>
               </p>
-              <div className="relative w-full bg-gray-200 h-2 rounded-3xl">
-                <div className="absolute w-[50%] bg-green-500 h-2 left-0 rounded-3xl"></div>
-              </div>
+              <ProgressUI
+                rangeColor="#22c55e"
+                rangePercent="50%"
+                height="8px"
+                rounded="24px"
+                wholeColor="#e5e7eb"
+              />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-3">
-              <img src={Land} className="w-[123px] h-[77px]" alt="land" />
+              <img
+                src={Land}
+                className="w-full md:w-[123px] h-fit md:h-[77px]"
+                alt="land"
+              />
               <p>Toyota Tacoma </p>
               <p className="text-defaultOrange font-semibold">110kg</p>
             </div>
 
             <div className="flex flex-col gap-3">
-              <img src={Hilux} className="w-[123px] h-[77px]" alt="land" />
+              <img
+                src={Hilux}
+                className="w-full md:w-[123px] h-fit md:h-[77px]"
+                alt="land"
+              />
               <p>Toyota Tacoma </p>
               <p className="text-green-500 font-semibold">110kg</p>
             </div>
 
             <div className="flex flex-col gap-3">
-              <img src={House} className="w-[123px] h-[77px]" alt="land" />
+              <img
+                src={House}
+                className="w-full md:w-[123px] h-fit md:h-[77px]"
+                alt="land"
+              />
               <p>Toyota Tacoma </p>
               <p className="text-lightBlue font-semibold">110kg</p>
             </div>
 
             <div className="flex flex-col gap-3">
-              <img src={Lexus} className="w-[123px] h-[77px]" alt="land" />
+              <img
+                src={Lexus}
+                className="w-full md:w-[123px] h-fit md:h-[77px]"
+                alt="land"
+              />
               <p>Toyota Tacoma </p>
               <p className="text-darkBlue font-semibold">110kg</p>
             </div>
           </div>
 
-          <div className=" flex flex-col gap-[53px] justify-between">
+          <div className=" flex flex-col gap-4 md:gap-[53px] items-center justify-center md:justify-between">
             <div>
               <p className="text-darkBlue font-semibold text-[18px]">
                 Total Orders
@@ -405,7 +382,7 @@ export default function Dashboard() {
               <p className="text-[70px] font-bold text-defaultOrange">595</p>
             </div>
 
-            <div>
+            <div className="text-center">
               <p className="text-darkBlue font-semibold text-[18px]">
                 Total Inventory Products
               </p>
@@ -418,13 +395,7 @@ export default function Dashboard() {
 
         <div className="bg-white shadow-md rounded-lg p-6 my-5">
           <div className="flex text-darkBlue justify-between items-center">
-            <h2 className="text-2xl  font-bold">Active Bides</h2>{" "}
-            <p className="text-sm font-[500px]">
-              Current price:
-              <span className="text-[25px] font-bold text-[#21C45D]">
-                N22,000000
-              </span>
-            </p>
+            <h2 className="md:text-2xl  font-bold">Active Bides</h2>
           </div>
           {/* table */}
           <div className="mt-0 h-[500px] flex flex-1 w-full overflow-hidden">
@@ -445,32 +416,34 @@ export default function Dashboard() {
 
         {/* Income */}
         <div className="p-3.5 bg-white shadow-md rounded-lg mt-7">
-          <div className="flex w-full justify-between items-center">
-            <div className="flex gap-14 items-center">
-              <h5 className="text-lg font-bold text-[#1E1A1C]">Income</h5>
-              <div className="mt-2 flex gap-x-8 items-center">
+          <div className="flex w-full justify-between gap-1 items-center">
+            <div className="flex md:gap-14 items-center">
+              <h5 className="md:text-lg font-bold text-[#1E1A1C]">Income</h5>
+              <div className="mt-2 hidden md:flex flex-row gap-3 md:gap-x-8 items-center">
                 <p className="text-xs flex flex-col font-semibold text-darkBlue">
                   Total income:{" "}
-                  <span className="text-lg text-defaultOrange">
+                  <span className="md:text-lg text-defaultOrange">
                     ₦23,230,450
                   </span>
                 </p>
                 <p className="text-xs flex flex-col font-semibold text-darkBlue">
                   Total expenditure:{" "}
-                  <span className="text-lg text-defaultOrange">₦5,230,450</span>
+                  <span className="md:text-lg text-defaultOrange">
+                    ₦5,230,450
+                  </span>
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-x-14 items-center">
-              <div className="flex gap-3">
+            <div className="flex gap-3 md:gap-x-14 items-center">
+              <div className="flex flex-col md:flex-row gap-3">
                 <p className="flex gap-2 items-center">
-                  <span className="w-3 h-3 rounded-full bg-[#0B0C52]"></span>
+                  <span className="w-1 h-1 md:w-3 md:h-3 rounded-full bg-[#0B0C52]"></span>
                   Income
                 </p>
-                <p className="flex gap-2 items-center">
+                <p className="flex gap-1 md:gap-2 items-center">
                   {" "}
-                  <span className="w-3 h-3 rounded-full bg-defaultOrange"></span>
+                  <span className="w-1 h-1 md:w-3 md:h-3  rounded-full bg-defaultOrange"></span>
                   Expenses
                 </p>
               </div>
@@ -507,11 +480,12 @@ export default function Dashboard() {
             />
           </div>
         </div>
-        {/*income line chart*/}
 
-        <div className="mt-7 flex gap-x-10">
-          <div className="basis-[50%] rounded-lg ">
-            <div className="flex justify-between rounded-t-lg px-2.5 bg-white">
+        {/* sales order and top selling location */}
+
+        <div className="mt-7 flex flex-col md:flex-row gap-x-10">
+          <div className="basis-[50%] rounded-lg bg-white">
+            <div className="flex justify-between rounded-t-lg px-2.5 ">
               <h5 className="font-bold py-4">Sales Order</h5>
               <select className="bg-transparent outline-none text-sm">
                 <option>This month</option>
@@ -526,21 +500,19 @@ export default function Dashboard() {
                 layout={{ fixedHeader: true }}
               />
             </div>
-            <div className="rounded-b-lg bg-white w-full h-14"></div>
           </div>
 
           <div className="basis-[50%] rounded-lg p-5 bg-white">
-            <div className="flex justify-between rounded-t-lg  ">
+            <div className="flex justify-between rounded-t-lg ">
               <h5 className="font-bold">Top Selling Locations</h5>
             </div>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={230}>
               <PieChart>
                 <Legend
                   align="left"
                   layout="vertical"
                   verticalAlign="middle"
                   content={renderLegend2}
-                  className=""
                 />
                 <Tooltip wrapperClassName="text-xs" />
 
@@ -548,9 +520,9 @@ export default function Dashboard() {
                   data={data02}
                   dataKey="value"
                   nameKey="name"
-                  innerRadius={50}
-                  outerRadius={80}
-                  cornerRadius={10} // rounded edges
+                  innerRadius={isMobile ? 50 : 80}
+                  outerRadius={isMobile ? 70 : 110}
+                  cornerRadius={5} // rounded edges
                   stroke="#ffffff" // Optional: white space between arcs
                   strokeWidth={2} // Thickness of the gap
                   fill="#121488"
@@ -561,8 +533,8 @@ export default function Dashboard() {
                       y={cy}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      fontSize="60"
-                      className="font-semibold fill-[#000000]"
+                      fontSize="40"
+                      className="font-semibold  fill-[#000000]"
                     >
                       30
                       <tspan
@@ -584,7 +556,8 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
         </div>
-        {/*purchase sales table*/}
+
+        {/*sales order summary*/}
 
         <div className="mt-7 rounded-lg border border-primaryBorder">
           <div className="flex justify-between rounded-t-lg px-2.5 bg-[#F0F0F0]">
@@ -596,7 +569,7 @@ export default function Dashboard() {
             </select>
           </div>
 
-          <div className="w-full h-[20rem] bg-white gap-x-5 flex">
+          <div className="w-full h-[20rem] bg-white gap-x-5 flex flex-col md:flex-row">
             <div className="flex-1">
               <LineChartComponent
                 chartData={generateLineChartData2SellerDashboard()}

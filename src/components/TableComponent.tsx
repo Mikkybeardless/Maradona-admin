@@ -1,5 +1,5 @@
 import { Paper } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
 
 type TableComponentProps = {
   columns: GridColDef[];
@@ -12,6 +12,7 @@ type TableComponentProps = {
     backgroundColor?: string;
     fontWeight?: string | number;
   };
+  onRowClick?: (params: GridRowParams) => void;
 };
 
 export default function MuiTableComponent({
@@ -22,8 +23,15 @@ export default function MuiTableComponent({
   rowHeight,
   showCheckbox,
   headerStyle,
+  onRowClick,
 }: TableComponentProps) {
   const paginationModel = { page: 0, pageSize };
+  // Handle row click
+  const handleRowClick = (params: GridRowParams) => {
+    if (onRowClick) {
+      onRowClick(params);
+    }
+  };
 
   return (
     <Paper className="flex-1 custom-scrollbar overflow-hidden">
@@ -39,6 +47,7 @@ export default function MuiTableComponent({
         disableColumnMenu={true}
         disableRowSelectionOnClick={true}
         rowHeight={rowHeight}
+        onRowClick={handleRowClick}
         sx={{
           border: 0,
           paddingLeft: 2,
@@ -47,6 +56,9 @@ export default function MuiTableComponent({
           },
           "& .MuiDataGrid-columnHeaderTitle": {
             fontWeight: headerStyle?.fontWeight ?? "normal",
+          },
+          "& .MuiDataGrid-row": {
+            cursor: `${onRowClick && "pointer"}`, // Always show pointer cursor on rows
           },
         }}
       />

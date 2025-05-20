@@ -1,166 +1,200 @@
-import { FaPlus, FaRegEye, FaStar } from "react-icons/fa6"
-import DashboardSearchBar from "../components/DashboardSearchBar"
-import { CiSearch } from "react-icons/ci"
-import MuiTableComponent from "../components/TableComponent"
-import { GridColDef } from "@mui/x-data-grid"
-import { Link } from "react-router-dom"
-import { BiEditAlt } from "react-icons/bi"
-import { GoTrash } from "react-icons/go"
+import { FaPlus, FaStar } from "react-icons/fa6";
+import DashboardSearchBar from "../components/DashboardSearchBar";
+import { CiSearch } from "react-icons/ci";
+import MuiTableComponent from "../components/TableComponent";
+import { GridColDef, GridRowParams } from "@mui/x-data-grid";
+import { Link, useNavigate } from "react-router-dom";
+import Car2 from "../assets/Dashboard-listing-car.png";
+import { generateRandomNumber } from "../helper/helperFunctions";
+import { HiSortDescending } from "react-icons/hi";
+import { useState } from "react";
+import { DateSelect } from "../components/common/dateSelect";
 
-const rows = (): any[] => {
-    const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-    const returnArray: any[] = []
-    loopArray.forEach((num) => {
-        returnArray.push({
-            id: "DSA" + num,
-            name: "Toyota Camry 2018",
-            category: "Car",
-            start: new Date(),
-            end: new Date(),
-            status: "Active",
-        })
-    })
-    return returnArray
-}
+type BidTableType = {
+  id: number;
+  bidder: any;
+  product: string;
+  price: string;
+  status: string;
+  date: Date | string;
+};
+
+const rows = (): BidTableType[] => {
+  return Array.from({ length: 15 }, (_, i) => {
+    const num = i + 1;
+    const randomNum = generateRandomNumber(4, 1);
+
+    return {
+      id: num, // Required by MUI
+      bidder: randomNum === 2 ? "No Bid" : `#E${num}HH`,
+      product: "Toyota Camery LE (2024)",
+      price: "N5,500,000",
+      status:
+        randomNum === 1
+          ? "Pending"
+          : randomNum === 2
+          ? "Closed"
+          : randomNum === 3
+          ? "Sold"
+          : "Active",
+      date: new Date().toUTCString(),
+    };
+  });
+};
 
 const columns: GridColDef[] = [
-    {
-        field: "id",
-        headerName: "Auction ID",
-        flex: 0.4,
-        sortable: false,
+  {
+    field: "bidder",
+    headerName: "Bidders",
+    renderCell: ({ value }) => {
+      return (
+        <span className={`${value === "No Bid" && "text-[#DC1313]"}`}>
+          {value}
+        </span>
+      );
     },
-    {
-        field: "name",
-        headerName: "Item Name",
-        flex: 1,
-        sortable: false,
+    flex: 0.7,
+  },
+  {
+    field: "product",
+    headerName: "Product",
+    renderCell: ({ value }) => {
+      return (
+        <div className="flex gap-x-2 items-center">
+          <img className="w-[40px] h-[40px]" src={Car2} alt="product" />
+          <p className="text-sm font-medium text-darkBlue">{value}</p>
+        </div>
+      );
     },
-    {
-        field: "category",
-        headerName: "Category",
-        flex: 0.6,
-        sortable: false,
+    flex: 1,
+  },
+  { field: "price", headerName: "Price", flex: 0.7 },
+  {
+    field: "status",
+    headerName: "Status",
+    flex: 0.7,
+    renderCell: ({ value }) => {
+      return (
+        <span
+          className={`px-3 py-1 rounded-full font-medium text-sm
+          ${
+            value === "Active"
+              ? "bg-[#FE8E49] text-white"
+              : value === "Sold"
+              ? "bg-[#E8F8E8] text-[#0C560B]"
+              : value === "Pending"
+              ? "bg-[#FEF3B8] text-[#0C560B]"
+              : "bg-[#DC1313] text-white"
+          }`}
+        >
+          {value}
+        </span>
+      );
     },
-    {
-        field: "start",
-        headerName: "Start Date",
-        flex: 0.6,
-        type: "date",
-    },
-    {
-        field: "end",
-        headerName: "End Date",
-        flex: 0.6,
-        type: "date",
-    },
-    {
-        field: "Action",
-        flex: 0.8,
-        sortable: false,
-        headerName: "",
-        renderCell: () => {
-            return (
-                <div className="h-full w-full flex justify-center gap-x-5 items-center">
-                    <Link to="/auctions/auction">
-                        <FaRegEye size={20} />
-                    </Link>
-                    <Link to="/auctions/add-auction">
-                        <BiEditAlt size={20} />
-                    </Link>
-                    <GoTrash className="flex-shrink-0" size={20} />
-                </div>
-            )
-        },
-    },
-]
+  },
+
+  { field: "date", headerName: "Time", flex: 1 },
+];
 
 export default function Auction() {
-    return (
-        <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-7 bg-[#F5F5F5]">
-            <div className="w-full py-5 px-24 border-b border-b-primaryBorder">
-                <DashboardSearchBar />
-            </div>
+  const navigate = useNavigate();
+  const [selects, setSelects] = useState({
+    category: "",
+    date: null,
+    status: "",
+  });
 
-            <div className="px-24 w-full mt-4 flex flex-col flex-1">
-                <div className="flex justify-between items-center mt-1">
-                    <h1 className="text-3xl font-bold flex items-start">
-                        Auction
-                    </h1>
+  // const handleRowClick = (row: BidTableType) => {
+  //     navigate(`/auctions/${row.id}`);
+  // };
 
-                    <Link
-                        to="/auctions/add-auction"
-                        className="rounded-lg flex items-center gap-x-2 px-5 py-2.5 text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
-                    >
-                        <FaPlus size={18} />
-                        New Auction
-                    </Link>
-                </div>
+  const handleRowClick = (params: GridRowParams) => {
+    console.log("Row clicked:", params.row);
+    navigate(`/auctions/auction/${params.row.id}`);
+  };
 
-                <div className="w-full h-[7rem] grid grid-cols-3 gap-x-10 mt-8">
-                    <div className="w-full h-full p-3 flex flex-col justify-center items-center gap-y-5 text-sm rounded-2xl border border-primaryBorder">
-                        <p className="font-medium">Total Active Auctions</p>
-                        <p className="">15</p>
-                    </div>
-                    <div className="w-full h-full p-3 flex flex-col justify-center items-center gap-y-5 text-sm rounded-2xl border border-primaryBorder">
-                        <p className="font-medium">Total Bids Received</p>
-                        <p className="">2 days</p>
-                    </div>
-                    <div className="w-full h-full p-3 flex flex-col justify-center items-center gap-y-5 text-sm rounded-2xl border border-primaryBorder">
-                        <p className="font-medium">Highest Bidding Auction</p>
-                        <p className="flex items-center gap-x-2">
-                            4.8/5
-                            <FaStar color="#F0CA00" />
-                        </p>
-                    </div>
-                </div>
+  const handleSelectChange = (event: {
+    target: { name: string; value: string };
+  }) => {
+    setSelects((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.value,
+    }));
+  };
+  return (
+    <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar py-20 bg-[#F5F5F5]">
+      <div className="w-full py-5 px-5 md:px-10 fixed z-10 left-2 top-0 border-b border-b-primaryBorder">
+        <DashboardSearchBar />
+      </div>
 
-                <div className="flex justify-between items-end mt-5 w-full">
-                    <div className="flex gap-x-5 items-center">
-                        <div className="flex flex-col gap-y-1">
-                            <p className="text-xs">Status:</p>
-                            <select className="p-2.5 text-sm rounded-lg border border-primaryBorder bg-white outline-none">
-                                <option>Active</option>
-                                <option>Inactive</option>
-                            </select>
-                        </div>
-                        <div className="flex flex-col gap-y-1">
-                            <p className="text-xs">Start Date:</p>
-                            <input
-                                type="date"
-                                className="p-2.5 text-sm rounded-lg border border-primaryBorder bg-white outline-none"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-y-1">
-                            <p className="text-xs">End Date:</p>
-                            <input
-                                type="date"
-                                className="p-2.5 text-sm rounded-lg border border-primaryBorder bg-white outline-none"
-                            />
-                        </div>
-                    </div>
+      <div className="px-5 md:px-10 w-full mt-4 flex flex-col flex-1">
+        <div className="flex justify-between items-center mt-1">
+          <h1 className="text-3xl font-bold flex items-start">Auction</h1>
 
-                    <div className="flex gap-x-2 px-3 basis-[25%] rounded-lg border border-primaryBorder">
-                        <CiSearch className="h-fit w-fit my-auto" size={24} />
-                        <input
-                            className="flex-1 py-2.5 outline-none border-none text-sm bg-transparent"
-                            placeholder="Search"
-                            type="text"
-                        />
-                    </div>
-                </div>
-
-                <div className="mt-3 flex h-[25rem] w-full overflow-hidden bg-white">
-                    <MuiTableComponent
-                        columns={columns}
-                        showCheckbox={false}
-                        rows={rows()}
-                        paginationActive={true}
-                        rowHeight={60}
-                        pageSize={10}
-                    />
-                </div>
-            </div>
+          <Link
+            to="/auctions/add-auction"
+            className="rounded-lg flex items-center gap-x-2 px-5 py-2.5 text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
+          >
+            <FaPlus size={18} />
+            New Auction
+          </Link>
         </div>
-    )
+
+        <div className="flex justify-between flex-wrap gap-y-1 items-end my-5 w-full">
+          <div className="flex gap-x-3 md:gap-x-5 items-center">
+            <div className="px-2.5 rounded-lg  border border-primaryBorder bg-white">
+              <select className="py-2.5 text-sm outline-none">
+                <option>Category</option>
+                <option>2</option>
+              </select>
+            </div>
+            <DateSelect value={selects.date} />
+            <div className="flex flex-col gap-y-1">
+              <div className=" px-2 md:px-2.5 relative flex items-center gap-x-[2px] md:gap-x-1 rounded-lg border border-primaryBorder bg-white">
+                <HiSortDescending />
+                <select
+                  id="selectSort"
+                  value={selects.status}
+                  name="status"
+                  onChange={handleSelectChange}
+                  className="text-sm outline-none h-full py-2.5"
+                >
+                  <option value="">status</option>
+                  <option value="published">Published</option>
+                  <option value="pending">Pending</option>
+                  <option value="canceled">Canceled</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-x-2 px-3 basis-[25%] rounded-lg border bg-white border-primaryBorder">
+            <CiSearch className="h-fit w-fit my-auto" size={24} />
+            <input
+              className="flex-1 py-2.5 outline-none border-none text-sm bg-transparent"
+              placeholder="Search"
+              type="text"
+            />
+          </div>
+        </div>
+
+        {/* table */}
+        <div className="mt-0 min-h-[500px] flex flex-1 w-full overflow-hidden">
+          <MuiTableComponent
+            columns={columns}
+            showCheckbox={false}
+            rows={rows()}
+            paginationActive={true}
+            rowHeight={60}
+            pageSize={10}
+            onRowClick={handleRowClick}
+            headerStyle={{
+              backgroundColor: "#f3f4f6",
+              fontWeight: "bold",
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
 }

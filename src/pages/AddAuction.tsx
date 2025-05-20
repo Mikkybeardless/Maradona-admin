@@ -4,44 +4,16 @@ import { Link } from "react-router-dom";
 import { FaChevronRight, FaPlus } from "react-icons/fa6";
 import ReactQuill from "react-quill";
 import { IoCloudUploadOutline } from "react-icons/io5";
+import { FileUpload } from "../components/FileUpload";
 
 export default function AddAuction() {
-  const {
-    getRootProps,
-    getInputProps,
-    isDragActive,
-    acceptedFiles,
-    // fileRejections,
-  } = useDropzone({
-    accept: {
-      "image/jpeg": [],
-      "image/png": [],
-    },
-    maxSize: 20000000,
-  });
-
-  const files = acceptedFiles.map((file, index) => {
-    return (
-      <img
-        key={index}
-        className="w-full h-[5rem] object-fill rounded-lg bg-gray-100"
-        src={URL.createObjectURL(file)}
-        alt="Car"
-      />
-    );
-  });
-
-  // useEffect(() => {
-  //     if (fileRejections.length > 0) console.log(fileRejections)
-  // }, [fileRejections])
-
   return (
     <div className="w-full h-full overflow-hidden overflow-y-auto custom-scrollbar pb-10 bg-[#F5F5F5]">
-      <div className="w-full py-5 px-24 border-b border-b-primaryBorder">
+      <div className="w-full py-5 px-14 border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
-      <div className="px-24 w-full mt-4 flex flex-col flex-1">
+      <div className="px-14 w-full mt-4 flex flex-col flex-1">
         <div className="flex gap-x-4 items-center">
           <Link to="/auctions" className="text-sm opacity-60">
             Auctions
@@ -82,7 +54,7 @@ export default function AddAuction() {
                 <h5 className="text-sm mb-2 font-medium">
                   Product description:
                 </h5>
-                {/* <ReactQuill theme="snow" className="!rounded-lg" /> */}
+                <ReactQuill theme="snow" className="!rounded-lg" />
               </div>
               <div className="w-full flex justify-between items-center gap-x-8">
                 <div className="flex flex-col gap-y-1.5 flex-1">
@@ -112,12 +84,14 @@ export default function AddAuction() {
                 </button>
               </div>
 
-              <div
-                {...getRootProps()}
-                className="w-full h-[10rem] flex flex-col justify-center items-center gap-y-1 rounded-lg border border-[#B0B0B0] border-dashed bg-[#F5F5F5]"
-              >
-                <input {...getInputProps()} />
-                {!isDragActive ? (
+              <FileUpload
+                acceptedFileTypes={{
+                  "image/jpeg": [],
+                  "image/png": [],
+                  "video/mp4": [],
+                }}
+                maxSizeMB={20}
+                Child={
                   <>
                     <IoCloudUploadOutline size={30} />
                     <p className="text-lg font-semibold text-center">
@@ -127,14 +101,9 @@ export default function AddAuction() {
                       Png, jpeg, Mp4 supported up to 20mb max
                     </p>
                   </>
-                ) : (
-                  <>
-                    <p className="">Drop file(s) here...</p>
-                  </>
-                )}
-              </div>
-
-              <div className="w-full grid grid-cols-5 gap-5">{files}</div>
+                }
+                // onFilesChange={handleMediaChange}
+              />
 
               <button className="flex gap-x-2 ml-auto hover:underline items-center text-[#898989]">
                 <FaPlus size={18} />

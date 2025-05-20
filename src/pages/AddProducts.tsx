@@ -3,41 +3,100 @@ import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight, FaPlus } from "react-icons/fa6";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { useState } from "react";
+import { FileUpload } from "../components/FileUpload";
 import { IoCloudUploadOutline } from "react-icons/io5";
-import { useDropzone } from "react-dropzone";
-// import { useEffect } from "react"
 
+type FileUpload = {
+  images: File[];
+  documents: File[];
+  videos: File[];
+};
 export default function AddProducts() {
   const location = useLocation();
   const { pathname } = location;
-  const {
-    getRootProps,
-    getInputProps,
-    isDragActive,
-    acceptedFiles,
-    // fileRejections,
-  } = useDropzone({
-    accept: {
-      "image/jpeg": [],
-      "image/png": [],
-    },
-    maxSize: 20000000,
+
+  const [media, setMedia] = useState<FileUpload>({
+    images: [],
+    documents: [],
+    videos: [],
+  });
+  const [documents, setDocuments] = useState<FileUpload>({
+    images: [],
+    documents: [],
+    videos: [],
   });
 
-  const files = acceptedFiles.map((file, index) => {
-    return (
-      <img
-        key={index}
-        className="w-full h-[5rem] object-fill rounded-lg bg-gray-100"
-        src={URL.createObjectURL(file)}
-        alt="Car"
-      />
+  // media change
+  const handleMediaChange = (newMedia: File[]) => {
+    const images = newMedia.filter((file) => file.type.startsWith("image/"));
+    const documents = newMedia.filter((file) =>
+      file.type.startsWith("application/")
     );
-  });
+    const videos = newMedia.filter((file) => file.type.startsWith("video/"));
+    setMedia((prevMedia) => ({
+      ...prevMedia,
+      images: [...prevMedia.images, ...images],
+      documents: [...prevMedia.documents, ...documents],
+      videos: [...prevMedia.videos, ...videos],
+    }));
+    console.log("Updated Media:", {
+      images: [...media.images, ...images],
+      documents: [...media.documents, ...documents],
+      videos: [...media.videos, ...videos],
+    });
+  };
 
-  // useEffect(() => {
-  //     if (fileRejections.length > 0) console.log(fileRejections)
-  // }, [fileRejections])
+  // document change
+  const handleDocumentChange = (newdocument: File[]) => {
+    const images = newdocument.filter((file) => file.type.startsWith("image/"));
+    const docs = newdocument.filter((file) =>
+      file.type.startsWith("application/")
+    );
+    const videos = newdocument.filter((file) => file.type.startsWith("video/"));
+    setDocuments((prevDocument) => ({
+      ...prevDocument,
+      images: [...prevDocument.images, ...images],
+      documents: [...prevDocument.documents, ...docs],
+      videos: [...prevDocument.videos, ...videos],
+    }));
+    console.log("Updated document:", {
+      images: [...documents.images, ...images],
+      documents: [...documents.documents, ...docs],
+      videos: [...documents.videos, ...videos],
+    });
+  };
+  const handleSubmit = (e: React.FormEvent) => {
+    // e.preventDefault();
+
+    const { images, documents, videos } = media;
+    // Here you would typically send the Media to your backend
+    console.log("Submitting form with:");
+    console.log("Images:", images);
+    console.log("Documents:", documents);
+    console.log("Videos:", videos);
+
+    // Example of creating FormData for submission
+    const formData = new FormData();
+
+    // Add all image Media
+    images.forEach((file, index) => {
+      formData.append(`images[${index}]`, file);
+    });
+
+    // Add all document Media
+    documents.forEach((file, index) => {
+      formData.append(`documents[${index}]`, file);
+    });
+
+    // Add all video Media
+    videos.forEach((file, index) => {
+      formData.append(`videos[${index}]`, file);
+    });
+
+    // You would then submit formData to your backend
+    // axios.post('/api/upload', formData)
+  };
 
   return (
     <div className="w-full h-full overflow-hidden overflow-y-auto custom-scrollbar pb-10 bg-[#F5F5F5]">
@@ -87,7 +146,7 @@ export default function AddProducts() {
                 <h5 className="text-sm mb-2 font-medium">
                   Product description:
                 </h5>
-                <ReactQuill theme="snow" className="!rounded-lg" />
+                <ReactQuill  theme="snow" className="!rounded-lg" />
               </div>
               <div className="w-full flex justify-between items-center gap-x-8">
                 <div className="flex flex-col gap-y-1.5 flex-1">
@@ -117,29 +176,15 @@ export default function AddProducts() {
                 </button>
               </div>
 
-              <div
-                {...getRootProps({ "aria-label": "drag and drop area" })}
-                className="w-full h-[10rem] flex flex-col justify-center items-center gap-y-1 rounded-lg border border-[#B0B0B0] border-dashed cursor-pointer bg-[#F5F5F5]"
-              >
-                <input {...getInputProps()} />
-                {!isDragActive ? (
-                  <>
-                    <IoCloudUploadOutline size={30} />
-                    <p className="text-lg font-semibold text-center">
-                      Drag files here or click to select
-                    </p>
-                    <p className="text-sm text-[#898989]">
-                      Png, jpeg, Mp4 supported up to 20mb max
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="">Drop file(s) here...</p>
-                  </>
-                )}
-              </div>
-
-              <div className="w-full grid grid-cols-5 gap-5">{files}</div>
+              <FileUpload
+                acceptedFileTypes={{
+                  "image/jpeg": [],
+                  "image/png": [],
+                  "video/mp4": [],
+                }}
+                maxSizeMB={20}
+                onFilesChange={handleMediaChange}
+              />
 
               <button className="flex gap-x-2 ml-auto hover:underline items-center text-[#898989]">
                 <FaPlus size={18} />
@@ -156,22 +201,22 @@ export default function AddProducts() {
                   <h5 className="text-sm mb-2 font-medium">Price:</h5>
                   <div className="w-full px-3 flex gap-x-2 items-center rounded-lg border border-primaryBorder">
                     <input
-                      type="text"
+                      type="number"
                       placeholder="0.00"
                       className="py-3 outline-none w-full"
                     />
-                    <span>NGN</span>
+                    <span className="text-secondaryTextColor">NGN</span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-y-1.5 flex-1 w-[50%]">
                   <h5 className="text-sm mb-2 font-medium">Sale price:</h5>
                   <div className="w-full px-3 flex gap-x-2 items-center rounded-lg border border-primaryBorder">
                     <input
-                      type="text"
+                      type="number"
                       placeholder="0.00"
                       className="py-3 outline-none w-full"
                     />
-                    <span>NGN</span>
+                    <span className="text-secondaryTextColor">NGN</span>
                   </div>
                 </div>
               </div>
@@ -182,43 +227,56 @@ export default function AddProducts() {
               <h4 className="text-lg font-semibold">
                 Select the condition for this product
               </h4>
-              <div className="rounded-lg p-5 grid grid-cols-3 gap-x-4 bg-white border border-primaryBorder">
-                <div className="flex flex-col gap-y-3">
-                  <h6 className="font-medium">Condition</h6>
-                  <div className="flex gap-x-2 items-center text-sm">
+              <div className="flex flex-col md:flex-row justify-between gap-4">
+                <div className="flex justify-between gap-12 w-full md:w-1/2 rounded-lg p-5  bg-white border border-primaryBorder">
+                  <div className="flex flex-col gap-y-3">
+                    <h6 className="font-medium">Condition</h6>
+                    <div className="flex gap-x-2 items-center text-sm">
+                      <input
+                        className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
+                        id="condition1"
+                        type="checkbox"
+                      />
+                      <label htmlFor="condition1">New</label>
+                    </div>
+                    <div className="flex gap-x-2 items-center text-sm">
+                      <input
+                        className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
+                        id="condition2"
+                        type="checkbox"
+                      />
+                      <label htmlFor="condition2">Old</label>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-y-2 items-center">
+                    <h6 className="font-medium">Price (N)</h6>
+                    <input
+                      className="p-2.5 w-[40%] rounded-lg border border-primaryBorder"
+                      placeholder="0"
+                      min={0}
+                      type="number"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-y-3  md:w-1/2 rounded-lg p-5  bg-white border border-primaryBorder">
+                  <h6 className="font-medium">Product Type</h6>
+                  <div className="flex gap-x-4 items-center text-sm">
                     <input
                       className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
-                      id="condition1"
+                      id="auctioned"
                       type="checkbox"
                     />
-                    <label htmlFor="condition1">New</label>
+                    <label htmlFor="auctioned">Auctioned</label>
                   </div>
-                  <div className="flex gap-x-2 items-center text-sm">
+                  <div className="flex gap-x-4 items-center text-sm">
                     <input
                       className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
                       id="condition2"
                       type="checkbox"
                     />
-                    <label htmlFor="condition2">Old</label>
+                    <label htmlFor="condition2">Non-auctioned</label>
                   </div>
-                </div>
-                <div className="flex flex-col gap-y-2 items-center">
-                  <h6 className="font-medium">Qty</h6>
-                  <input
-                    className="p-2.5 w-[40%] rounded-lg border border-primaryBorder"
-                    placeholder="0"
-                    min={0}
-                    type="number"
-                  />
-                </div>
-                <div className="flex flex-col gap-y-2 items-center">
-                  <h6 className="font-medium">Price(₦)</h6>
-                  <input
-                    className="p-2.5 w-[40%] rounded-lg border border-primaryBorder"
-                    placeholder="0"
-                    min={0}
-                    type="number"
-                  />
                 </div>
               </div>
             </div>
@@ -274,6 +332,36 @@ export default function AddProducts() {
                   Used to calculate shipping rates at checkout
                 </p>
               </div>
+            </div>
+
+            <div className="w-full flex flex-col rounded-lg bg-white border p-3 border-primaryBorder">
+              <h5 className="text-sm">Product Document</h5>
+              <div className="w-full px-4 py-2">
+                <FileUpload
+                  acceptedFileTypes={{
+                    "application/pdf": [],
+                    "image/png": [],
+                    "image/jpeg": [],
+                  }}
+                  maxSizeMB={20}
+                  Child={
+                    <>
+                      <IoCloudUploadOutline size={30} />
+                      <p className="text-sm font-semibold text-center">
+                        Drag files here or{" "}
+                        <span className="text-[#E65800]">click to select</span>
+                      </p>
+                      <p className="text-xs text-[#898989]">
+                        Png, jpeg, PDF supported up to 20mb max
+                      </p>
+                    </>
+                  }
+                  onFilesChange={handleDocumentChange}
+                />
+              </div>
+              <p className="text-secondaryTextColor">
+                Upload authentic documents of your product
+              </p>
             </div>
           </div>
         </div>

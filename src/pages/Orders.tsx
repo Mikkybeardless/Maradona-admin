@@ -1,4 +1,4 @@
-import { FaRegEyeSlash } from "react-icons/fa6";
+import { FaChevronRight, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { PiCoinVerticalDuotone } from "react-icons/pi";
 import { CiSearch } from "react-icons/ci";
@@ -9,6 +9,10 @@ import { generateRandomNumber } from "../helper/helperFunctions";
 import LineAreaChart from "../components/LineAreaChart";
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
+import { FaFileDownload } from "react-icons/fa";
+import { Popper } from "@mui/material";
+import { BsThreeDots } from "react-icons/bs";
+import { DateSelect } from "../components/common/dateSelect";
 
 type UserTableType = {
   id: any;
@@ -22,25 +26,16 @@ type UserTableType = {
 const rows = (): UserTableType[] => {
   const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
   let returnArray: UserTableType[] = [];
+  const statuses = ["Pending", "Processed", "Returned", "Cancelled"];
 
   returnArray = loopArray.map((num) => {
-    let randomNum = generateRandomNumber(4, 1);
     return {
       id: "100" + num,
       name: "Rosemary Sunday",
       type: "House",
       details: "3-bedroom house in Ikeja",
       date: new Date().toUTCString(),
-      status:
-        randomNum === 1
-          ? "Pending"
-          : randomNum === 2
-          ? "Processed"
-          : randomNum === 3
-          ? "Cancelled"
-          : randomNum === 4
-          ? "Returned"
-          : "",
+      status: statuses[num % 4],
     };
   });
   return returnArray;
@@ -73,7 +68,23 @@ export default function Orders() {
   const location = useLocation();
   const { pathname } = location;
   const [exportModal, setExportModal] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const exportModalRef = useRef(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const dotsPopupRef = useRef(null);
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popper" : undefined;
+
+  useClickAway(dotsPopupRef, () => {
+    setAnchorEl(null);
+  });
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation(); // Prevents bubbling
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
 
   useClickAway(exportModalRef, () => {
     setExportModal(false);
@@ -96,37 +107,56 @@ export default function Orders() {
     { field: "status", headerName: "Status", flex: 0.5 },
     {
       field: "Action",
+      flex: 0.5,
       renderCell: ({ row }) => {
         return (
-          <div className="h-full w-full relative flex justify-center gap-x-3 items-center">
-            <Link
-              className="text-xs text-[#C38D00] hover:underline"
-              to={`/orders/order`}
-              state={row.status === "Processed" ? { isProcessed: true } : null}
+          <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
+            <button
+              aria-describedby={id}
+              type="button"
+              onClick={(e) => handleClick(e)}
+              className="cursor-pointer bg-transparent border-none p-0 m-0"
+              style={{ lineHeight: 0 }}
             >
-              View
-            </Link>
-            {row.status === "Pending" ? (
-              <button className="text-xs p-1 px-1.5 rounded-lg bg-[#E5FFE5] text-[#008000] hover:underline">
-                Process
-              </button>
-            ) : null}
-            {row.status === "Processed" ||
-            row.status === "Returned" ||
-            row.status === "Pending" ? (
-              <button className="text-xs p-1 px-1.5 rounded-lg bg-[#FFB8B8] text-[#FF0000] hover:underline">
-                Cancel
-              </button>
-            ) : null}
+              <BsThreeDots size={16} />
+            </button>
+            <Popper
+              ref={dotsPopupRef}
+              className="p-3 text-sm z-10 flex gap-x-4 items-center rounded-lg border border-primaryBorder bg-white"
+              id={id}
+              open={open}
+              anchorEl={anchorEl}
+            >
+              <Link
+                className="text-xs text-[#C38D00] hover:underline"
+                to={`/orders/order`}
+                state={
+                  row.status === "Processed" ? { isProcessed: true } : null
+                }
+              >
+                View
+              </Link>
+              {row.status === "Pending" && (
+                <button className="text-xs p-1 px-1.5 rounded-lg bg-[#E5FFE5] text-[#008000] hover:underline">
+                  Process
+                </button>
+              )}
+              {row.status === "Processed" ||
+                row.status === "Returned" ||
+                (row.status === "Pending" && (
+                  <button className="text-xs p-1 px-1.5 rounded-lg bg-[#FFB8B8] text-[#FF0000] hover:underline">
+                    Cancel
+                  </button>
+                ))}
+            </Popper>
           </div>
         );
       },
-      flex: 0.9,
     },
   ];
 
   return (
-    <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-3">
+    <div className="w-full h-full bg-white overflow-y-auto flex flex-col custom-scrollbar py-20">
       {exportModal ? (
         <div className="w-screen h-screen flex justify-center items-center fixed top-0 left-0 z-30 bg-black/50 backdrop-blur-sm">
           <div
@@ -190,11 +220,19 @@ export default function Orders() {
           </div>
         </div>
       ) : null}
-      <div className="w-full py-3.5 px-24 border-b border-b-primaryBorder">
+      <div className="w-full py-3.5 px-5 md:px-10 fixed z-10 left-2 top-0 border-b  border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
-      <div className="px-24 w-full mt-3 flex flex-col flex-1">
+      <div className="px-5 md:px-10 w-full mt-3 flex flex-col flex-1">
+        <div className="flex gap-x-4 mb-3 items-center">
+          <Link to={`/`} className="text-sm opacity-60">
+            Dashboard
+          </Link>
+          <FaChevronRight size={18} />
+          <span className="text-sm">Orders</span>
+        </div>
+
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold flex items-start">
             Orders{" "}
@@ -202,15 +240,26 @@ export default function Orders() {
           </h1>
 
           <div className="flex items-center gap-x-5">
-            <button className="text-sm flex items-center gap-x-2 rounded-lg px-4 py-2.5 bg-[#FFF4EE] text-defaultOrange">
-              <FaRegEyeSlash color="#e65800" />
-              <span>Hide analytics</span>
+            <button
+              onClick={() => setShowAnalytics((prev) => !prev)}
+              className="text-sm hidden md:block rounded-lg p-2 md:px-4 md:py-2.5 bg-[#FFF4EE] text-defaultOrange"
+            >
+              {!showAnalytics ? (
+                <div className="flex gap-x-2 items-center">
+                  <FaRegEye color="#e65800" /> <span>Show Analytics</span>
+                </div>
+              ) : (
+                <div className="flex gap-x-2 items-center">
+                  <FaRegEyeSlash color="#e65800" />
+                  <span>Hide Analytics</span>
+                </div>
+              )}
             </button>
             <button
               onClick={openExportModal}
-              className="text-sm rounded-lg px-4 py-2.5 bg-defaultOrange hover:bg-defaultOrangeHover text-white"
+              className="text-sm flex  gap-3 rounded-lg px-4 py-2.5 bg-defaultOrange hover:bg-defaultOrangeHover text-white"
             >
-              Export
+              <FaFileDownload size={18} /> Export
             </button>
           </div>
         </div>
@@ -229,17 +278,11 @@ export default function Orders() {
             </div>
           </div>
 
-          <LineAreaChart width="45%" data={chartData()} />
+          {showAnalytics && <LineAreaChart width="45%" data={chartData()} />}
         </div>
 
-        <div className="flex justify-between items-end mt-5 w-full">
+        <div className="flex flex-wrap gap-y-1 justify-between items-end mt-5 w-full">
           <div className="flex gap-x-5 items-center">
-            <div className="flex flex-col gap-y-1">
-              <p className="text-xs">Customer:</p>
-              <select className="p-2.5 text-sm rounded-lg border border-primaryBorder bg-white outline-none">
-                <option>Rosie Sunday</option>
-              </select>
-            </div>
             <div className="flex flex-col gap-y-1">
               <p className="text-xs">Status:</p>
               <select className="p-2.5 text-sm rounded-lg border border-primaryBorder bg-white outline-none">
@@ -256,10 +299,8 @@ export default function Orders() {
               </select>
             </div>
             <div className="flex flex-col gap-y-1">
-              <p className="text-xs">Order Date:</p>
-              <select className="p-2.5 text-sm rounded-lg border border-primaryBorder bg-white outline-none">
-                <option>{new Date().toLocaleDateString()}</option>
-              </select>
+              <p className="text-xs">Date:</p>
+              <DateSelect value={null} />
             </div>
           </div>
 
@@ -274,7 +315,7 @@ export default function Orders() {
         </div>
         {/* filters */}
 
-        <div className="mt-3 flex flex-1 w-full overflow-hidden">
+        <div className="mt-3 flex flex-1 w-full min-h-[500px] overflow-hidden">
           <MuiTableComponent
             columns={columns}
             showCheckbox={false}
