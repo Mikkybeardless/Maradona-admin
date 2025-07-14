@@ -169,7 +169,7 @@ export default function Agent() {
           </div>
         </div>
       ) : null}
-      <div className="w-full py-5 px-5 md:px-10 border-b border-b-primaryBorder">
+      <div className="w-full py-5 px-5 md:px-10 border-b bg-white border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 

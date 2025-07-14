@@ -7,13 +7,17 @@ import { GridColDef } from "@mui/x-data-grid";
 import { Link, useLocation } from "react-router-dom";
 import { generateRandomNumber } from "../helper/helperFunctions";
 import LineAreaChart from "../components/LineAreaChart";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import { FaFileDownload } from "react-icons/fa";
 import { Popper } from "@mui/material";
 import { BsThreeDots } from "react-icons/bs";
 import { DateSelect } from "../components/common/dateSelect";
-
+import { FilterGroup } from "../components/common/FilterGroup";
+import { Dayjs } from "dayjs";
+import { useDebounce } from "../hooks/useDebounce";
+import { TableSearchInput } from "../components/common/TableSearchInput";
+import { StatusSelect } from "../components/common/statusSelect";
 type UserTableType = {
   id: any;
   name: string;
@@ -24,21 +28,16 @@ type UserTableType = {
 };
 
 const rows = (): UserTableType[] => {
-  const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-  let returnArray: UserTableType[] = [];
   const statuses = ["Pending", "Processed", "Returned", "Cancelled"];
-
-  returnArray = loopArray.map((num) => {
-    return {
-      id: "100" + num,
-      name: "Rosemary Sunday",
-      type: "House",
-      details: "3-bedroom house in Ikeja",
-      date: new Date().toUTCString(),
-      status: statuses[num % 4],
-    };
-  });
-  return returnArray;
+  const data: UserTableType[] = Array.from({ length: 15 }, (_, i) => ({
+    id: "100" + (i + 1),
+    name: "Rosemary Sunday",
+    type: "House",
+    details: "3-bedroom house in Ikeja",
+    date: new Date().toUTCString(),
+    status: statuses[i % 4], // Randomly assign status
+  }));
+  return data;
 };
 
 const chartData = () => {
@@ -64,14 +63,30 @@ const chartData = () => {
   return returnArray;
 };
 
+export type IFilter = {
+  type: string;
+  status: string;
+  date: Dayjs | null;
+  modified: Dayjs | null;
+};
+
 export default function Orders() {
-  const location = useLocation();
-  const { pathname } = location;
+  // const location = useLocation();
+  // const { pathname } = location;
   const [exportModal, setExportModal] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const exportModalRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const dotsPopupRef = useRef(null);
+
+  const [filters, setFilters] = useState<IFilter>({
+    type: "",
+    status: "",
+    date: null,
+    modified: null,
+  });
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery);
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popper" : undefined;
@@ -129,7 +144,7 @@ export default function Orders() {
             >
               <Link
                 className="text-xs text-[#C38D00] hover:underline"
-                to={`/orders/order`}
+                to={`/orders/order/${row.id}`}
                 state={
                   row.status === "Processed" ? { isProcessed: true } : null
                 }
@@ -137,23 +152,50 @@ export default function Orders() {
                 View
               </Link>
               {row.status === "Pending" && (
-                <button className="text-xs p-1 px-1.5 rounded-lg bg-[#E5FFE5] text-[#008000] hover:underline">
-                  Process
-                </button>
-              )}
-              {row.status === "Processed" ||
-                row.status === "Returned" ||
-                (row.status === "Pending" && (
+                <>
+                  <button className="text-xs p-1 px-1.5 rounded-lg bg-[#E5FFE5] text-[#008000] hover:underline">
+                    Process
+                  </button>
                   <button className="text-xs p-1 px-1.5 rounded-lg bg-[#FFB8B8] text-[#FF0000] hover:underline">
                     Cancel
                   </button>
-                ))}
+                </>
+              )}
+              {row.status === "Returned" && (
+                <button className="text-xs p-1 px-1.5 rounded-lg bg-[#FFB8B8] text-[#FF0000] hover:underline">
+                  Cancel
+                </button>
+              )}
             </Popper>
           </div>
         );
       },
     },
   ];
+
+  useEffect(() => {
+    // fetch or filter rows based on active tab, filters, and search query
+    const formatedFilters = {
+      type: filters.type || "",
+      status: filters.status || "",
+      date: filters.date ? filters.date.toISOString() : null,
+      modified: filters.modified ? filters.modified.toISOString() : null,
+    };
+
+    // Simulate fetching or filtering rows based on the active tab, filters, and search query
+
+    console.log("Fetching or filtering rows based on:", {
+      formatedFilters,
+    });
+  }, [filters]);
+
+  useEffect(() => {
+    // Simulate fetching or filtering rows based on the search query
+    console.log(
+      "Fetching or filtering rows based on search query:",
+      debouncedSearchQuery
+    );
+  }, [debouncedSearchQuery]);
 
   return (
     <div className="w-full h-full bg-white overflow-y-auto flex flex-col custom-scrollbar py-20">
@@ -220,7 +262,7 @@ export default function Orders() {
           </div>
         </div>
       ) : null}
-      <div className="w-full py-3.5 px-5 md:px-10 fixed z-10 left-2 top-0 border-b  border-b-primaryBorder">
+      <div className="w-full py-3.5 px-5 md:px-10 fixed z-10 left-2 top-0 border-b bg-white  border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
@@ -281,39 +323,54 @@ export default function Orders() {
           {showAnalytics && <LineAreaChart width="45%" data={chartData()} />}
         </div>
 
-        <div className="flex flex-wrap gap-y-1 justify-between items-end mt-5 w-full">
-          <div className="flex gap-x-5 items-center">
-            <div className="flex flex-col gap-y-1">
-              <p className="text-xs">Status:</p>
-              <select className="p-2.5 text-sm rounded-lg border border-primaryBorder bg-white outline-none">
-                <option>Pending</option>
-                <option>Processed</option>
-                <option>Cancelled</option>
-                <option>Returned</option>
-              </select>
-            </div>
-            <div className="flex flex-col gap-y-1">
-              <p className="text-xs">Type:</p>
-              <select className="p-2.5 text-sm rounded-lg border border-primaryBorder bg-white outline-none">
-                <option>House</option>
-              </select>
-            </div>
-            <div className="flex flex-col gap-y-1">
-              <p className="text-xs">Date:</p>
-              <DateSelect value={null} />
-            </div>
-          </div>
-
-          <div className="flex gap-x-2 px-3 basis-[25%] rounded-lg border border-primaryBorder">
-            <CiSearch className="h-fit w-fit my-auto" size={24} />
-            <input
-              className="flex-1 py-2.5 outline-none border-none text-sm bg-transparent"
-              placeholder="Search"
-              type="text"
-            />
-          </div>
+        {/* Filters & Search Bar */}
+        <div className="mb-4">
+          <FilterGroup
+            filters={filters}
+            onChange={(updated) => {
+              setFilters((prev) => ({ ...prev, ...updated }));
+            }}
+            selects={[
+              {
+                name: "type",
+                placeholder: "Category",
+                options: [
+                  { label: "House", value: "house" },
+                  { label: "Cars", value: "cars" },
+                  { label: "Land", value: "land" },
+                ],
+              },
+            ]}
+            extraFilters={
+              <>
+                <StatusSelect
+                  options={[
+                    { label: "Published", value: "published" },
+                    { label: "Pending", value: "pending" },
+                    { label: "Cancelled", value: "cancelled" },
+                  ]}
+                  onChange={(value) => {
+                    setFilters((prev) => ({ ...prev, status: value }));
+                  }}
+                  value={filters.status}
+                />
+                <DateSelect
+                  onChange={(date) => {
+                    setFilters((prev) => ({ ...prev, date }));
+                  }}
+                  value={filters.date}
+                />
+              </>
+            }
+            searchNode={
+              <TableSearchInput
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                placeholder="Search orders"
+              />
+            }
+          />
         </div>
-        {/* filters */}
 
         <div className="mt-3 flex flex-1 w-full min-h-[500px] overflow-hidden">
           <MuiTableComponent

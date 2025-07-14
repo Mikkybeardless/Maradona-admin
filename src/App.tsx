@@ -32,12 +32,16 @@ import AddPromotion from "./pages/AddPromition";
 import AddAdvert from "./pages/AddAdvert";
 import CustomerCare from "./pages/CustomerCare";
 import CustomerChat from "./pages/CustomerChat";
+import SaleReport from "./pages/SalesReport";
+import RevenueReport from "./pages/RevenueReport";
+import ExpensesReport from "./pages/ExpensesReport";
+import FinancialTracking from "./pages/FinancialTracking";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LoggedInAuthenticator />}>
+        <Route path="admin" element={<LoggedInAuthenticator />}>
           <Route index element={<Dashboard />} />
           <Route path="login" element={<AdminLogin />} />
 
@@ -97,9 +101,13 @@ function App() {
             <Route index element={<Orders />} />
             <Route path="order/:id" element={<AdminOrder />} />
           </Route>
-
-          <Route path="reports" element={<Reports />} />
-
+          <Route path="reports">
+            <Route index element={<Reports />} />
+            <Route path="sale-report" element={<SaleReport />} />
+            <Route path="revenue-report" element={<RevenueReport />} />
+            <Route path="expenses-report" element={<ExpensesReport />} />
+            <Route path="financial-tracking" element={<FinancialTracking />} />
+          </Route>
           <Route path="promotions">
             <Route index element={<Promotions />} />
             <Route path="add-promotion" element={<AddPromotion />} />
@@ -116,7 +124,7 @@ function App() {
           <Route path="agents">
             <Route index element={<FieldAgents />} />
             <Route path="agent/:id" element={<Agent />} />
-            <Route path="request" element={<ProductDetails />} />
+            <Route path="request/:id" element={<ProductDetails />} />
           </Route>
 
           <Route path="auctions">

@@ -9,7 +9,10 @@ export default function DashboardSearchBar() {
   const pathName = location.pathname;
 
   return (
-    <div className="w-full h-full flex justify-between items-center">
+    <nav
+      id="dashboard-search-bar"
+      className="w-full h-full flex justify-between items-center"
+    >
       {pathName === "/" ||
         (pathName.startsWith("/customer-care") && (
           <div className="md:flex hidden items-stretch gap-x-4 w-[100%]  md:w-[60%] ">
@@ -68,6 +71,6 @@ export default function DashboardSearchBar() {
           />
         </NavLink>
       </div>
-    </div>
+    </nav>
   );
 }

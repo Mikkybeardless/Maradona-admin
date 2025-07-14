@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import logo from "../assets/logo.svg";
 // import receiptItem from "../assets/receipt-item.svg";
 import { RxDashboard } from "react-icons/rx";
@@ -23,7 +23,7 @@ export default function AdminSidebar() {
   const { windowWidth, isMobile } = useWindowResizer();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [userCategoryOpen, setUserCategoryOpen] = useState(false);
-
+  const { pathname } = useLocation();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -72,6 +72,11 @@ export default function AdminSidebar() {
       label: "Customer Care",
     },
   ];
+  // Function to check if a link is active for root (/admin) dashboard
+  const isActiveLink = (path: string) => {
+    // Check if the current path matches the link's path
+    return pathname === path;
+  };
 
   const handleLogout = () => {
     isMobile && setIsSidebarOpen(false);
@@ -128,14 +133,12 @@ export default function AdminSidebar() {
         <div className="flex flex-col gap-y-2 flex-1 w-full mt-7">
           {/* Map through navigation links */}
           <NavLink
-            to={"/"}
-            className={({ isActive }) =>
-              `${
-                isActive
-                  ? "text-white bg-defaultOrange"
-                  : "text-black hover:bg-defaultOrange hover:text-white"
-              } rounded-[8px] p-2.5 px-3 flex items-center gap-x-3 text-sm w-full`
-            }
+            to={"/admin"}
+            className={`${
+              isActiveLink("/admin")
+                ? "text-white bg-defaultOrange"
+                : "text-black hover:bg-defaultOrange hover:text-white"
+            } rounded-[8px] p-2.5 px-3 flex items-center gap-x-3 text-sm w-full`}
             onClick={() => isMobile && setIsSidebarOpen(false)}
           >
             <span className="transition-none flex-shrink-0">
@@ -145,7 +148,7 @@ export default function AdminSidebar() {
           </NavLink>
 
           <NavLink
-            to={"/products"}
+            to={"/admin/products"}
             className={({ isActive }) =>
               `${
                 isActive
@@ -193,7 +196,7 @@ export default function AdminSidebar() {
               }  p-2.5 flex-col gap-1  shadow-lg `}
             >
               <NavLink
-                to={"/buyers"}
+                to={"/admin/buyers"}
                 className={({ isActive }) =>
                   `${
                     isActive
@@ -207,7 +210,7 @@ export default function AdminSidebar() {
               </NavLink>
 
               <NavLink
-                to={"/sellers"}
+                to={"/admin/sellers"}
                 className={({ isActive }) =>
                   `${
                     isActive
@@ -226,7 +229,7 @@ export default function AdminSidebar() {
           {navLinks.map((link, index) => (
             <NavLink
               key={index}
-              to={link.to}
+              to={`/admin/${link.to}`}
               className={({ isActive }) =>
                 `${
                   isActive

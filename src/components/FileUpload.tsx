@@ -1,5 +1,5 @@
 import { useDropzone } from "react-dropzone";
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { IoCloudUploadOutline } from "react-icons/io5";
 
 interface FileUploadProps {
@@ -21,19 +21,10 @@ export const FileUpload = ({
 }: FileUploadProps) => {
   const [files, setFiles] = useState<File[]>([]);
 
-  const { getRootProps, getInputProps, isDragActive, acceptedFiles } =
-    useDropzone({
-      accept: acceptedFileTypes,
-      maxSize: maxSizeMB * 1000000, // Convert MB to bytes
-      maxFiles: maxFiles,
-    });
-
-  // Update our state when acceptedFiles changes
-  useEffect(() => {
-    if (acceptedFiles.length > 0) {
-      // Add new files to the existing array, avoiding duplicates
+  const onDrop = useCallback(
+    (newFiles: File[]) => {
       setFiles((prevFiles) => {
-        const newFiles = acceptedFiles.filter(
+        const uniqueFiles = newFiles.filter(
           (newFile) =>
             !prevFiles.some(
               (existingFile) =>
@@ -42,17 +33,29 @@ export const FileUpload = ({
                 existingFile.lastModified === newFile.lastModified
             )
         );
-        const updatedFiles = [...prevFiles, ...newFiles];
-        onFilesChange(updatedFiles); // Notify parent component
+        const updatedFiles = [...prevFiles, ...uniqueFiles];
+        onFilesChange(updatedFiles);
         return updatedFiles;
       });
-    }
-  }, [acceptedFiles, onFilesChange]);
+    },
+    [onFilesChange]
+  );
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: acceptedFileTypes,
+    maxSize: maxSizeMB * 1000000,
+    maxFiles: maxFiles,
+    onDrop, // 👈 use this instead of acceptedFiles + useEffect
+  });
+
+  const isSameFile = (a: File, b: File) =>
+    a.name === b.name && a.size === b.size && a.lastModified === b.lastModified;
 
   const removeFile = (fileToRemove: File) => {
     setFiles((prevFiles) => {
-      const updatedFiles = prevFiles.filter((file) => file !== fileToRemove);
-      onFilesChange(updatedFiles); // Notify parent component
+      const updatedFiles = prevFiles.filter(
+        (file) => !isSameFile(file, fileToRemove)
+      );
+      onFilesChange(updatedFiles);
       return updatedFiles;
     });
   };
@@ -131,7 +134,7 @@ export const FileUpload = ({
 
       {files.length > 0 && (
         <div className="mt-4">
-          <div className="w-full grid md:grid-cols-2 gap-5">{fileList}</div>
+          <div className="w-full grid grid-cols-2 gap-5">{fileList}</div>
         </div>
       )}
     </div>

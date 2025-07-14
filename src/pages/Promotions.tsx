@@ -231,7 +231,7 @@ export default function Promotions() {
             </button>
           </div>
           <Link
-            to={`/promotions/add-${promotionType}`}
+            to={`/admin/promotions/add-${promotionType}`}
             className="rounded-lg capitalize flex items-center gap-x-2 px-2 md:px-5 py-2.5 text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
           >
             <FaPlus />

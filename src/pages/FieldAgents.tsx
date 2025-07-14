@@ -2,7 +2,7 @@ import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import DashboardSearchBar from "../components/DashboardSearchBar";
-import { CiSearch } from "react-icons/ci";
+import { CiCalendar, CiClock2, CiSearch } from "react-icons/ci";
 import MuiTableComponent from "../components/TableComponent";
 import { FaPlus } from "react-icons/fa6";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -10,6 +10,8 @@ import { TbAward } from "react-icons/tb";
 import { generateRandomNumber } from "../helper/helperFunctions";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { HiSortDescending } from "react-icons/hi";
+import { FaTimes } from "react-icons/fa";
+import img1 from "../assets/agent.jpg";
 
 const rows = (): any[] => {
   const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
@@ -50,9 +52,22 @@ export default function FieldAgents() {
   const [newAgentModal, setNewAgentModal] = useState(false);
   const [agentType, setAgentType] = useState(locationAgentType || "agent");
   const newAgentModalRef = useRef(null);
+  const [inspectionModal, setInspectionModal] = useState(false);
+  const inspectionModalRef = useRef(null);
+  const [currentAgent, setCurrentAgent] = useState({
+    id: 0,
+    name: "James Bond",
+    email: "",
+    phone: "",
+    status: "",
+    verifiedListings: 0,
+  });
 
   useClickAway(newAgentModalRef, () => {
     setNewAgentModal(false);
+  });
+  useClickAway(inspectionModalRef, () => {
+    setInspectionModal(false);
   });
 
   function openNewAgentModal() {
@@ -63,9 +78,17 @@ export default function FieldAgents() {
     setNewAgentModal(false);
   }
 
+  function openInspectionModal(id: number) {
+    console.log("ID", id);
+    const selectedAgent = rows().find((row) => row.id === id);
+    if (selectedAgent) {
+      setCurrentAgent(selectedAgent);
+    }
+    setInspectionModal(true);
+  }
   const handleRowClick = (params: GridRowParams) => {
     console.log("Row clicked:", params.row);
-    navigate(`/agents/agent`);
+    navigate(`/agents/agent/:${params.row.id}`);
   };
   const columns: GridColDef[] = [
     { field: "id", headerName: "Agent ID", flex: 0.4, sortable: false },
@@ -117,17 +140,17 @@ export default function FieldAgents() {
       flex: 1,
       sortable: false,
     },
-    { field: "category", headerName: "Category", flex: 1, sortable: false },
-    { field: "price", headerName: "Price(₦)", flex: 1 },
-    { field: "stock", headerName: "Stock", flex: 0.4, type: "number" },
+    { field: "category", headerName: "Category", flex: 0.5, sortable: false },
+    { field: "price", headerName: "Price(₦)", flex: 0.7 },
+    { field: "stock", headerName: "Stock", flex: 0.5, type: "number" },
     {
       field: "Action",
       headerName: "Action",
-      renderCell: () => {
+      renderCell: ({ row }) => {
         return (
           <div className="h-full w-full relative flex justify-center items-center gap-x-4">
             <Link
-              to="/agents/request"
+              to={`/agents/request/${row.id}`}
               state={{ fieldAgent: true }}
               className="text-sm text-[#C38D00] hover:underline"
             >
@@ -156,16 +179,15 @@ export default function FieldAgents() {
     {
       field: "Action",
       headerName: "Action",
-      renderCell: () => {
+      renderCell: ({ row }) => {
         return (
           <div className="h-full w-full relative flex justify-center items-center gap-x-4">
-            <Link
-              to="/agents/request"
-              state={{ fieldAgent: true }}
+            <button
+              onClick={() => openInspectionModal(row.id)}
               className="text-sm text-[#C38D00] hover:underline"
             >
               View
-            </Link>
+            </button>
             <span className="text-sm text-green-800">Approve</span>
             <span className="text-sm text-red-500">Reject</span>
           </div>
@@ -259,6 +281,63 @@ export default function FieldAgents() {
           </div>
         </div>
       ) : null}
+
+      {inspectionModal ? (
+        <div className="w-screen h-screen  flex justify-center items-center fixed top-0 left-0 z-30 bg-black/50 backdrop-blur-sm">
+          <div
+            ref={inspectionModalRef}
+            className="md:w-[40%] md:h-[70%] rounded-[24px] flex flex-col px-8 py-2 bg-white"
+          >
+            <div className="mt-5 flex items-center justify-between gap-x-3 border-b pb-1 ">
+              <h2 className="text-2xl font-bold">Request for Inspection</h2>
+              <button
+                onClick={() => setInspectionModal(false)}
+                className="rounded-full bg-gray-200 p-3 hover:underline"
+              >
+                <FaTimes size={16} />
+              </button>
+            </div>
+            <div className="flex flex-col gap-y-1 mt-5">
+              <div className=" flex flex-col justify-center mb-14 items-center text-[#585858] gap-y-3">
+                <img
+                  src={img1}
+                  alt="agent profile picture"
+                  className="w-[97px] h-[97px] rounded-sm object-contain"
+                />
+                <p>
+                  Inspection with{" "}
+                  <span className="font-semibold mr-1 text-black">
+                    {currentAgent.name}
+                  </span>
+                  (Buyer)
+                </p>
+                <p>
+                  Filed Agent Assigned : <span>{currentAgent.id}</span>{" "}
+                </p>
+                <p className="flex items-center gap-x-3">
+                  <span className="flex items-center gap-x-1">
+                    <CiCalendar size={18} className="text-black" />
+                    Thur, Nov 7
+                  </span>
+                  <span className="flex items-center gap-x-1">
+                    <CiClock2 size={18} className="text-black" /> 5 pm EST
+                  </span>
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-y-2">
+                <button className="bg-[#008000] rounded-lg py-2 w-full text-white">
+                  Approve
+                </button>
+                <button className="bg-[#EE1E1E] rounded-lg py-2 w-full text-white">
+                  Reject
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <div className="w-full py-5 px-5 md:px-10 border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>

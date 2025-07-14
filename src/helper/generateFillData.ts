@@ -46,7 +46,7 @@ export function generateBarChartData() {
   const lineChartData: any = [];
   data.forEach((month) => {
     lineChartData.push({
-      name: month,
+      month: month,
       revenue: generateRandomNumber(2000000, 1000000),
     });
   });

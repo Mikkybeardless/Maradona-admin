@@ -1,6 +1,5 @@
 import { FaPlus, FaStar } from "react-icons/fa6";
 import DashboardSearchBar from "../components/DashboardSearchBar";
-import { CiSearch } from "react-icons/ci";
 import MuiTableComponent from "../components/TableComponent";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,6 +8,12 @@ import { generateRandomNumber } from "../helper/helperFunctions";
 import { HiSortDescending } from "react-icons/hi";
 import { useState } from "react";
 import { DateSelect } from "../components/common/dateSelect";
+import { TableSearchInput } from "../components/common/TableSearchInput";
+import { FilterGroup } from "../components/common/FilterGroup";
+import { Dayjs } from "dayjs";
+import { useDebounce } from "../hooks/useDebounce";
+import { StatusSelect } from "../components/common/statusSelect";
+import { set } from "js-cookie";
 
 type BidTableType = {
   id: number;
@@ -17,6 +22,11 @@ type BidTableType = {
   price: string;
   status: string;
   date: Date | string;
+};
+type IFilter = {
+  category: string;
+  status: string;
+  date: Dayjs | null;
 };
 
 const rows = (): BidTableType[] => {
@@ -83,7 +93,7 @@ const columns: GridColDef[] = [
               : value === "Sold"
               ? "bg-[#E8F8E8] text-[#0C560B]"
               : value === "Pending"
-              ? "bg-[#FEF3B8] text-[#0C560B]"
+              ? "bg-[#FEF3B8] "
               : "bg-[#DC1313] text-white"
           }`}
         >
@@ -103,6 +113,13 @@ export default function Auction() {
     date: null,
     status: "",
   });
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery);
+  const [filters, setFilters] = useState<IFilter>({
+    category: "",
+    status: "",
+    date: null,
+  });
 
   // const handleRowClick = (row: BidTableType) => {
   //     navigate(`/auctions/${row.id}`);
@@ -110,7 +127,7 @@ export default function Auction() {
 
   const handleRowClick = (params: GridRowParams) => {
     console.log("Row clicked:", params.row);
-    navigate(`/auctions/auction/${params.row.id}`);
+    navigate(`/admin/auctions/auction/${params.row.id}`);
   };
 
   const handleSelectChange = (event: {
@@ -123,16 +140,16 @@ export default function Auction() {
   };
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar py-20 bg-[#F5F5F5]">
-      <div className="w-full py-5 px-5 md:px-10 fixed z-10 left-2 top-0 border-b border-b-primaryBorder">
+      <div className="w-full py-5 px-5 md:px-10 fixed z-10 left-2 top-0 bg-white border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
-      <div className="px-5 md:px-10 w-full mt-4 flex flex-col flex-1">
+      <main className="px-5 md:px-10 w-full mt-4 flex flex-col flex-1">
         <div className="flex justify-between items-center mt-1">
           <h1 className="text-3xl font-bold flex items-start">Auction</h1>
 
           <Link
-            to="/auctions/add-auction"
+            to="/admin/auctions/add-auction"
             className="rounded-lg flex items-center gap-x-2 px-5 py-2.5 text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
           >
             <FaPlus size={18} />
@@ -140,7 +157,7 @@ export default function Auction() {
           </Link>
         </div>
 
-        <div className="flex justify-between flex-wrap gap-y-1 items-end my-5 w-full">
+        {/* <div className="flex justify-between flex-wrap gap-y-1 items-end my-5 w-full">
           <div className="flex gap-x-3 md:gap-x-5 items-center">
             <div className="px-2.5 rounded-lg  border border-primaryBorder bg-white">
               <select className="py-2.5 text-sm outline-none">
@@ -176,6 +193,55 @@ export default function Auction() {
               type="text"
             />
           </div>
+        </div> */}
+
+        {/* Filters & Search Bar */}
+        <div className="">
+          <FilterGroup
+            filters={filters}
+            onChange={(updated) => {
+              setFilters((prev) => ({ ...prev, ...updated }));
+            }}
+            selects={[
+              {
+                name: "category",
+                placeholder: "Category",
+                options: [
+                  { label: "House", value: "house" },
+                  { label: "Cars", value: "cars" },
+                  { label: "Land", value: "land" },
+                ],
+              },
+            ]}
+            extraFilters={
+              <>
+                <StatusSelect
+                  options={[
+                    { label: "Published", value: "published" },
+                    { label: "Pending", value: "pending" },
+                    { label: "Cancelled", value: "cancelled" },
+                  ]}
+                  onChange={(value) => {
+                    setFilters((prev) => ({ ...prev, status: value }));
+                  }}
+                  value={filters.status}
+                />
+                <DateSelect
+                  onChange={(date) => {
+                    setFilters((prev) => ({ ...prev, date }));
+                  }}
+                  value={filters.date}
+                />
+              </>
+            }
+            searchNode={
+              <TableSearchInput
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                placeholder="Search orders"
+              />
+            }
+          />
         </div>
 
         {/* table */}
@@ -194,7 +260,7 @@ export default function Auction() {
             }}
           />
         </div>
-      </div>
+      </main>
     </div>
   );
 }

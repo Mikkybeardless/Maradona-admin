@@ -11,6 +11,12 @@ import { Button } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { DateSelect } from "./common/dateSelect";
 import { HiSortDescending } from "react-icons/hi";
+import { TableSearchInput } from "./common/TableSearchInput";
+import { FilterGroup } from "./common/FilterGroup";
+import { useDebounce } from "../hooks/useDebounce";
+import { useState } from "react";
+import { Dayjs } from "dayjs";
+import { StatusSelect } from "./common/statusSelect";
 
 type LineChartData = {
   xAxis: string;
@@ -23,12 +29,24 @@ interface PromoAdProps {
   rows: any[];
   lineChartData: LineChartData[];
 }
+
+type IFilter = {
+  status: string;
+  date: Dayjs | null;
+};
 export default function PromoAd({
   pageTitle,
   columns,
   rows,
   lineChartData,
 }: PromoAdProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery);
+  const [filters, setFilters] = useState<IFilter>({
+    status: "",
+    date: null,
+  });
+
   return (
     <div className="flex flex-col gap-20">
       {/* promotion summary */}
@@ -227,38 +245,34 @@ export default function PromoAd({
       </div>
 
       {/* table */}
-      <div className="mt-10">
+      <section id="promotion-table" className="mt-10">
+        {/* Filters & Search Bar */}
         <div className="flex justify-between items-end  w-full">
           <div className="flex gap-x-5 items-center">
-            <div className="flex flex-col gap-y-1">
-              {/* <p className="text-xs">Status:</p> */}
-              <div className="px-2.5 relative flex items-center gap-x-1 rounded-lg border border-primaryBorder bg-white">
-                <HiSortDescending />
-                <select
-                  id="selectSort"
-                  // value={selects.status}
-                  name="status"
-                  // onChange={handleSelectChange}
-                  className="text-sm outline-none h-full py-2.5"
-                >
-                  <option value="">Sort by status</option>
-                  <option value="published">Published</option>
-                  <option value="pending">Pending</option>
-                  <option value="canceled">Canceled</option>
-                </select>
-              </div>
-            </div>
-            <DateSelect value={null} />
-          </div>
-
-          <div className="flex gap-x-2 px-3 basis-[25%] rounded-lg border border-primaryBorder">
-            <CiSearch className="h-fit w-fit my-auto" size={24} />
-            <input
-              className="flex-1 py-2.5 outline-none border-none text-sm bg-transparent"
-              placeholder="Search"
-              type="text"
+            <StatusSelect
+              options={[
+                { label: "Published", value: "published" },
+                { label: "Pending", value: "pending" },
+                { label: "Cancelled", value: "cancelled" },
+              ]}
+              onChange={(value) => {
+                setFilters((prev) => ({ ...prev, status: value }));
+              }}
+              value={filters.status}
+            />
+            <DateSelect
+              onChange={(date) => {
+                setFilters((prev) => ({ ...prev, date }));
+              }}
+              value={filters.date}
             />
           </div>
+
+          <TableSearchInput
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            placeholder="Search Promotions"
+          />
         </div>
 
         <div className="mt-3 flex h-[25rem] w-full overflow-hidden bg-white">
@@ -271,7 +285,7 @@ export default function PromoAd({
             pageSize={10}
           />
         </div>
-      </div>
+      </section>
     </div>
   );
 }

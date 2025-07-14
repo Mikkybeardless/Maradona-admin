@@ -1,7 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
-import { FaPlus, FaRegEye } from "react-icons/fa6";
-import { HiSortDescending } from "react-icons/hi";
+import { FaPlus } from "react-icons/fa6";
 import { CiSearch } from "react-icons/ci";
 import MuiTableComponent from "../components/TableComponent";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
@@ -10,6 +9,11 @@ import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import SelectInputCom from "../components/common/muiSelect";
 import { SelectChangeEvent } from "@mui/material";
+import { TableSearchInput } from "../components/common/TableSearchInput";
+import { DateSelect } from "../components/common/dateSelect";
+import { FilterGroup } from "../components/common/FilterGroup";
+import { useDebounce } from "../hooks/useDebounce";
+import { Dayjs } from "dayjs";
 
 type UserTableType = {
   id: any;
@@ -38,41 +42,24 @@ const rows = (): UserTableType[] => {
   return returnArray;
 };
 
+type IFilter = {
+  status: string;
+  date: Dayjs | null;
+};
+
 export default function Sellers() {
   const location = useLocation();
   const { pathname } = location;
   const [exportModal, setExportModal] = useState(false);
   const exportModalRef = useRef(null);
-  const [selectedStatus, setSelectedStatus] = useState<string>("");
-  const [selectedId, setSelectedId] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery);
+  const [filters, setFilters] = useState<IFilter>({
+    status: "",
+    date: null,
+  });
+
   const navigate = useNavigate();
-
-  const handleIdChange = (
-    event: SelectChangeEvent<string | string[]>,
-    _child: React.ReactNode
-  ) => {
-    const value = event.target.value;
-    setSelectedId(Array.isArray(value) ? value[0] : value);
-  };
-
-  const handleStatusChange = (
-    event: SelectChangeEvent<string | string[]>,
-    _child: React.ReactNode
-  ) => {
-    const value = event.target.value;
-    setSelectedStatus(Array.isArray(value) ? value[0] : value);
-  };
-  const idOptions = [
-    { label: "Option A", value: "A" },
-    { label: "Option B", value: "B" },
-    { label: "Option C", value: "C" },
-  ];
-
-  const statusOptions = [
-    { label: "Option A", value: "Active" },
-    { label: "Option B", value: "Inactive" },
-    { label: "Option C", value: "Busy" },
-  ];
 
   useClickAway(exportModalRef, () => {
     setExportModal(false);
@@ -88,7 +75,7 @@ export default function Sellers() {
 
   const handleRowClick = (params: GridRowParams) => {
     console.log("Row clicked:", params.row);
-    navigate(`/sellers/seller`);
+    navigate(`/admin/sellers/seller`);
   };
 
   const columns: GridColDef[] = [
@@ -107,6 +94,29 @@ export default function Sellers() {
     },
     { field: "status", headerName: "Status", sortable: false },
   ];
+
+  // useEffect(() => {
+  //   const normalizedQuery = debouncedSearchQuery.toLowerCase();
+
+  //   const filtered = allRows.filter((row) => {
+
+  //     // Search filter (e.g., match against name or details)
+  //     const searchMatch =
+  //       row.name.toLowerCase().includes(normalizedQuery) ||
+  //       row.details.toLowerCase().includes(normalizedQuery);
+
+  //     // Custom filters
+  //     const categoryMatch = filters.category ? row.category === filters.category : true;
+  //     const statusMatch = filters.status ? row.status === filters.status : true;
+  //     const dateMatch = filters.date
+  //       ? row.date.startsWith(filters.date.toISOString().slice(0, 10))
+  //       : true;
+
+  //     // Combine
+  //     return dateMatch && searchMatch && categoryMatch && statusMatch;
+  //   });
+
+  // }, [filters, debouncedSearchQuery]);
 
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-7 bg-[#F5F5F5]">
@@ -173,7 +183,7 @@ export default function Sellers() {
           </div>
         </div>
       ) : null}
-      <div className="w-full py-5 px-5 md:px-10 border-b border-b-primaryBorder">
+      <div className="w-full py-5 px-5 md:px-10 border-b bg-white border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
@@ -192,7 +202,7 @@ export default function Sellers() {
               Export
             </button>
             <Link
-              to={`/sellers/add-seller`}
+              to={`/admin/sellers/add-seller`}
               className="flex gap-x-3 items-center rounded-lg px-5 py-3 text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
             >
               <FaPlus size={20} />
@@ -201,31 +211,43 @@ export default function Sellers() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-y-1 justify-between items-end mt-5 w-full">
-          <div className="flex gap-x-5 items-center">
-            <SelectInputCom
-              options={idOptions}
-              label="ID"
-              value={selectedId}
-              onChange={handleIdChange}
-            />
-
-            <SelectInputCom
-              options={statusOptions}
-              label="Status"
-              value={selectedStatus}
-              onChange={handleStatusChange}
-            />
-          </div>
-
-          <div className="flex gap-x-2 px-3 basis-[25%] rounded-lg border border-primaryBorder">
-            <CiSearch className="h-fit w-fit my-auto" size={24} />
-            <input
-              className="flex-1 py-2.5 outline-none border-none text-sm bg-transparent"
-              placeholder="Search"
-              type="text"
-            />
-          </div>
+        {/* Filters & Search Bar */}
+        <div className="">
+          <FilterGroup
+            filters={filters}
+            onChange={(updated) => {
+              setFilters((prev) => ({ ...prev, ...updated }));
+            }}
+            selects={[
+              {
+                name: "status",
+                placeholder: "Status",
+                options: [
+                  { label: "Pending", value: "pending" },
+                  { label: "Processed", value: "processed" },
+                  { label: "Cancelled", value: "cancelled" },
+                  { label: "Returned", value: "returned" },
+                ],
+              },
+            ]}
+            extraFilters={
+              <>
+                <DateSelect
+                  onChange={(date) => {
+                    setFilters((prev) => ({ ...prev, date }));
+                  }}
+                  value={filters.date}
+                />
+              </>
+            }
+            searchNode={
+              <TableSearchInput
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                placeholder="Search sellers"
+              />
+            }
+          />
         </div>
 
         <div className="mt-3 flex flex-1 w-full overflow-hidden bg-white">

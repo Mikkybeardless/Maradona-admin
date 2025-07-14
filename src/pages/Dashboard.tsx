@@ -128,7 +128,7 @@ export default function Dashboard() {
               : value === "Sold"
               ? "bg-[#E8F8E8] text-[#0C560B]"
               : value === "Pending"
-              ? "bg-[#FEF3B8] text-[#0C560B]"
+              ? "bg-[#FEF3B8] "
               : "bg-[#DC1313] text-white"
           }`}
           >
@@ -186,7 +186,7 @@ export default function Dashboard() {
 
   return (
     <div className="w-full h-full overflow-y-auto custom-scrollbar py-20">
-      <div className="w-full fixed z-10 left-2 top-0 py-5 px-5 border-b md:px-10">
+      <div className="w-full fixed z-10 left-2 top-0 py-5 px-5 bg-white border-b md:px-10">
         <DashboardSearchBar />
       </div>
 

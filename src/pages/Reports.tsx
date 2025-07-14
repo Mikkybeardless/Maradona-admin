@@ -70,23 +70,23 @@ export default function Reports() {
   };
 
   const handleToRevenuReport = () => {
-    navigate("/reports/revenue-report");
+    navigate("/admin/reports/revenue-report");
   };
   const handleToSaleReport = () => {
-    navigate("/reports/sale-report");
+    navigate("/admin/reports/sale-report");
   };
 
   const handleToFinancialTracking = () => {
-    navigate("/reports/financial-tracking");
+    navigate("/admin/reports/financial-tracking");
   };
 
   const handleToExpensesReport = () => {
-    navigate("/seller/reports/expenses-report");
+    navigate("/admin/reports/expenses-report");
   };
 
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col pt-10 custom-scrollbar pb-10">
-      <div className="w-full py-3.5 px-5 md:pl-[260px] md:pr-[50px] fixed z-10 left-2 top-0 border-b border-b-primaryBorder">
+      <div className="w-full py-3.5 px-5 md:pl-[260px] md:pr-[50px] fixed z-10 left-2 top-0 bg-white border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
@@ -272,7 +272,7 @@ export default function Reports() {
                     borderColor: "#EAE6E9",
                     textTransform: "capitalize",
                   }}
-                  // onClick={handleToSaleReport}
+                  onClick={handleToSaleReport}
                 >
                   View more
                 </Button>
@@ -438,7 +438,7 @@ export default function Reports() {
                         borderColor: "#5C4D58",
                         textTransform: "capitalize",
                       }}
-                      // onClick={() => navigate("/seller/reports/sales-report")}
+                      onClick={handleToRevenuReport}
                     >
                       View more
                     </Button>
@@ -450,7 +450,7 @@ export default function Reports() {
                         barSize={15}
                         barCategoryGap="50%"
                       >
-                        <XAxis dataKey="name" />
+                        <XAxis dataKey="month" />
                         <YAxis
                           tickFormatter={(value) => `${value / 1000}k`}
                           domain={[0, "auto"]}
@@ -508,7 +508,7 @@ export default function Reports() {
                           padding: "5px 8px",
                           textTransform: "capitalize",
                         }}
-                        // onClick={handleToFinancialTracking}
+                        onClick={handleToFinancialTracking}
                       >
                         View More
                       </Button>
@@ -606,7 +606,7 @@ export default function Reports() {
                               padding: "5px 8px",
                               textTransform: "capitalize",
                             }}
-                            // onClick={section.handler}
+                            onClick={section.handler}
                           >
                             View More
                           </Button>
@@ -708,7 +708,7 @@ export default function Reports() {
                               padding: "5px 8px",
                               textTransform: "capitalize",
                             }}
-                            // onClick={section.handler}
+                            onClick={section.handler}
                           >
                             View More
                           </Button>

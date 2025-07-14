@@ -76,7 +76,7 @@ export default function AddPromotion() {
             </button>
           </div>
           <div className="flex gap-x-4 items-center">
-            <Link to="/promotions" className="text-sm opacity-60">
+            <Link to="/admin/promotions" className="text-sm opacity-60">
               Promotion
             </Link>
             <FaChevronRight size={18} />

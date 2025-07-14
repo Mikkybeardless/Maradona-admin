@@ -68,12 +68,12 @@ export default function CustomerCare() {
 
   const handleRowClick = (params: GridRowParams) => {
     console.log("Row clicked:", params.row);
-    navigate(`/customer-care/ticket/${params.row.id}`);
+    navigate(`/admin/customer-care/ticket/${params.row.id}`);
   };
 
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar py-20 bg-[#F5F5F5]">
-      <div className="w-full py-5 px-5 md:pl-[250px] md:pr-[100px] fixed z-10 left-10 top-0 border-b border-b-primaryBorder">
+      <div className="w-full py-5 px-5 md:pl-[250px] md:pr-[100px] bg-white fixed z-10 left-10 top-0 border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 

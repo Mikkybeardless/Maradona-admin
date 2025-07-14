@@ -1,23 +1,19 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
-import { FaChevronRight, FaRegEye } from "react-icons/fa6";
-import { HiSortDescending } from "react-icons/hi";
-import { CiSearch } from "react-icons/ci";
+import { FaChevronRight } from "react-icons/fa6";
 import MuiTableComponent from "../components/TableComponent";
-import Car from "../assets/Dashboard-Car-3.png";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
-import { generateRandomNumber } from "../helper/helperFunctions";
 import { SetStateAction, useEffect, useRef, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { useClickAway } from "react-use";
 import productService from "../api/services/product.service";
 import Cookies from "js-cookie";
-import { IconButton, Menu, MenuItem } from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
-import { RiCalendarEventLine } from "react-icons/ri";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateSelect } from "../components/common/dateSelect";
+import { TableSearchInput } from "../components/common/TableSearchInput";
+import { FilterGroup } from "../components/common/FilterGroup";
+import { Dayjs } from "dayjs";
+import { useDebounce } from "../hooks/useDebounce";
+import { StatusSelect } from "../components/common/statusSelect";
 
 type ProdcutTableType = {
   id: number;
@@ -64,22 +60,27 @@ type ProdcutTableType = {
 //     return "bg-[#DAE9FB] text-[#0B283E]";
 // }
 
+type IFilter = {
+  category: string;
+  status: string;
+  date: Dayjs | null;
+};
+
 export default function Products() {
-  const location = useLocation();
-  const { pathname } = location;
+  // const location = useLocation();
+  // const { pathname } = location;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const dotsPopupRef = useRef(null);
   const navigate = useNavigate();
   const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl2);
-
-  const [status, setStatus] = useState("Published");
   const [rows, setRows] = useState<ProdcutTableType[]>([]);
-
-  const [selects, setSelects] = useState({
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery);
+  const [filters, setFilters] = useState<IFilter>({
     category: "",
-    date: "",
     status: "",
+    date: null,
   });
 
   useEffect(() => {
@@ -91,17 +92,32 @@ export default function Products() {
     fetProducts();
   }, []);
 
+  // useEffect(() => {
+  //   const normalizedQuery = debouncedSearchQuery.toLowerCase();
+
+  //   const filtered = allRows.filter((row) => {
+
+  //     // Search filter (e.g., match against name or details)
+  //     const searchMatch =
+  //       row.name.toLowerCase().includes(normalizedQuery) ||
+  //       row.details.toLowerCase().includes(normalizedQuery);
+
+  //     // Custom filters
+  //     const categoryMatch = filters.category ? row.category === filters.category : true;
+  //     const statusMatch = filters.status ? row.status === filters.status : true;
+  //     const dateMatch = filters.date
+  //       ? row.date.startsWith(filters.date.toISOString().slice(0, 10))
+  //       : true;
+
+  //     // Combine
+  //     return dateMatch && searchMatch && categoryMatch && statusMatch;
+  //   });
+
+  // }, [filters, debouncedSearchQuery]);
+
   const handleRowClick = (params: GridRowParams) => {
     console.log("Row clicked:", params.row);
     navigate(`/products/product/${params.row.id}`);
-  };
-  const handleSelectChange = (event: {
-    target: { name: string; value: string };
-  }) => {
-    setSelects((prev) => ({
-      ...prev,
-      [event.target.name]: event.target.value,
-    }));
   };
 
   useClickAway(dotsPopupRef, () => {
@@ -189,7 +205,7 @@ export default function Products() {
 
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-10 bg-[#F5F5F5]">
-      <div className="w-full py-5 px-5 md:px-10 border-b border-b-primaryBorder">
+      <div className="w-full py-5 px-5 md:px-10 border-b bg-white border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
@@ -205,50 +221,60 @@ export default function Products() {
         <div className="flex justify-between items-center mt-1">
           <h1 className="text-3xl font-bold">Products</h1>
           <Link
-            to={`/products/add-product`}
+            to={`/admin/products/add-product`}
             className="rounded-lg px-5 py-3 flex gap-x-3 items-center text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
           >
             <FaPlus size={20} /> Add product
           </Link>
         </div>
 
-        <div className="flex flex-wrap gap-2 justify-between items-end mt-5 w-full">
-          <div className="flex gap-x-5   items-center">
-            <div className="px-2.5 py-1.5 rounded-lg  border border-primaryBorder bg-white gap-y-1">
-              <select className=" text-sm  outline-none">
-                <option>Category</option>
-                <option>2</option>
-              </select>
-            </div>
-
-            <DateSelect value={null} />
-            <div className="flex flex-col gap-y-1">
-              <div className="px-2.5 relative flex items-center gap-x-1 rounded-lg border border-primaryBorder bg-white">
-                <HiSortDescending />
-                <select
-                  id="selectSort"
-                  value={selects.status}
-                  name="status"
-                  onChange={handleSelectChange}
-                  className="text-sm outline-none h-full py-2.5"
-                >
-                  <option value="">Sort by status</option>
-                  <option value="published">Published</option>
-                  <option value="pending">Pending</option>
-                  <option value="canceled">Canceled</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-x-2 px-3 basis-[25%] rounded-lg border bg-white border-primaryBorder">
-            <CiSearch className="h-fit w-fit my-auto" size={24} />
-            <input
-              className="flex-1 py-2.5 outline-none border-none text-sm bg-transparent"
-              placeholder="Search"
-              type="text"
-            />
-          </div>
+        {/* Filters & Search Bar */}
+        <div className="">
+          <FilterGroup
+            filters={filters}
+            onChange={(updated) => {
+              setFilters((prev) => ({ ...prev, ...updated }));
+            }}
+            selects={[
+              {
+                name: "category",
+                placeholder: "Category",
+                options: [
+                  { label: "House", value: "house" },
+                  { label: "Cars", value: "cars" },
+                  { label: "Land", value: "land" },
+                ],
+              },
+            ]}
+            extraFilters={
+              <>
+                <StatusSelect
+                  options={[
+                    { label: "Published", value: "published" },
+                    { label: "Pending", value: "pending" },
+                    { label: "Cancelled", value: "cancelled" },
+                  ]}
+                  onChange={(value) => {
+                    setFilters((prev) => ({ ...prev, status: value }));
+                  }}
+                  value={filters.status}
+                />
+                <DateSelect
+                  onChange={(date) => {
+                    setFilters((prev) => ({ ...prev, date }));
+                  }}
+                  value={filters.date}
+                />
+              </>
+            }
+            searchNode={
+              <TableSearchInput
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                placeholder="Search orders"
+              />
+            }
+          />
         </div>
 
         <div className="mt-3 flex flex-1 w-full overflow-hidden bg-white">

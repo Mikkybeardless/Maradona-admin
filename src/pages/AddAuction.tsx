@@ -1,4 +1,3 @@
-import { useDropzone } from "react-dropzone";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { Link } from "react-router-dom";
 import { FaChevronRight, FaPlus } from "react-icons/fa6";
@@ -9,7 +8,7 @@ import { FileUpload } from "../components/FileUpload";
 export default function AddAuction() {
   return (
     <div className="w-full h-full overflow-hidden overflow-y-auto custom-scrollbar pb-10 bg-[#F5F5F5]">
-      <div className="w-full py-5 px-14 border-b border-b-primaryBorder">
+      <div className="w-full py-5 px-14 border-b bg-white border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
