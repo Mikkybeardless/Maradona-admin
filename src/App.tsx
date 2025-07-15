@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import LoggedInAuthenticator from "./components/LoggedInAuthenticator";
 import Products from "./pages/Products";
@@ -41,6 +41,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Redirect from home "/" to "/admin" */}
+        <Route path="/" element={<Navigate to="/admin" replace />} />
         <Route path="admin" element={<LoggedInAuthenticator />}>
           <Route index element={<Dashboard />} />
           <Route path="login" element={<AdminLogin />} />
