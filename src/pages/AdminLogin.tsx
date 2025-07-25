@@ -47,6 +47,7 @@ export default function AdminLogin() {
   }
 
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError("");
     const { name, value } = e.target;
 
     setLoginData((prev) => ({
@@ -64,46 +65,48 @@ export default function AdminLogin() {
       setError("Please fill in all fields");
       return;
     }
-    try {
-      const response = await authService.login({
-        email: email,
-        password: password,
-        login_by: "email",
-        user_type: "admin",
-      });
+    // try {
+    //   const response = await authService.login({
+    //     email: email,
+    //     password: password,
+    //     login_by: "email",
+    //     user_type: "admin",
+    //   });
 
-      if (response.status == 200) {
-        const data = response.data;
+    //   if (response.status == 200) {
+    //     const data = response.data;
 
-        // Dispatch to Redux (optional: include token if needed)
-        // const expiresAt = new Date(new Date().getTime() + 1 * 60 * 60 * 1000);
-        Cookies.set("token", data.access_token);
-        dispatch(login(data.user));
-        toast.success("Login successful");
-        // Redirect
-        return setTimeout(() => {
-          navigate("/");
-        }, 3000);
-      } else if (response.status == 401) {
-        toast.error("Invalid credentials");
-        setError("Invalid credentials");
-        return;
-      }
-    } catch (err: any) {
-      console.error("Login error:", err.status);
-      toast.error("Login failed");
-      setError(() => {
-        if (err.status == 401) {
-          return "Invalid credentials";
-        } else if (err.response.status == 403) {
-          return "You are not authorized to access this page";
-        } else {
-          return "An error occurred. Please try again.";
-        }
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    //     // Dispatch to Redux (optional: include token if needed)
+    //     // const expiresAt = new Date(new Date().getTime() + 1 * 60 * 60 * 1000);
+    //     Cookies.set("token", data.access_token);
+    //     dispatch(login(data.user));
+    //     toast.success("Login successful");
+    //     // Redirect
+    //     return setTimeout(() => {
+    //       navigate("/");
+    //     }, 3000);
+    //   }
+    // } catch (err: any) {
+    //   console.error("Login error:", err.status);
+    //   toast.error("Login failed");
+    //   setError(() => {
+    //     if (err.status == 401) {
+    //       return "Invalid credentials";
+    //     } else if (err.response.status == 403) {
+    //       return "You are not authorized to access this page";
+    //     } else if (err.response.status == 404) {
+    //       return "User not found";
+    //     } else {
+    //       return "An error occurred. Please try again.";
+    //     }
+    //   });
+    // } finally {
+    //   setIsLoading(false);
+    // }
+
+    setTimeout(() => {
+      navigate("/");
+    }, 3000);
   };
 
   const handleResetPassword = async (e: FormEvent) => {
