@@ -91,6 +91,7 @@ export default function Agent() {
         <div className="w-screen h-screen flex justify-center items-center fixed top-0 left-0 z-30 bg-black/50 backdrop-blur-sm">
           <div
             ref={editAgentModalRef}
+            aria-label="edit agent Modal"
             className="w-[50%] h-[90%] rounded-[24px] flex flex-col p-8 bg-white"
           >
             <h2 className="text-2xl font-bold">Edit</h2>

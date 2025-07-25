@@ -79,7 +79,8 @@ export default function AdminOrder() {
         <div className="fixed z-30 flex justify-center items-center top-0 left-0 w-screen h-screen bg-black/50">
           <div
             ref={markModalRef}
-            className="w-[35%] flex flex-col gap-y-7 rounded-2xl p-7 bg-white"
+            aria-label="mark order modal"
+            className="md:w-[35%] flex flex-col gap-y-7 rounded-2xl p-7 bg-white"
           >
             <div className="w-full flex justify-between items-center">
               <span className="text-2xl font-semibold">Mark Order as</span>
@@ -130,7 +131,8 @@ export default function AdminOrder() {
         <div className="fixed z-30 flex justify-center items-center top-0 left-0 w-screen h-screen bg-black/50">
           <div
             ref={cancelModalRef}
-            className="w-[40%] flex flex-col rounded-2xl p-7 bg-white"
+            aria-label="Cancel order modal"
+            className="md:w-[40%] flex flex-col rounded-2xl p-7 bg-white"
           >
             <div className="w-full flex justify-between items-center">
               <span className="text-2xl font-semibold">Cancel order</span>
@@ -185,6 +187,7 @@ export default function AdminOrder() {
         <div className="fixed z-30 flex justify-center items-center top-0 left-0 w-screen h-screen bg-black/50">
           <div
             ref={invoiceModalRef}
+            aria-label="invoice modal"
             className="w-[40%] flex flex-col rounded-2xl p-7 bg-white"
           >
             <div className="w-full flex justify-between items-center">

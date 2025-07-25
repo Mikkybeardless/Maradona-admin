@@ -16,14 +16,26 @@ import { useDebounce } from "../hooks/useDebounce";
 import { StatusSelect } from "../components/common/statusSelect";
 
 type ProdcutTableType = {
-  id: number;
-  thumbnail_img: string;
   name: string;
-  category: string;
+  type: "LAND" | "CAR" | "HOUSE";
+  description: string;
+  category_id: null | number;
+  sku: null | string;
   price: string;
-  current_stock: number;
-  status: string;
-  featured: boolean;
+  sale_price: null | string;
+  status: "draft" | "publish";
+  inventory: null | string;
+  weight: null | string;
+  body_type: null | string;
+  auction_duration: null | string;
+  condition: null | string;
+  mode: null | string;
+  gear_type: null | string;
+  engine_type: null | string;
+  mileage: null | string;
+  location_state: null | string;
+  location_city: null | string;
+  location_address: null | string;
 };
 
 // const rows = (): ProdcutTableType[] => {
@@ -86,8 +98,8 @@ export default function Products() {
   useEffect(() => {
     const fetProducts = async () => {
       const response = await productService.getAllProducts();
-      // console.log("Products:", response.data.data);
-      setRows(response.data.data);
+      console.log("Products:", response.data.data);
+      // setRows(response.data.data);
     };
     fetProducts();
   }, []);

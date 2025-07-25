@@ -2,9 +2,8 @@ import apiClient from "../apiClient";
 
 interface Category {
   name: string;
-  banner: File;
-  icon: File;
-  cover_image: File;
+  picture: File;
+  description: string;
 }
 
 type CategoryUpdate = Partial<Category>;

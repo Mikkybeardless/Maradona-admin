@@ -52,7 +52,7 @@ function ExpensesReport() {
       </div>
 
       {/* Page Content */}
-      <div className="w-[95%] sm:w-[90%] mx-auto mb-20 pt-6 sm:pt-12">
+      <main className="w-[95%] sm:w-[90%] mx-auto mb-20 pt-6 sm:pt-12">
         <div className="flex flex-wrap gap-3 sm:gap-x-7 items-center mb-6 sm:mb-12">
           <Link
             to="/seller/reports"
@@ -117,7 +117,7 @@ function ExpensesReport() {
             </Table>
           </TableContainer>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

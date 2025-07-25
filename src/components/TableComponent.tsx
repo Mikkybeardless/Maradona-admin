@@ -1,9 +1,16 @@
 import { Paper } from "@mui/material";
-import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRowParams,
+  GridRowSelectionModel,
+} from "@mui/x-data-grid";
+import { useState } from "react";
 
 type TableComponentProps = {
   columns: GridColDef[];
   rows: any[];
+  onSelect?: (selectedRows: any[]) => void;
   paginationActive: boolean;
   pageSize: number;
   rowHeight?: number;
@@ -23,14 +30,29 @@ export default function MuiTableComponent({
   rowHeight,
   showCheckbox,
   headerStyle,
+  onSelect,
   onRowClick,
 }: TableComponentProps) {
   const paginationModel = { page: 0, pageSize };
+  const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>(
+    []
+  );
+
   // Handle row click
   const handleRowClick = (params: GridRowParams) => {
     if (onRowClick) {
       onRowClick(params);
     }
+  };
+
+  const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
+    setSelectedRowIds(newSelection);
+    // Get full selected rows (optional)
+    const selectedRowsData = rows.filter((row) =>
+      newSelection.includes(row.id)
+    );
+    // console.log("Selected Rows Data:", selectedRowsData);
+    onSelect?.(selectedRowsData);
   };
 
   return (
@@ -46,11 +68,15 @@ export default function MuiTableComponent({
         disableColumnFilter={true}
         disableColumnMenu={true}
         disableRowSelectionOnClick={true}
+        onRowSelectionModelChange={handleSelectionChange}
         rowHeight={rowHeight}
         onRowClick={handleRowClick}
         sx={{
           border: 0,
           paddingLeft: 2,
+          "& .MuiCheckbox-root.Mui-checked": {
+            color: "#e65800 !important", // Replace with your desired color
+          },
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: headerStyle?.backgroundColor ?? "transparent",
           },

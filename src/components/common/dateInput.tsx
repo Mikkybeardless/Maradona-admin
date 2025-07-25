@@ -2,11 +2,12 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { PiCalendarDotsLight } from "react-icons/pi";
+import dayjs from "dayjs";
 
 interface CustomDateInputProps {
   label?: string;
-  onChange?: (date: Date | null) => void;
   value: Date | null;
+  onChange: (date: Date | null) => void;
   iconColor?: string;
 }
 
@@ -24,13 +25,7 @@ export default function CustomDateInput({
           value={value}
           onChange={(value) => {
             if (onChange) {
-              onChange(
-                value instanceof Date
-                  ? value
-                  : value
-                  ? new Date(value as any)
-                  : null
-              );
+              onChange(value ? dayjs(value).toDate() : null);
             }
           }}
           slots={{

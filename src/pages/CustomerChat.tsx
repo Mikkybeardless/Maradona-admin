@@ -13,7 +13,7 @@ export default function CustomerChat() {
       <div className="w-full py-5 px-5 md:pl-[250px] md:pr-[100px] fixed z-10 left-2 top-0 border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
-      <div className=" px-5 md:px-14 w-full mt-4 flex flex-col gap-y-5">
+      <main className=" px-5 md:px-14 w-full mt-4 flex flex-col gap-y-5">
         <div className="flex gap-x-4 items-center">
           <Link to={`/`} className="text-sm opacity-60">
             Dashboard
@@ -25,7 +25,7 @@ export default function CustomerChat() {
         <div className="flex flex-col md:flex-row gap-10">
           {/* left side */}
 
-          <div className="w-full md:w-[60%]">
+          <section id="chat" className="w-full md:w-[60%]">
             <div className="w-full h-fit bg-white shadow-sm space-y-3 rounded-lg border p-5">
               <h1 className="text-xl flex gap-x-9 font-bold">
                 Subject: <span>Refund Not Received</span>
@@ -43,7 +43,10 @@ export default function CustomerChat() {
               </div>
             </div>
 
-            <div className="w-full min-h-[500px] relative flex flex-col  bg-white shadow-sm space-y-10 rounded-lg border p-5 pb-28 mt-5">
+            <section
+              id="chat-messages"
+              className="w-full min-h-[500px] relative flex flex-col  bg-white shadow-sm space-y-10 rounded-lg border p-5 pb-28 mt-5"
+            >
               {/* User  messages*/}
               <div>
                 <div className="flex gap-3 justify-start">
@@ -146,11 +149,14 @@ export default function CustomerChat() {
                   Send
                 </button>
               </div>
-            </div>
-          </div>
+            </section>
+          </section>
 
           {/* right side */}
-          <div className="w-full md:w-[40%] flex flex-col gap-y-5">
+          <section
+            id="ticket-info"
+            className="w-full md:w-[40%] flex flex-col gap-y-5"
+          >
             <div className="w-full h-fit bg-white shadow-sm space-y-3 rounded-lg border p-5">
               <div className="flex font-bold justify-between">
                 <span className="text-xl">Ticket Info</span>
@@ -227,9 +233,9 @@ export default function CustomerChat() {
                 </p>
               </div>
             </div>
-          </div>
+          </section>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

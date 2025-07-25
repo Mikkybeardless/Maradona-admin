@@ -2,7 +2,8 @@ import apiClient from "../apiClient";
 
 interface CreateBrand {
   name: string;
-  logo: File;
+  picture: File;
+  description: string;
 }
 
 type BrandUpdate = Partial<CreateBrand>;
@@ -12,7 +13,7 @@ const brandService = {
   getBrand: (id: number) => apiClient.get(`/admin/brands/${id}`),
   addBrand: (data: CreateBrand) => apiClient.post("/admin/brands", data),
   updateBrand: (id: number, data: BrandUpdate) =>
-    apiClient.put(`/admin/brands/${id}/update`, data),
+    apiClient.put(`/admin/brands/${id}/edit`, data),
   deleteBrand: (id: number) => apiClient.delete(`/admin/brands/${id}`),
 };
 

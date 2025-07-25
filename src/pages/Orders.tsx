@@ -18,6 +18,8 @@ import { Dayjs } from "dayjs";
 import { useDebounce } from "../hooks/useDebounce";
 import { TableSearchInput } from "../components/common/TableSearchInput";
 import { StatusSelect } from "../components/common/statusSelect";
+import orderService from "../api/services/order.service";
+import { ExportModal } from "../components/modals/export-modal";
 type UserTableType = {
   id: any;
   name: string;
@@ -71,11 +73,10 @@ export type IFilter = {
 };
 
 export default function Orders() {
-  // const location = useLocation();
-  // const { pathname } = location;
   const [exportModal, setExportModal] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
-  const exportModalRef = useRef(null);
+
+  const [selectedData, setSelectedData] = useState<UserTableType[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const dotsPopupRef = useRef(null);
 
@@ -95,15 +96,15 @@ export default function Orders() {
     setAnchorEl(null);
   });
 
+  const handleTableSelectionChange = (newSelection: UserTableType[]) => {
+    setSelectedData(newSelection);
+  };
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation(); // Prevents bubbling
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
-
-  useClickAway(exportModalRef, () => {
-    setExportModal(false);
-  });
 
   function openExportModal() {
     setExportModal(true);
@@ -174,94 +175,46 @@ export default function Orders() {
   ];
 
   useEffect(() => {
-    // fetch or filter rows based on active tab, filters, and search query
-    const formatedFilters = {
-      type: filters.type || "",
-      status: filters.status || "",
-      date: filters.date ? filters.date.toISOString() : null,
-      modified: filters.modified ? filters.modified.toISOString() : null,
+    const fetchOrders = async () => {
+      const response = await orderService.getAllOrderShipments();
+      console.log("Orders:", response.data.data);
+      // setRows(response.data.data);
     };
+    fetchOrders();
+  }, []);
 
-    // Simulate fetching or filtering rows based on the active tab, filters, and search query
+  // useEffect(() => {
+  //   const normalizedQuery = debouncedSearchQuery.toLowerCase();
 
-    console.log("Fetching or filtering rows based on:", {
-      formatedFilters,
-    });
-  }, [filters]);
+  //   const filtered = allRows.filter((row) => {
 
-  useEffect(() => {
-    // Simulate fetching or filtering rows based on the search query
-    console.log(
-      "Fetching or filtering rows based on search query:",
-      debouncedSearchQuery
-    );
-  }, [debouncedSearchQuery]);
+  //     // Search filter (e.g., match against name or details)
+  //     const searchMatch =
+  //       row.name.toLowerCase().includes(normalizedQuery) ||
+  //       row.details.toLowerCase().includes(normalizedQuery);
+
+  //     // Custom filters
+  //     const categoryMatch = filters.category ? row.category === filters.category : true;
+  //     const statusMatch = filters.status ? row.status === filters.status : true;
+  //     const dateMatch = filters.date
+  //       ? row.date.startsWith(filters.date.toISOString().slice(0, 10))
+  //       : true;
+
+  //     // Combine
+  //     return dateMatch && searchMatch && categoryMatch && statusMatch;
+  //   });
+
+  // }, [filters, debouncedSearchQuery]);
 
   return (
     <div className="w-full h-full bg-white overflow-y-auto flex flex-col custom-scrollbar py-20">
-      {exportModal ? (
-        <div className="w-screen h-screen flex justify-center items-center fixed top-0 left-0 z-30 bg-black/50 backdrop-blur-sm">
-          <div
-            ref={exportModalRef}
-            className="w-[30%] rounded-[24px] flex flex-col p-8 bg-white"
-          >
-            <h2 className="text-2xl font-bold">Export Products</h2>
-            <h6 className="font-medium mt-5">Export</h6>
-            <div className="flex flex-col gap-y-2 mt-2">
-              <div className="flex gap-x-3 items-center text-sm">
-                <input type="radio" name="export-select" id="export-select1" />
-                <label htmlFor="export-select1" className="opacity-70">
-                  Current page
-                </label>
-              </div>
-              <div className="flex gap-x-3 items-center text-sm">
-                <input type="radio" name="export-select" id="export-select2" />
-                <label htmlFor="export-select2" className="opacity-70">
-                  All products
-                </label>
-              </div>
-              <div className="flex gap-x-3 items-center text-sm">
-                <input type="radio" name="export-select" id="export-select3" />
-                <label htmlFor="export-select3" className="opacity-70">
-                  Selection(0 products selected)
-                </label>
-              </div>
-            </div>
-            <h6 className="font-medium mt-5">Export As</h6>
-            <div className="flex flex-col gap-y-2 mt-2">
-              <div className="flex gap-x-3 items-center text-sm">
-                <input type="radio" name="export-as" id="export-as1" />
-                <label htmlFor="export-as1" className="opacity-70">
-                  CSV
-                </label>
-              </div>
-              <div className="flex gap-x-3 items-center text-sm">
-                <input type="radio" name="export-as" id="export-as2" />
-                <label htmlFor="export-as2" className="opacity-70">
-                  PDF
-                </label>
-              </div>
-              <div className="flex gap-x-3 items-center text-sm">
-                <input type="radio" name="export-as" id="export-as3" />
-                <label htmlFor="export-as3" className="opacity-70">
-                  Plain Text
-                </label>
-              </div>
-            </div>
-            <div className="mt-5 flex items-center justify-end gap-x-3 text-sm">
-              <button
-                onClick={closeExportModal}
-                className="rounded-lg hover:underline"
-              >
-                Cancel
-              </button>
-              <button className="px-5 py-3 rounded-lg text-white bg-defaultOrange">
-                Export
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <ExportModal
+        isOpen={exportModal}
+        onClose={closeExportModal}
+        allData={rows()}
+        selectedData={selectedData}
+        filename="orders-data"
+      />
       <div className="w-full py-3.5 px-5 md:px-10 fixed z-10 left-2 top-0 border-b bg-white  border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
@@ -375,8 +328,9 @@ export default function Orders() {
         <div className="mt-3 flex flex-1 w-full min-h-[500px] overflow-hidden">
           <MuiTableComponent
             columns={columns}
-            showCheckbox={false}
+            showCheckbox={true}
             rows={rows()}
+            onSelect={handleTableSelectionChange}
             paginationActive={true}
             rowHeight={60}
             pageSize={10}

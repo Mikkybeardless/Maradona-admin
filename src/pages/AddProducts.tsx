@@ -8,6 +8,7 @@ import { FileUpload } from "../components/FileUpload";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import StateCitySelector2 from "../components/common/stateCitySelector";
 import { CustomCheckbox } from "../components/common/customCheckInput";
+// import { GrVmMaintenance } from "react-icons/gr";
 
 type FileUpload = {
   images: File[];
@@ -18,8 +19,8 @@ export default function AddProducts() {
   const location = useLocation();
   const { pathname } = location;
 
-  const [productDetails, setProductDetails] = useState({
-    productType: "land" as "land" | "car" | "house",
+  const [productDetails, setProductDetails] = useState<Product>({
+    productType: "land",
     productName: "",
     description: "",
     productPrice: 0,
@@ -29,30 +30,30 @@ export default function AddProducts() {
     houseType: "",
     continueSelling: false,
     state: "",
-    furnishedStatus: "furnished" as "furnished" | "unfurnished",
+    furnishedStatus: "furnished",
     propertySize: 0,
-    weightUnit: "kg" as "kg" | "g",
+    weightUnit: "kg",
     skuNumber: "",
-    media: [] as File[],
-    documents: [] as File[],
-    status: "draft" as "draft" | "publish",
+    media: [],
+    documents: [],
+    status: "draft",
     tags: "",
     inventory: "",
     weight: 0,
-    bodyType: "SUV" as "SUV" | "Sedan" | "Coupe" | "Truck" | "Bus",
+    bodyType: "SUV",
     engineType: "",
-    accessibility: "main-road" as "main-road" | "inner-road",
-    fencing: "fenced" as "fenced" | "not-fenced",
-    topography: "dry-land" as "dry-land" | "water-logged" | "swampy",
-    landType: "residential" as "residential" | "commercial" | "agricultural",
-    duration: "days" as "days" | "weeks" | "months",
+    accessibility: "main-road",
+    fencing: "fenced",
+    topography: "dry-land",
+    landType: "residential",
+    duration: "days",
     auctionDuration: 0,
     transmission: "",
-    condition: "new" as "new" | "old",
-    houseCondition: "newly-built" as "newly-built" | "old" | "needs-renovation",
-    auctionType: "auctioned" as "auctioned" | "non-auctioned",
+    condition: "new",
+    houseCondition: "newly-built",
+    auctionType: "auctioned",
     landSize: 0,
-    gearType: "manual" as "manual" | "automatic",
+    gearType: "manual",
     mileage: "",
   });
 
@@ -187,14 +188,7 @@ export default function AddProducts() {
     setProductDetails((prev) => {
       return {
         ...prev,
-        [key]: id as
-          | "manual"
-          | "automatic"
-          | "SUV"
-          | "Sedan"
-          | "Coupe"
-          | "Truck"
-          | "Bus",
+        [key]: id as ProductGearType | ProductBodyType,
       };
     });
   };
@@ -216,17 +210,7 @@ export default function AddProducts() {
     setProductDetails((prev) => {
       return {
         ...prev,
-        [key]: id as
-          | "main-road"
-          | "inner-road"
-          | "fenced"
-          | "not-fenced"
-          | "dry-land"
-          | "water-logged"
-          | "swampy"
-          | "residential"
-          | "commercial"
-          | "agricultural",
+        [key]: id as HouseCondition | ProductLandType,
       };
     });
   };
@@ -248,12 +232,7 @@ export default function AddProducts() {
     setProductDetails((prev) => {
       return {
         ...prev,
-        [key]: id as
-          | "main-road"
-          | "inner-road"
-          | "newly-built"
-          | "old"
-          | "needs-renovation",
+        [key]: id as HouseCondition,
       };
     });
   };
@@ -265,7 +244,7 @@ export default function AddProducts() {
     const { id } = e.target;
     setProductDetails((prev) => ({
       ...prev,
-      [key]: id as "new" | "old" | "auctioned" | "non-auctioned",
+      [key]: id as ProductCondition | ProductAuctionType,
     }));
   };
   const handleInputChange = (
@@ -293,7 +272,7 @@ export default function AddProducts() {
             Dashboard
           </Link>
           <FaChevronRight size={18} />
-          <Link to={`/products`} className="text-sm opacity-60">
+          <Link to={`/admin/products`} className="text-sm opacity-60">
             Products
           </Link>
           <FaChevronRight size={18} />
@@ -301,7 +280,7 @@ export default function AddProducts() {
         </div>
 
         <div className="flex justify-between items-center mt-6">
-          <h1 className="text-3xl font-bold">Add Products</h1>
+          <h1 className="md:text-3xl font-bold">Add Products</h1>
 
           <div className="flex gap-x-5 items-center">
             <button className="text-sm text-defaultOrange hover:underline">
@@ -316,7 +295,7 @@ export default function AddProducts() {
           </div>
         </div>
 
-        <div className="w-full flex  flex-col md:flex-row gap-y-5 gap-x-8 mt-8">
+        <main className="w-full flex  flex-col md:flex-row gap-y-5 gap-x-8 mt-8">
           <div className=" w-full md:w-[70%] flex flex-col gap-y-5 overflow-hidden">
             <div className="w-full rounded-lg p-5 flex flex-col gap-y-3 bg-white border border-primaryBorder">
               <h4 className="text-lg font-semibold">Product type</h4>
@@ -547,8 +526,8 @@ export default function AddProducts() {
               <div className="w-full rounded-lg p-5 flex flex-col gap-y-3 bg-white border border-primaryBorder">
                 <h4 className="text-sm">Product Document</h4>
 
-                <div className="w-full flex justify-between items-start gap-x-10">
-                  <div className="flex flex-col gap-y-1.5 flex-1 w-[50%]">
+                <div className="w-full flex flex-col md:flex-row justify-between items-start gap-x-10">
+                  <div className="flex flex-col gap-y-1.5 flex-1 md:w-[50%]">
                     <div>
                       <div className="w-full px-4 py-2">
                         <FileUpload
@@ -580,7 +559,7 @@ export default function AddProducts() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-y-1.5 flex-1 w-[50%]">
+                  <div className="flex flex-col gap-y-1.5 flex-1 md:w-[50%]">
                     <h5 className="text-sm">Document type</h5>
 
                     <CustomCheckbox
@@ -1194,7 +1173,7 @@ export default function AddProducts() {
               )}
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

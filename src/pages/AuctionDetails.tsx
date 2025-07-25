@@ -213,7 +213,10 @@ export default function AuctionDetails() {
       </div>
 
       {/* table */}
-      <div className="mt-10  px-5 md:px-10 min-h-[500px] flex flex-1 w-full overflow-hidden">
+      <section
+        id="auction table"
+        className="mt-10  px-5 md:px-10 min-h-[500px] flex flex-1 w-full overflow-hidden"
+      >
         <MuiTableComponent
           columns={columns}
           showCheckbox={false}
@@ -227,7 +230,7 @@ export default function AuctionDetails() {
             fontWeight: "bold",
           }}
         />
-      </div>
+      </section>
     </div>
   );
 }

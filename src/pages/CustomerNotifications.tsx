@@ -43,7 +43,7 @@ export default function CustomerNotifications({
         <DashboardSearchBar />
       </div>
 
-      <div className="px-24 w-full mt-4 flex flex-col">
+      <main className="px-24 w-full mt-4 flex flex-col">
         <div className="flex gap-x-4 items-center">
           <Link
             to={`/${customer}s/${customer}`}
@@ -55,7 +55,10 @@ export default function CustomerNotifications({
           <span className="text-sm">Notifications</span>
         </div>
 
-        <div className="flex justify-between items-center mt-4">
+        <section
+          id="customer-info"
+          className="flex justify-between items-center mt-4"
+        >
           <div className="flex flex-col gap-y-1.5">
             <h1 className="text-3xl font-bold flex items-start">
               Rosemary Sunday
@@ -92,7 +95,7 @@ export default function CustomerNotifications({
               </div>
             ) : null}
           </div>
-        </div>
+        </section>
 
         <div className="flex gap-x-5 items-center mt-5">
           <div className="flex flex-col gap-y-1">
@@ -132,7 +135,7 @@ export default function CustomerNotifications({
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

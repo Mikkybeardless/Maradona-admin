@@ -1,17 +1,16 @@
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
-import { useRef, useState } from "react";
-import { useClickAway } from "react-use";
+import { useState } from "react";
 import DashboardSearchBar from "../components/DashboardSearchBar";
-import { CiCalendar, CiClock2, CiSearch } from "react-icons/ci";
+import { CiSearch } from "react-icons/ci";
 import MuiTableComponent from "../components/TableComponent";
 import { FaPlus } from "react-icons/fa6";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { TbAward } from "react-icons/tb";
 import { generateRandomNumber } from "../helper/helperFunctions";
-import { IoCloudUploadOutline } from "react-icons/io5";
 import { HiSortDescending } from "react-icons/hi";
-import { FaTimes } from "react-icons/fa";
-import img1 from "../assets/agent.jpg";
+import AddAgentModal from "../components/modals/addAgent-modal";
+import InspectionModal from "../components/modals/inspection-modal";
+import { TableSearchInput } from "../components/common/TableSearchInput";
 
 const rows = (): any[] => {
   const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
@@ -50,10 +49,10 @@ export default function FieldAgents() {
   const { pathname, state } = location;
   const locationAgentType: string = state?.fieldAgent;
   const [newAgentModal, setNewAgentModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = searchQuery; // useDebounce(searchQuery);
   const [agentType, setAgentType] = useState(locationAgentType || "agent");
-  const newAgentModalRef = useRef(null);
   const [inspectionModal, setInspectionModal] = useState(false);
-  const inspectionModalRef = useRef(null);
   const [currentAgent, setCurrentAgent] = useState({
     id: 0,
     name: "James Bond",
@@ -63,19 +62,8 @@ export default function FieldAgents() {
     verifiedListings: 0,
   });
 
-  useClickAway(newAgentModalRef, () => {
-    setNewAgentModal(false);
-  });
-  useClickAway(inspectionModalRef, () => {
-    setInspectionModal(false);
-  });
-
   function openNewAgentModal() {
     setNewAgentModal(true);
-  }
-
-  function closeNewAgentModal() {
-    setNewAgentModal(false);
   }
 
   function openInspectionModal(id: number) {
@@ -199,11 +187,11 @@ export default function FieldAgents() {
   ];
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-7 bg-[#F5F5F5]">
-      {newAgentModal ? (
+      {/* {newAgentModal ? (
         <div className="w-screen h-screen flex justify-center items-center fixed top-0 left-0 z-30 bg-black/50 backdrop-blur-sm">
           <div
             ref={newAgentModalRef}
-            className="w-[50%] h-[90%] rounded-[24px] flex flex-col p-8 bg-white"
+            className="md:w-[50%] h-[90%] rounded-[24px] flex flex-col p-8 bg-white"
           >
             <h2 className="text-2xl font-bold">Add New Agent</h2>
             <div className="w-full flex flex-col flex-1 gap-y-3.5 mt-2 overflow-y-auto custom-scrollbar-low-opacity">
@@ -280,70 +268,27 @@ export default function FieldAgents() {
             </div>
           </div>
         </div>
-      ) : null}
+      ) : null} */}
+      <AddAgentModal
+        newAgentModal={newAgentModal}
+        setNewAgentModal={setNewAgentModal}
+      />
 
-      {inspectionModal ? (
-        <div className="w-screen h-screen  flex justify-center items-center fixed top-0 left-0 z-30 bg-black/50 backdrop-blur-sm">
-          <div
-            ref={inspectionModalRef}
-            className="md:w-[40%] md:h-[70%] rounded-[24px] flex flex-col px-8 py-2 bg-white"
-          >
-            <div className="mt-5 flex items-center justify-between gap-x-3 border-b pb-1 ">
-              <h2 className="text-2xl font-bold">Request for Inspection</h2>
-              <button
-                onClick={() => setInspectionModal(false)}
-                className="rounded-full bg-gray-200 p-3 hover:underline"
-              >
-                <FaTimes size={16} />
-              </button>
-            </div>
-            <div className="flex flex-col gap-y-1 mt-5">
-              <div className=" flex flex-col justify-center mb-14 items-center text-[#585858] gap-y-3">
-                <img
-                  src={img1}
-                  alt="agent profile picture"
-                  className="w-[97px] h-[97px] rounded-sm object-contain"
-                />
-                <p>
-                  Inspection with{" "}
-                  <span className="font-semibold mr-1 text-black">
-                    {currentAgent.name}
-                  </span>
-                  (Buyer)
-                </p>
-                <p>
-                  Filed Agent Assigned : <span>{currentAgent.id}</span>{" "}
-                </p>
-                <p className="flex items-center gap-x-3">
-                  <span className="flex items-center gap-x-1">
-                    <CiCalendar size={18} className="text-black" />
-                    Thur, Nov 7
-                  </span>
-                  <span className="flex items-center gap-x-1">
-                    <CiClock2 size={18} className="text-black" /> 5 pm EST
-                  </span>
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-y-2">
-                <button className="bg-[#008000] rounded-lg py-2 w-full text-white">
-                  Approve
-                </button>
-                <button className="bg-[#EE1E1E] rounded-lg py-2 w-full text-white">
-                  Reject
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <InspectionModal
+        inspectionModal={inspectionModal}
+        setInspectionModal={setInspectionModal}
+        currentAgent={currentAgent}
+      />
 
       <div className="w-full py-5 px-5 md:px-10 border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
-      <div className=" px-5 md:px-10 w-full mt-4 flex flex-col flex-1">
-        <div className="flex flex-wrap-reverse gap-y-3 justify-between items-center mt-1">
+      <main className=" px-5 md:px-10 w-full mt-4 flex flex-col flex-1">
+        <section
+          id="agents-tab"
+          className="flex flex-wrap-reverse gap-y-3 justify-between items-center mt-1"
+        >
           <div className=" w-full md:w-fit flex gap-x-6 items-center mt-3 text-sm border-b border-b-primaryBorder">
             <button
               className={`${
@@ -391,7 +336,7 @@ export default function FieldAgents() {
             <FaPlus size={18} />
             New Agent
           </button>
-        </div>
+        </section>
         <h1 className="text-3xl font-bold my-6">Field Agents</h1>
 
         {agentType === "agent" ? (
@@ -451,14 +396,11 @@ export default function FieldAgents() {
                 </div>
               </div>
 
-              <div className="flex gap-x-2 px-3 basis-[25%] rounded-lg border bg-white border-primaryBorder">
-                <CiSearch className="h-fit w-fit my-auto" size={24} />
-                <input
-                  className="flex-1 py-2.5 outline-none border-none text-sm bg-transparent"
-                  placeholder="Search"
-                  type="text"
-                />
-              </div>
+              <TableSearchInput
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                placeholder="Search orders"
+              />
             </div>
             <div className="mt-3 flex flex-1 w-full overflow-hidden bg-white">
               <MuiTableComponent
@@ -502,7 +444,7 @@ export default function FieldAgents() {
             </div>
           </>
         )}
-      </div>
+      </main>
     </div>
   );
 }

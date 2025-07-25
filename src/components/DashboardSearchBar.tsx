@@ -63,7 +63,7 @@ export default function DashboardSearchBar() {
           className="cursor-pointer hover:text-defaultOrange"
           size={22}
         />
-        <NavLink to={"/seller/profile"} className={"md:flex hidden"}>
+        <NavLink to={"/admin"} className={"md:flex hidden"}>
           <img
             className="w-[36px] h-[36px] rounded-full object-fill"
             src={img1}

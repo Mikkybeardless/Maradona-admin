@@ -77,7 +77,7 @@ export default function CustomerCare() {
         <DashboardSearchBar />
       </div>
 
-      <div className=" px-5 md:px-10 w-full mt-4 flex flex-col gap-y-5">
+      <main className=" px-5 md:px-10 w-full mt-4 flex flex-col gap-y-5">
         <div className="flex gap-x-4 items-center">
           <Link to={`/`} className="text-sm opacity-60">
             Dashboard
@@ -196,7 +196,10 @@ export default function CustomerCare() {
               </div>
             </div>
 
-            <div className="mt-3 flex flex-1 w-full min-h-[400px] bg-white">
+            <section
+              id="refund-table"
+              className="mt-3 flex flex-1 w-full min-h-[400px] bg-white"
+            >
               <MuiTableComponent
                 showCheckbox={true}
                 columns={columns}
@@ -206,7 +209,7 @@ export default function CustomerCare() {
                 rowHeight={60}
                 pageSize={10}
               />
-            </div>
+            </section>
           </div>
         ) : requestType === "return" ? (
           // Return Requests
@@ -239,7 +242,10 @@ export default function CustomerCare() {
               </div>
             </div>
 
-            <div className="mt-3 flex flex-1 w-full min-h-[400px] bg-white">
+            <section
+              id="return-table"
+              className="mt-3 flex flex-1 w-full min-h-[400px] bg-white"
+            >
               <MuiTableComponent
                 showCheckbox={true}
                 columns={columns}
@@ -249,7 +255,7 @@ export default function CustomerCare() {
                 rowHeight={60}
                 pageSize={10}
               />
-            </div>
+            </section>
           </div>
         ) : (
           // others
@@ -282,7 +288,10 @@ export default function CustomerCare() {
               </div>
             </div>
 
-            <div className="mt-3 flex  flex-1 w-full min-h-[400px] bg-white">
+            <section
+              id="others-table"
+              className="mt-3 flex  flex-1 w-full min-h-[400px] bg-white"
+            >
               <MuiTableComponent
                 showCheckbox={true}
                 columns={columns}
@@ -292,10 +301,10 @@ export default function CustomerCare() {
                 rowHeight={60}
                 pageSize={10}
               />
-            </div>
+            </section>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

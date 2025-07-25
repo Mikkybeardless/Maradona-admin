@@ -28,9 +28,9 @@ export default function CustomerFeedback({ customer }: { customer: string }) {
         </div>
         <p className="text-sm font-medium whitespace-pre">Excellent Services</p>
         <p className="text-sm whitespace-pre">
-          Couldn’t have asked for a better service. Delivery was fast and they
-          also have an ultimate warranty policy. Would highly recommend Distress
-          Sales 24/7
+          Couldn&apos;t have asked for a better service. Delivery was fast and
+          they also have an ultimate warranty policy. Would highly recommend
+          Distress Sales 24/7
         </p>
         <div className="">
           <img
@@ -49,16 +49,19 @@ export default function CustomerFeedback({ customer }: { customer: string }) {
         <DashboardSearchBar />
       </div>
 
-      <div className="px-24 w-full mt-4 flex flex-col">
-        <div className="flex gap-x-4 items-center">
+      <main className="px-24 w-full mt-4 flex flex-col">
+        <section className="flex gap-x-4 items-center">
           <Link to={`/${customer}s/${customer}`} className="text-sm opacity-60">
             Customer
           </Link>
           <FaChevronRight size={18} />
           <span className="text-sm">Feedback & Reviews</span>
-        </div>
+        </section>
 
-        <div className="flex justify-between items-center mt-4">
+        <section
+          id="customer-info"
+          className="flex justify-between items-center mt-4"
+        >
           <div className="flex flex-col gap-y-1.5">
             <h1 className="text-3xl font-bold flex items-start">
               Rosemary Sunday
@@ -95,7 +98,7 @@ export default function CustomerFeedback({ customer }: { customer: string }) {
               </div>
             ) : null}
           </div>
-        </div>
+        </section>
 
         <div className="flex gap-x-5 items-center mt-5">
           <div className="flex flex-col gap-y-1">
@@ -125,7 +128,7 @@ export default function CustomerFeedback({ customer }: { customer: string }) {
             ))}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

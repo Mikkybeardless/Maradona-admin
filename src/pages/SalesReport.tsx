@@ -74,7 +74,7 @@ function SaleReport() {
         </p>
 
         {/* Table Container */}
-        <div className="overflow-x-auto">
+        <section id="sales-table" className="overflow-x-auto">
           <TableContainer component={Paper} sx={{ border: "1px solid #ddd" }}>
             <Table sx={{ borderCollapse: "separate", borderSpacing: "0" }}>
               <TableHead>
@@ -128,7 +128,7 @@ function SaleReport() {
               </TableBody>
             </Table>
           </TableContainer>
-        </div>
+        </section>
       </div>
     </div>
   );

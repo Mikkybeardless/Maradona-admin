@@ -190,10 +190,13 @@ export default function Dashboard() {
         <DashboardSearchBar />
       </div>
 
-      <div className="md:px-10 px-5 w-full mt-8">
+      <main className="md:px-10 px-5 w-full mt-8">
         <h1 className="text-3xl text-darkBlue font-bold">Dashboard</h1>
 
-        <div className="w-full p-6 grid gap-y-4 md:gap-x-4 grid-col-1 md:grid-cols-3 bg-white shadow-md rounded-lg my-7">
+        <section
+          id="dashboard-metrics"
+          className="w-full p-6 grid gap-y-4 md:gap-x-4 grid-col-1 md:grid-cols-3 bg-white shadow-md rounded-lg my-7"
+        >
           <div className="bg-darkBlue rounded-lg p-2 text-white">
             <div className="flex flex-col gap-y-1 border rounded-lg border-white p-2">
               <div className="flex gap-x-3 mb-5 items-center">
@@ -255,10 +258,13 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Top selling products */}
-        <div className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row justify-between text-darkBlue gap-10">
+        <section
+          id="top-selling-product"
+          className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row justify-between text-darkBlue gap-10"
+        >
           <div className="flex flex-col gap-x-6">
             <div className="flex gap-6 justify-between mb-4">
               <h2 className="md:text-xl font-bold text-darkBlue">
@@ -389,11 +395,14 @@ export default function Dashboard() {
               <p className="text-[70px] font-bold text-lightBlue">595</p>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Active Bids */}
 
-        <div className="bg-white shadow-md rounded-lg p-6 my-5">
+        <section
+          id="active-bids"
+          className="bg-white shadow-md rounded-lg p-6 my-5"
+        >
           <div className="flex text-darkBlue justify-between items-center">
             <h2 className="md:text-2xl  font-bold">Active Bides</h2>
           </div>
@@ -412,10 +421,13 @@ export default function Dashboard() {
               }}
             />
           </div>
-        </div>
+        </section>
 
         {/* Income */}
-        <div className="p-3.5 bg-white shadow-md rounded-lg mt-7">
+        <section
+          id="income-graph"
+          className="p-3.5 bg-white shadow-md rounded-lg mt-7"
+        >
           <div className="flex w-full justify-between gap-1 items-center">
             <div className="flex md:gap-14 items-center">
               <h5 className="md:text-lg font-bold text-[#1E1A1C]">Income</h5>
@@ -479,11 +491,14 @@ export default function Dashboard() {
               tooltipTextColor="#fff"
             />
           </div>
-        </div>
+        </section>
 
         {/* sales order and top selling location */}
 
-        <div className="mt-7 flex flex-col md:flex-row gap-x-10">
+        <section
+          id="sales-order"
+          className="mt-7 flex flex-col md:flex-row gap-x-10"
+        >
           <div className="basis-[50%] rounded-lg bg-white">
             <div className="flex justify-between rounded-t-lg px-2.5 ">
               <h5 className="font-bold py-4">Sales Order</h5>
@@ -555,11 +570,14 @@ export default function Dashboard() {
               </PieChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </section>
 
         {/*sales order summary*/}
 
-        <div className="mt-7 rounded-lg border border-primaryBorder">
+        <section
+          id="sales-order-summary"
+          className="mt-7 rounded-lg border border-primaryBorder"
+        >
           <div className="flex justify-between rounded-t-lg px-2.5 bg-[#F0F0F0]">
             <h5 className="font-medium py-2.5">
               Sales Order Summary (in Naira)
@@ -592,8 +610,8 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 }

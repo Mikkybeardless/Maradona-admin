@@ -1,25 +1,18 @@
-import { CiSearch } from "react-icons/ci";
 import MuiTableComponent from "../components/TableComponent";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { GridColDef } from "@mui/x-data-grid";
 import { FaArrowLeftLong, FaPlus } from "react-icons/fa6";
-import { useRef, useState } from "react";
-import { FaTimes } from "react-icons/fa";
-import { useClickAway } from "react-use";
-import "react-international-phone/style.css";
-import { PhoneInput } from "react-international-phone";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import CustomDateInput from "../components/common/dateInput";
-import { HiSortDescending } from "react-icons/hi";
 import { DateSelect } from "../components/common/dateSelect";
 import { generateRandomNumber } from "../helper/helperFunctions";
 import { DistanceRange } from "../components/shipmentRangeInput";
 import { NumberInput } from "../components/shipmentAmountInput";
-import StateCitySelector from "../components/StateCitySelector";
 import { TableSearchInput } from "../components/common/TableSearchInput";
 import { StatusSelect } from "../components/common/statusSelect";
 import { useDebounce } from "../hooks/useDebounce";
 import { Dayjs } from "dayjs";
+import ShipmentModal from "../components/modals/shipment-modal";
 
 interface IFilter {
   status: string;
@@ -43,23 +36,7 @@ export default function Shipments() {
     },
   });
   const [shipmentModal, setShipmentModal] = useState(false);
-  const promotionModalRef = useRef<HTMLDivElement>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    state: "",
-    city: "",
-    zip: "",
-    product: "",
-    productDescription: "",
-    shippingCarrier: "",
-    edd: null,
-    trackingNumber: "",
-    deliveryAddress: "",
-    streetAddress: "",
-    address: "",
-  });
+
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery);
   const [actFilters, setActFilters] = useState<IFilter>({
@@ -77,10 +54,6 @@ export default function Shipments() {
   const [shippingSettings, setShippingSettings] = useState({
     distance: 0,
     price: 0,
-  });
-
-  useClickAway(promotionModalRef, () => {
-    setShipmentModal(false);
   });
 
   function openShipmentModal() {
@@ -155,173 +128,12 @@ export default function Shipments() {
     { field: "address", headerName: "Delivery Address", flex: 1 },
   ];
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-7 bg-[#F5F5F5]">
-      {shipmentModal && (
-        <section className="w-screen h-screen flex justify-center items-center fixed top-0 left-0 z-30 bg-black/50 backdrop-blur-sm">
-          <div
-            ref={promotionModalRef}
-            aria-modal
-            className="w-[85%] md:w-[40%] h-[95%] flex flex-col gap-y-3 p-8 rounded-[24px]  bg-white"
-          >
-            <div className="flex justify-between">
-              <h2 className="text-xl font-semibold">Create Shipment</h2>
-              <FaTimes
-                onClick={() => setShipmentModal(false)}
-                className="cursor-pointer"
-                size={24}
-              />
-            </div>
-
-            <div className="flex-1 flex flex-col gap-y-6 mt-3 overflow-y-auto custom-scrollbar-low-opacity">
-              <div className="flex flex-col gap-y-1 text-sm">
-                <label className="font-medium">Customer Name:</label>
-                <input
-                  className="p-3 rounded-lg border border-[#B0B0B0]"
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Type"
-                />
-              </div>
-              <div className="flex flex-col gap-y-1 text-sm">
-                <label className="font-medium">Phone:</label>
-                <div className="w-full flex items-end gap-x-6">
-                  <PhoneInput
-                    className="!w-full gap-x-5"
-                    countrySelectorStyleProps={{
-                      className: "w-[20%]",
-                      buttonClassName:
-                        "!h-[auto] w-full py-3 !rounded-lg border-[#B0B0B0]",
-                    }}
-                    defaultCountry="ng"
-                    onChange={(val) => {
-                      setFormData((prevData) => ({
-                        ...prevData,
-                        phone: val,
-                      }));
-                    }}
-                    value={formData.phone}
-                    inputClassName="w-full !h-[unset] !py-3 !rounded-lg outline-none !border !border-[#B0B0B0] !text-base"
-                  />
-                </div>
-              </div>
-
-              <StateCitySelector
-                onCityChange={(city) => {
-                  setFormData((prevData) => ({
-                    ...prevData,
-                    city: city?.value || "",
-                  }));
-                }}
-                onStateChange={(state) => {
-                  setFormData((prevData) => ({
-                    ...prevData,
-                    state: state?.value || "",
-                  }));
-                }}
-              />
-              <div className="flex flex-col gap-y-1 text-sm">
-                <label className="font-medium">Zip:</label>
-                <input
-                  className="p-3 rounded-lg border border-[#B0B0B0]"
-                  type="text"
-                  name="zip"
-                  value={formData.zip}
-                  onChange={handleInputChange}
-                  placeholder="Type"
-                />
-              </div>
-              <div className="flex flex-col gap-y-1 text-sm">
-                <label htmlFor="streetAddress" className="font-medium">
-                  Street Address:
-                </label>
-                <input
-                  className="p-3 rounded-lg border border-[#B0B0B0]"
-                  type="text"
-                  id="streetAddress"
-                  name="streetAddress"
-                  value={formData.streetAddress}
-                  onChange={handleInputChange}
-                  placeholder="Type"
-                />
-              </div>
-              <div className="flex flex-col gap-y-1 text-sm">
-                <label htmlFor="product" className="font-medium">
-                  Product:
-                </label>
-                <input
-                  className="p-3 rounded-lg border border-[#B0B0B0]"
-                  type="text"
-                  id="product"
-                  name="product"
-                  value={formData.product}
-                  onChange={handleInputChange}
-                  placeholder="Type"
-                />
-              </div>
-              <div className="flex flex-col gap-y-1 text-sm">
-                <label htmlFor="productDescription" className="font-medium">
-                  Product description:
-                </label>
-                <textarea
-                  className="p-3 rounded-lg resize-none outline-none custom-scrollbar border border-[#B0B0B0]"
-                  placeholder="Type"
-                  id="productDescription"
-                  name="productDescription"
-                  value={formData.productDescription}
-                  onChange={handleInputChange}
-                  rows={4}
-                />
-              </div>
-              <div className="flex flex-col gap-y-1 text-sm">
-                <label htmlFor="shippingCarrier" className="font-medium">
-                  Shipping carrier:
-                </label>
-                <input
-                  className="p-3 rounded-lg border border-[#B0B0B0]"
-                  type="text"
-                  id="shippingCarrier"
-                  name="shippingCarrier"
-                  value={formData.shippingCarrier}
-                  onChange={handleInputChange}
-                  placeholder="Type"
-                />
-              </div>
-              <div className="flex flex-col gap-y-1 text-sm">
-                <CustomDateInput
-                  label="E.D.D:"
-                  value={formData.edd}
-                  // onChange={(date) => {
-                  //   setFormData((prevData) => ({
-                  //     ...prevData,
-                  //     edd: date ? date.toLocaleDateString() : null,
-                  //   }));
-                  // }}
-                  // iconColor="text-blue-600"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-x-2.5 text-sm">
-              <button className="p-2.5 rounded-lg text-white bg-defaultOrange hover:bg-defaultOrangeHover">
-                Create
-              </button>
-            </div>
-          </div>
-        </section>
-      )}
+      <ShipmentModal
+        shipmentModal={shipmentModal}
+        setShipmentModal={setShipmentModal}
+      />
       <div className="w-full py-5 px-10 border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
@@ -362,14 +174,14 @@ export default function Shipments() {
                   </span>
                 </p>
               </div>
-              <div className="flex gap-x-2">
+              <div className="flex flex-col md:flex-row  gap-2">
                 <Link
                   to="/shipments/track-shipment"
-                  className="rounded-lg text-sm px-5 py-2.5 text-white bg-defaultOrange"
+                  className="rounded-lg text-xs md:text-sm md:px-5 px-3 py-1.5 md:py-2.5 text-white bg-defaultOrange"
                 >
                   Track
                 </Link>
-                <button className="rounded-lg text-sm px-5 py-2.5 text-defaultOrange border border-defaultOrange">
+                <button className="rounded-lg text-xs md:text-sm md:px-5 px-3 py-1.5 md:py-2.5 text-defaultOrange border border-defaultOrange">
                   Contact carrier
                 </button>
               </div>

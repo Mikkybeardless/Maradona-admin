@@ -47,7 +47,7 @@ export default function AdminCustomer({ customer }: { customer: string }) {
 
         <div className="w-[5%]">
           <Link
-            to={`/orders/order`}
+            to={`/admin/orders/order`}
             state={{ fromTransaction: true }}
             className="text-sm hover:underline text-[#B44500]"
           >
@@ -64,19 +64,22 @@ export default function AdminCustomer({ customer }: { customer: string }) {
         <DashboardSearchBar />
       </div>
 
-      <div className="px-10 w-full mt-4  flex flex-col flex-1">
+      <main className="px-10 w-full mt-4  flex flex-col flex-1">
         <div className="flex gap-x-4 mb-6 items-center">
           <Link to="/" className="text-sm opacity-60">
             Dashboard
           </Link>
           <FaChevronRight size={18} />
-          <Link to="/buyers" className="text-sm capitalize opacity-60">
+          <Link to="/admin/buyers" className="text-sm capitalize opacity-60">
             {customer}s
           </Link>
           <FaChevronRight size={18} />
           <span className="text-sm capitalize">{customer}</span>
         </div>
-        <div className="flex justify-between items-center">
+        <section
+          id="customer-data"
+          className="flex justify-between items-center"
+        >
           <div className="flex flex-col gap-y-1.5">
             <h1 className="text-3xl font-bold flex items-start">
               Rosemary Sunday
@@ -99,13 +102,13 @@ export default function AdminCustomer({ customer }: { customer: string }) {
                 className="absolute flex flex-col top-[110%] right-0 z-20 py-1 rounded-lg bg-white border border-primaryBorder"
               >
                 <Link
-                  to={`/${customer}s/${customer}/transaction-history`}
+                  to={`/admin/${customer}s/${customer}/transaction-history`}
                   className="text-sm px-4 py-3 whitespace-nowrap hover:underline"
                 >
                   Transaction History
                 </Link>
                 <Link
-                  to={`/${customer}s/${customer}/notifications`}
+                  to={`/admin/${customer}s/${customer}/notifications`}
                   className="text-sm px-4 py-3 whitespace-nowrap hover:underline"
                 >
                   Notifications
@@ -119,9 +122,12 @@ export default function AdminCustomer({ customer }: { customer: string }) {
               </div>
             ) : null}
           </div>
-        </div>
+        </section>
 
-        <div className="w-full rounded-lg mt-7 py-2 grid grid-cols-4 border border-primaryBorder bg-white">
+        <section
+          id="customer-metrics"
+          className="w-full rounded-lg mt-7 py-2 grid grid-cols-4 border border-primaryBorder bg-white"
+        >
           <div className="flex flex-col gap-y-2 px-5 py-4 border-r border-r-primaryBorder">
             <p className="text-xs text-[#6D6D6D]">Orders</p>
             <p className="text-xl font-medium">6</p>
@@ -138,9 +144,9 @@ export default function AdminCustomer({ customer }: { customer: string }) {
             <p className="text-xs text-[#6D6D6D]">Frequency</p>
             <p className="text-xl font-medium">63%</p>
           </div>
-        </div>
+        </section>
 
-        <div className="flex gap-x-4 mt-5">
+        <section id="customer-information" className="flex gap-x-4 mt-5">
           <div className="w-[50%] flex flex-col text-sm rounded-lg border border-primaryBorder bg-white">
             <h3 className="font-medium text-base p-4 border-b border-b-primaryBorder">
               Basic information
@@ -185,9 +191,12 @@ export default function AdminCustomer({ customer }: { customer: string }) {
               </p>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="w-full flex flex-col gap-y-4 mt-5">
+        <section
+          id="recent-orders"
+          className="w-full flex flex-col gap-y-4 mt-5"
+        >
           <div className="w-full rounded-lg border border-primaryBorder bg-white">
             <h3 className="font-medium p-4">Recent order(s)</h3>
 
@@ -197,8 +206,8 @@ export default function AdminCustomer({ customer }: { customer: string }) {
               ))}
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 }

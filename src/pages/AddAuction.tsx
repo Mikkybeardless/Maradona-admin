@@ -37,7 +37,7 @@ export default function AddAuction() {
           </div>
         </div>
 
-        <div className="w-full flex items-start gap-x-8 mt-8">
+        <main className="w-full flex items-start gap-x-8 mt-8">
           <div className="w-[70%] flex flex-col gap-y-5 overflow-hidden">
             <div className="w-full rounded-lg p-5 flex flex-col gap-y-3 bg-white border border-primaryBorder">
               <h4 className="text-lg font-semibold mb-4">Details</h4>
@@ -299,7 +299,7 @@ export default function AddAuction() {
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

@@ -33,7 +33,7 @@ export const ReportTab = () => {
   };
 
   return (
-    <nav
+    <section
       id="report-tab"
       className="flex flex-wrap justify-between gap-4 sm:gap-7"
     >
@@ -76,6 +76,6 @@ export const ReportTab = () => {
           <option value="year">Year</option>
         </select>
       </div>
-    </nav>
+    </section>
   );
 };
