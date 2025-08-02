@@ -198,17 +198,19 @@ export default function CustomerCare() {
 
             <section
               id="refund-table"
-              className="mt-3 flex flex-1 w-full min-h-[400px] bg-white"
+              className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
             >
-              <MuiTableComponent
-                showCheckbox={true}
-                columns={columns}
-                onRowClick={handleRowClick}
-                rows={rows()}
-                paginationActive={true}
-                rowHeight={60}
-                pageSize={10}
-              />
+              <div className="min-w-[900px]">
+                <MuiTableComponent
+                  showCheckbox={true}
+                  columns={columns}
+                  onRowClick={handleRowClick}
+                  rows={rows()}
+                  paginationActive={true}
+                  rowHeight={60}
+                  pageSize={10}
+                />
+              </div>
             </section>
           </div>
         ) : requestType === "return" ? (
@@ -244,17 +246,19 @@ export default function CustomerCare() {
 
             <section
               id="return-table"
-              className="mt-3 flex flex-1 w-full min-h-[400px] bg-white"
+              className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
             >
-              <MuiTableComponent
-                showCheckbox={true}
-                columns={columns}
-                // onRowClick={handleRowClick}
-                rows={rows()}
-                paginationActive={true}
-                rowHeight={60}
-                pageSize={10}
-              />
+              <div className="min-w-[900px]">
+                <MuiTableComponent
+                  showCheckbox={true}
+                  columns={columns}
+                  // onRowClick={handleRowClick}
+                  rows={rows()}
+                  paginationActive={true}
+                  rowHeight={60}
+                  pageSize={10}
+                />
+              </div>
             </section>
           </div>
         ) : (
@@ -290,17 +294,19 @@ export default function CustomerCare() {
 
             <section
               id="others-table"
-              className="mt-3 flex  flex-1 w-full min-h-[400px] bg-white"
+              className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
             >
-              <MuiTableComponent
-                showCheckbox={true}
-                columns={columns}
-                // onRowClick={handleRowClick}
-                rows={rows()}
-                paginationActive={true}
-                rowHeight={60}
-                pageSize={10}
-              />
+              <div className="min-w-[900px]">
+                <MuiTableComponent
+                  showCheckbox={true}
+                  columns={columns}
+                  // onRowClick={handleRowClick}
+                  rows={rows()}
+                  paginationActive={true}
+                  rowHeight={60}
+                  pageSize={10}
+                />
+              </div>
             </section>
           </div>
         )}

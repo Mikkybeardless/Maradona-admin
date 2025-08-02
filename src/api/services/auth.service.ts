@@ -3,26 +3,34 @@ import apiClient from "../apiClient";
 interface LoginData {
   email: string;
   password: string;
-  login_by: string;
-  user_type: string;
+}
+
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+  type: string;
 }
 
 interface ReqPasswordData {
   email: string;
-  send_code_by: string;
 }
 
 interface DoPassReset {
-  verification_code: string;
+  email: string;
+  otp: string;
   password: string;
+  password_confirmation: string;
 }
 const authService = {
-  login: (loginData: LoginData) => apiClient.post("/auth/login", loginData),
-  logout: () => apiClient.get("/auth/logout"),
+  login: (loginData: LoginData) => apiClient.post("/login", loginData),
+  register: (registerData: RegisterData) =>
+    apiClient.post("/register", registerData),
+  logout: () => apiClient.get("/logout"),
   reqPasswordReset: (reqPasswordData: ReqPasswordData) =>
-    apiClient.post("/auth/password/forget_request", reqPasswordData),
-  doPassReset: (data: DoPassReset) =>
-    apiClient.post("/auth/password/confirm_reset", data),
+    apiClient.post("/forget_request", reqPasswordData),
+  doPassReset: (data: DoPassReset) => apiClient.post("/reset-password", data),
 };
 
 export type { LoginData, ReqPasswordData, DoPassReset };

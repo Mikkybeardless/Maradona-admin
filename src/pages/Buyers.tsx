@@ -11,6 +11,7 @@ import { FilterGroup } from "../components/common/FilterGroup";
 import { useDebounce } from "../hooks/useDebounce";
 import { Dayjs } from "dayjs";
 import { ExportModal } from "../components/modals/export-modal";
+import { FaPlus } from "react-icons/fa6";
 
 type UserTableType = {
   id: any;
@@ -140,9 +141,9 @@ export default function Buyers() {
             </button>
             <Link
               to={`/admin/buyers/add-buyer`}
-              className="rounded-lg px-5 py-2.5 text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
+              className="flex gap-x-1 md:gap-x-3 items-center rounded-lg px-3 md:px-5 py-1.5 md:py-3  text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
             >
-              Add buyer
+              <FaPlus size={20} /> Add buyer
             </Link>
           </div>
         </div>
@@ -188,18 +189,20 @@ export default function Buyers() {
 
         <section
           id="buyers-table"
-          className="mt-3 flex flex-1 w-full overflow-hidden bg-white"
+          className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
         >
-          <MuiTableComponent
-            columns={columns}
-            rows={rows()}
-            onRowClick={handleRowClick}
-            paginationActive={true}
-            showCheckbox={true}
-            onSelect={handleTableSelectionChange}
-            rowHeight={60}
-            pageSize={10}
-          />
+          <div className="min-w-[900px]">
+            <MuiTableComponent
+              columns={columns}
+              rows={rows()}
+              onRowClick={handleRowClick}
+              paginationActive={true}
+              showCheckbox={true}
+              onSelect={handleTableSelectionChange}
+              rowHeight={60}
+              pageSize={10}
+            />
+          </div>
         </section>
       </div>
     </section>

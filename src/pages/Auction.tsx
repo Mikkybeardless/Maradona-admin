@@ -245,21 +245,26 @@ export default function Auction() {
         </div>
 
         {/* table */}
-        <div className="mt-0 min-h-[500px] flex flex-1 w-full overflow-hidden">
-          <MuiTableComponent
-            columns={columns}
-            showCheckbox={false}
-            rows={rows()}
-            paginationActive={true}
-            rowHeight={60}
-            pageSize={10}
-            onRowClick={handleRowClick}
-            headerStyle={{
-              backgroundColor: "#f3f4f6",
-              fontWeight: "bold",
-            }}
-          />
-        </div>
+        <section
+          id="auctions-table"
+          className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
+        >
+          <div className="min-w-[900px]">
+            <MuiTableComponent
+              columns={columns}
+              showCheckbox={false}
+              rows={rows()}
+              paginationActive={true}
+              rowHeight={60}
+              pageSize={10}
+              onRowClick={handleRowClick}
+              headerStyle={{
+                backgroundColor: "#f3f4f6",
+                fontWeight: "bold",
+              }}
+            />
+          </div>
+        </section>
       </main>
     </div>
   );

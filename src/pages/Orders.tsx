@@ -325,17 +325,22 @@ export default function Orders() {
           />
         </div>
 
-        <div className="mt-3 flex flex-1 w-full min-h-[500px] overflow-hidden">
-          <MuiTableComponent
-            columns={columns}
-            showCheckbox={true}
-            rows={rows()}
-            onSelect={handleTableSelectionChange}
-            paginationActive={true}
-            rowHeight={60}
-            pageSize={10}
-          />
-        </div>
+        <section
+          id="orders-table"
+          className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
+        >
+          <div className="min-w-[900px]">
+            <MuiTableComponent
+              columns={columns}
+              showCheckbox={true}
+              rows={rows()}
+              onSelect={handleTableSelectionChange}
+              paginationActive={true}
+              rowHeight={60}
+              pageSize={10}
+            />
+          </div>
+        </section>
       </div>
     </div>
   );

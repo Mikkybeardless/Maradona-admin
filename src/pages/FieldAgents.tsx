@@ -138,7 +138,7 @@ export default function FieldAgents() {
         return (
           <div className="h-full w-full relative flex justify-center items-center gap-x-4">
             <Link
-              to={`/agents/request/${row.id}`}
+              to={`/admin/agents/request/${row.id}`}
               state={{ fieldAgent: true }}
               className="text-sm text-[#C38D00] hover:underline"
             >
@@ -280,7 +280,7 @@ export default function FieldAgents() {
         currentAgent={currentAgent}
       />
 
-      <div className="w-full py-5 px-5 md:px-10 border-b border-b-primaryBorder">
+      <div className="w-full py-5 px-5 md:pl-[250px] md:pr-[100px] bg-white fixed z-10 left-10 top-0 border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
@@ -372,17 +372,22 @@ export default function FieldAgents() {
               </div>
             </div>
 
-            <div className="mt-3 flex flex-1 w-full overflow-hidden bg-white">
-              <MuiTableComponent
-                showCheckbox={false}
-                columns={columns}
-                onRowClick={handleRowClick}
-                rows={rows()}
-                paginationActive={true}
-                rowHeight={60}
-                pageSize={10}
-              />
-            </div>
+            <section
+              id="table"
+              className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
+            >
+              <div className="min-w-[900px]">
+                <MuiTableComponent
+                  showCheckbox={false}
+                  columns={columns}
+                  onRowClick={handleRowClick}
+                  rows={rows()}
+                  paginationActive={true}
+                  rowHeight={60}
+                  pageSize={10}
+                />
+              </div>
+            </section>
           </>
         ) : agentType === "request" ? (
           <>
@@ -402,15 +407,20 @@ export default function FieldAgents() {
                 placeholder="Search orders"
               />
             </div>
-            <div className="mt-3 flex flex-1 w-full overflow-hidden bg-white">
-              <MuiTableComponent
-                columns={columns2}
-                rows={rows2()}
-                paginationActive={true}
-                rowHeight={60}
-                pageSize={10}
-              />
-            </div>
+            <section
+              id="table"
+              className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
+            >
+              <div className="min-w-[900px]">
+                <MuiTableComponent
+                  columns={columns2}
+                  rows={rows2()}
+                  paginationActive={true}
+                  rowHeight={60}
+                  pageSize={10}
+                />
+              </div>
+            </section>
           </>
         ) : (
           <>
@@ -433,15 +443,20 @@ export default function FieldAgents() {
                 />
               </div>
             </div>
-            <div className="mt-3 flex flex-1 w-full overflow-hidden bg-white">
-              <MuiTableComponent
-                columns={columns3}
-                rows={rows2()}
-                paginationActive={true}
-                rowHeight={60}
-                pageSize={10}
-              />
-            </div>
+            <section
+              id="table"
+              className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
+            >
+              <div className="min-w-[900px]">
+                <MuiTableComponent
+                  columns={columns3}
+                  rows={rows2()}
+                  paginationActive={true}
+                  rowHeight={60}
+                  pageSize={10}
+                />
+              </div>
+            </section>
           </>
         )}
       </main>

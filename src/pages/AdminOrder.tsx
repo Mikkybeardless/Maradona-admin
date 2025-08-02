@@ -229,31 +229,31 @@ export default function AdminOrder() {
         />
       ) : null}
       <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-10 bg-[#F5F5F5]">
-        <div className="w-full py-3.5 px-10 border-b border-b-primaryBorder">
+        <div className="w-full py-3.5 px-4 md:px-10 border-b border-b-primaryBorder">
           <DashboardSearchBar />
         </div>
 
-        <div className="px-10 w-full mt-4 flex flex-col flex-1">
+        <div className="px-4 md:px-10 w-full mt-4 flex flex-col flex-1">
           <div className="flex gap-x-4 items-center">
             <Link to="/" className="text-sm opacity-60">
               Dashboard
             </Link>
             <FaChevronRight size={18} />
-            <Link to={`/orders`} className="text-sm opacity-60">
+            <Link to={`/admin/orders`} className="text-sm opacity-60">
               Order
             </Link>
             <FaChevronRight size={18} />
             <span className="text-sm">Order detail</span>
           </div>
 
-          <div className="w-full flex justify-between items-center mt-6">
+          <section className="w-full flex justify-between items-center mt-6">
             <div className="flex flex-col gap-y-1">
               <h2 className="text-2xl font-semibold">#1011</h2>
               <p className="text-xs">Purchased - {new Date().toDateString()}</p>
             </div>
 
             <div className="flex gap-x-5 items-center">
-              <button className="p-3 rounded-lg text-sm border border-primaryBorder bg-white">
+              <button className="md:p-3 p-2 rounded-lg text-xs md:text-sm border border-primaryBorder bg-white">
                 Edit order
               </button>
               <div className="flex gap-x-1 items-center">
@@ -302,10 +302,10 @@ export default function AdminOrder() {
               </div>
             </div>
             {/* dropdown div */}
-          </div>
+          </section>
 
-          <div className="w-full flex gap-x-6 mt-6">
-            <div className="w-[70%] flex flex-col gap-y-5">
+          <section className="w-full flex flex-col md:flex-row gap-6 mt-6">
+            <div className=" w-full md:w-[70%] flex flex-col gap-y-5">
               <div className="w-full flex flex-col rounded-lg border border-primaryBorder bg-white">
                 <h4 className="py-5 px-4 flex gap-x-2 items-center font-medium">
                   Order ID: #1011
@@ -390,7 +390,7 @@ export default function AdminOrder() {
               </div>
             </div>
 
-            <div className="w-[30%] flex flex-col gap-y-5">
+            <div className=" w-full md:w-[30%] flex flex-col gap-y-5">
               <div className="w-full flex flex-col rounded-lg bg-white border border-primaryBorder">
                 <div className="flex justify-between items-center py-3 px-4 border-b border-b-primaryBorder">
                   <span className="font-medium">Details</span>
@@ -447,13 +447,13 @@ export default function AdminOrder() {
                 </div>
               </div>
             </div>
-          </div>
+          </section>
 
           {state?.fromTransaction ? (
             <div className="w-full mt-5 rounded-[16px] p-6 flex flex-col border border-primaryBorder bg-white">
               <div className="flex justify-between items-center">
                 <div className="flex flex-col gap-y-1">
-                  <h2 className="text-2xl font-semibold">
+                  <h2 className="text-xl md:text-2xl  font-semibold">
                     Shipment 73KJFHIUDF4
                   </h2>
                   <p className="text-sm">
@@ -464,10 +464,10 @@ export default function AdminOrder() {
                   </p>
                 </div>
                 <div className="flex gap-x-2">
-                  <button className="rounded-lg text-sm px-5 py-2.5 text-white bg-defaultOrange">
+                  <button className="rounded-lg text-xs  md:text-sm px-3 md:px-5 py-1 md:py-2.5 text-white bg-defaultOrange">
                     Track
                   </button>
-                  <button className="rounded-lg text-sm px-5 py-2.5 text-defaultOrange border border-defaultOrange">
+                  <button className="rounded-lg text-xs  md:text-sm px-3 md:px-5 py-1 md:py-2.5 text-defaultOrange border border-defaultOrange">
                     Contact carrier
                   </button>
                 </div>

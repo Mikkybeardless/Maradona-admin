@@ -54,7 +54,7 @@ function SaleReport() {
         {/* Breadcrumbs */}
         <div className="flex flex-wrap gap-3 md:gap-x-7 items-center mb-8 md:mb-12">
           <Link
-            to="/seller/reports"
+            to="/admin/reports"
             className="text-lg font-semibold text-[#14199C]"
           >
             Reports

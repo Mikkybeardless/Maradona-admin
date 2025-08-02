@@ -55,7 +55,7 @@ function ExpensesReport() {
       <main className="w-[95%] sm:w-[90%] mx-auto mb-20 pt-6 sm:pt-12">
         <div className="flex flex-wrap gap-3 sm:gap-x-7 items-center mb-6 sm:mb-12">
           <Link
-            to="/seller/reports"
+            to="/admin/reports"
             className="text-[16px] sm:text-[20px] font-semibold text-[#14199C]"
           >
             Reports

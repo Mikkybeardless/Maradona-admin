@@ -247,7 +247,7 @@ export default function PromoAd({
       {/* table */}
       <section id="promotion-table" className="mt-10">
         {/* Filters & Search Bar */}
-        <div className="flex justify-between items-end  w-full">
+        <div className="flex flex-wrap gap-3 justify-between items-end  w-full">
           <div className="flex gap-x-5 items-center">
             <StatusSelect
               options={[
@@ -275,16 +275,21 @@ export default function PromoAd({
           />
         </div>
 
-        <div className="mt-3 flex h-[25rem] w-full overflow-hidden bg-white">
-          <MuiTableComponent
-            columns={columns}
-            rows={rows}
-            paginationActive={true}
-            rowHeight={60}
-            showCheckbox={false}
-            pageSize={10}
-          />
-        </div>
+        <section
+          id="table"
+          className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
+        >
+          <div className="min-w-[900px]">
+            <MuiTableComponent
+              columns={columns}
+              rows={rows}
+              paginationActive={true}
+              rowHeight={60}
+              showCheckbox={false}
+              pageSize={10}
+            />
+          </div>
+        </section>
       </section>
     </div>
   );

@@ -134,12 +134,12 @@ export default function Shipments() {
         shipmentModal={shipmentModal}
         setShipmentModal={setShipmentModal}
       />
-      <div className="w-full py-5 px-10 border-b border-b-primaryBorder">
+      <div className="w-full py-5 px-5 md:pl-[250px] md:pr-[100px] bg-white fixed z-10 left-10 top-0 border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
       {shipment.active ? (
-        <main className="px-10 w-full mt-4 flex flex-col gap-y-6 flex-1">
+        <main className=" px-4 md:px-10 mt-10 w-full  flex flex-col gap-y-6 flex-1">
           <button
             onClick={() =>
               setShipment({
@@ -166,7 +166,9 @@ export default function Shipments() {
           <div className="flex-1 rounded-[16px] p-6 flex flex-col border border-primaryBorder bg-white">
             <div className="flex justify-between items-center">
               <div className="flex flex-col gap-y-1">
-                <h2 className="text-2xl font-semibold">Shipment 73KJFHIUDF4</h2>
+                <h2 className=" text-lg md:text-2xl font-semibold">
+                  Shipment 73KJFHIUDF4
+                </h2>
                 <p className="text-sm">
                   Jun 2, 2023{" "}
                   <span className="rounded-[100px] px-2 py-0.5 bg-[#FBF5D6]">
@@ -176,12 +178,12 @@ export default function Shipments() {
               </div>
               <div className="flex flex-col md:flex-row  gap-2">
                 <Link
-                  to="/shipments/track-shipment"
-                  className="rounded-lg text-xs md:text-sm md:px-5 px-3 py-1.5 md:py-2.5 text-white bg-defaultOrange"
+                  to="/admin/shipments/track-shipment"
+                  className="flex  justify-center rounded-lg text-xs md:text-sm md:px-5 px-3 py-1.5 md:py-2.5 text-white bg-defaultOrange"
                 >
                   Track
                 </Link>
-                <button className="rounded-lg text-xs md:text-sm md:px-5 px-3 py-1.5 md:py-2.5 text-defaultOrange border border-defaultOrange">
+                <button className="rounded-lg text-xs md:text-sm md:px-5 px-3 py-1 md:py-2.5 text-defaultOrange border border-defaultOrange">
                   Contact carrier
                 </button>
               </div>
@@ -191,7 +193,7 @@ export default function Shipments() {
               <h5 className="text-lg font-semibold mb-3">
                 Shipment information
               </h5>
-              <div className="flex items-center gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
+              <div className="flex items-center gap-5 md:gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
                 <span className="opacity-60 w-[200px]">
                   Client Account Number:
                 </span>
@@ -199,41 +201,41 @@ export default function Shipments() {
                   {shipment.data.accountNumber}
                 </span>
               </div>
-              <div className="flex items-center gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
+              <div className="flex items-center gap-5 md:gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
                 <span className="opacity-60 w-[200px]">Customer Name:</span>
                 <span className="font-medium">{shipment.data.name}</span>
               </div>
-              <div className="flex items-center gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
+              <div className="flex items-center md:gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
                 <span className="opacity-60 w-[200px]">Item:</span>
                 <span className="font-medium">{shipment.data.itemName}</span>
               </div>
-              <div className="flex items-center gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
+              <div className="flex items-center gap-5 md:gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
                 <span className="opacity-60 w-[200px]">Tracking Number:</span>
                 <span className="font-medium">
                   {shipment.data.trackingNumber}
                 </span>
               </div>
-              <div className="flex items-center gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
+              <div className="flex items-center gap-5 md:gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
                 <span className="opacity-60 w-[200px]">Shipping carrier:</span>
                 <span className="font-medium">
                   {shipment.data.shippingCenter}
                 </span>
               </div>
-              <div className="flex items-center gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
+              <div className="flex items-center gap-5 md:gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
                 <span className="opacity-60 w-[200px]">Status:</span>
                 <span className="font-medium">{shipment.data.status}</span>
               </div>
-              <div className="flex items-center gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
+              <div className="flex items-center gap-5 md:gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
                 <span className="opacity-60 w-[200px]">E.D.D:</span>
                 <span className="">{shipment.data.edd}</span>
               </div>
-              <div className="flex items-center gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
+              <div className="flex items-center gap-5 md:gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
                 <span className="opacity-60 w-[200px]">Delivery Address:</span>
                 <span className="font-medium">
                   {shipment.data.deliveryAddress}
                 </span>
               </div>
-              <div className="flex items-center gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
+              <div className="flex items-center gap-5 md:gap-x-[300px] text-sm border-b border-b-primaryBorder py-2">
                 <span className="opacity-60 w-[200px]">Phone:</span>
                 <span className="font-medium">{shipment.data.phone}</span>
               </div>
@@ -367,16 +369,21 @@ export default function Shipments() {
                   placeholder="Search orders"
                 />
               </div>
-              <div className="mt-3 flex flex-1 w-full min-h-[400px] overflow-hidden bg-white">
-                <MuiTableComponent
-                  columns={columns}
-                  rows={rows()}
-                  showCheckbox={false}
-                  paginationActive={true}
-                  rowHeight={60}
-                  pageSize={10}
-                />
-              </div>
+              <section
+                id="shipments-table"
+                className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
+              >
+                <div className="min-w-[900px]">
+                  <MuiTableComponent
+                    columns={columns}
+                    rows={rows()}
+                    showCheckbox={false}
+                    paginationActive={true}
+                    rowHeight={60}
+                    pageSize={10}
+                  />
+                </div>
+              </section>
             </section>
           )}
 

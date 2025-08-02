@@ -146,7 +146,7 @@ export default function Sellers() {
             </button>
             <Link
               to={`/admin/sellers/add-seller`}
-              className="flex gap-x-3 items-center rounded-lg px-5 py-3 text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
+              className="flex gap-x-1 md:gap-x-3 items-center rounded-lg px-3 md:px-5 py-1.5 md:py-3  text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
             >
               <FaPlus size={20} />
               Add seller
@@ -195,18 +195,20 @@ export default function Sellers() {
 
         <section
           id="sellers-table"
-          className="mt-3 flex flex-1 w-full overflow-hidden bg-white"
+          className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
         >
-          <MuiTableComponent
-            columns={columns}
-            rows={rows()}
-            onRowClick={handleRowClick}
-            paginationActive={true}
-            onSelect={handleTableSelectionChange}
-            showCheckbox={true}
-            rowHeight={60}
-            pageSize={10}
-          />
+          <div className="min-w-[900px]">
+            <MuiTableComponent
+              columns={columns}
+              rows={rows()}
+              onRowClick={handleRowClick}
+              paginationActive={true}
+              showCheckbox={true}
+              onSelect={handleTableSelectionChange}
+              rowHeight={60}
+              pageSize={10}
+            />
+          </div>
         </section>
       </main>
     </div>

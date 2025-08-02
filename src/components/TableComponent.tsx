@@ -56,7 +56,7 @@ export default function MuiTableComponent({
   };
 
   return (
-    <Paper className="flex-1 custom-scrollbar overflow-hidden">
+    <Paper className="w-full h-full min-h-[400px]">
       <DataGrid
         rows={rows}
         columns={columns}
@@ -73,6 +73,8 @@ export default function MuiTableComponent({
         onRowClick={handleRowClick}
         sx={{
           border: 0,
+          minWidth: "900px",
+          height: 500,
           paddingLeft: 2,
           "& .MuiCheckbox-root.Mui-checked": {
             color: "#e65800 !important", // Replace with your desired color

@@ -1,6 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-const API_BASE_URL = "/api/v2";
+const API_BASE_URL = "/api";
 const apiClient = axios.create({
   headers: {
     "System-Key": "1234",

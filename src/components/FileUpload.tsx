@@ -20,18 +20,15 @@ export const FileUpload = ({
   onFilesChange = () => {},
 }: FileUploadProps) => {
   const [files, setFiles] = useState<File[]>([]);
-
+  // Function to check if two files are the same based on name, size, and lastModified
+  const isSameFile = (a: File, b: File) =>
+    a.name === b.name && a.size === b.size && a.lastModified === b.lastModified;
   const onDrop = useCallback(
     (newFiles: File[]) => {
       setFiles((prevFiles) => {
         const uniqueFiles = newFiles.filter(
           (newFile) =>
-            !prevFiles.some(
-              (existingFile) =>
-                existingFile.name === newFile.name &&
-                existingFile.size === newFile.size &&
-                existingFile.lastModified === newFile.lastModified
-            )
+            !prevFiles.some((existingFile) => isSameFile(existingFile, newFile))
         );
         const updatedFiles = [...prevFiles, ...uniqueFiles];
         onFilesChange(updatedFiles);
@@ -46,9 +43,6 @@ export const FileUpload = ({
     maxFiles: maxFiles,
     onDrop, // 👈 use this instead of acceptedFiles + useEffect
   });
-
-  const isSameFile = (a: File, b: File) =>
-    a.name === b.name && a.size === b.size && a.lastModified === b.lastModified;
 
   const removeFile = (fileToRemove: File) => {
     setFiles((prevFiles) => {

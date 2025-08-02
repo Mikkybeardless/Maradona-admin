@@ -289,17 +289,23 @@ export default function Products() {
           />
         </div>
 
-        <div className="mt-3 flex flex-1 w-full overflow-hidden bg-white">
-          <MuiTableComponent
-            columns={columns}
-            rows={rows}
-            paginationActive={true}
-            rowHeight={60}
-            pageSize={10}
-            onRowClick={handleRowClick}
-            showCheckbox={true}
-          />
-        </div>
+        <section
+          id="products-table"
+          className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
+        >
+          <div className="min-w-[900px]">
+            <MuiTableComponent
+              columns={columns}
+              rows={rows}
+              onRowClick={handleRowClick}
+              paginationActive={true}
+              showCheckbox={true}
+              // onSelect={handleTableSelectionChange}
+              rowHeight={60}
+              pageSize={10}
+            />
+          </div>
+        </section>
       </div>
     </div>
   );

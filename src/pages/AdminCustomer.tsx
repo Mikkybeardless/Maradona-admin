@@ -17,7 +17,7 @@ export default function AdminCustomer({ customer }: { customer: string }) {
     setMenuDropdown(false);
   });
 
-  function ProductComponent({ index }: any) {
+  function ProductComponent({ index }: { index: number }) {
     return (
       <div key={index} className="w-full flex items-center gap-x-2">
         <div className="w-[65%] flex gap-x-2 items-center">
@@ -47,7 +47,7 @@ export default function AdminCustomer({ customer }: { customer: string }) {
 
         <div className="w-[5%]">
           <Link
-            to={`/admin/orders/order`}
+            to={`/admin/orders/order/${index}`}
             state={{ fromTransaction: true }}
             className="text-sm hover:underline text-[#B44500]"
           >
@@ -58,13 +58,20 @@ export default function AdminCustomer({ customer }: { customer: string }) {
     );
   }
 
+  const metrices = [
+    { label: "Orders", value: "6" },
+    { label: "Amount spent", value: "₦23,000" },
+    { label: "Conversion", value: "80%" },
+    { label: "Frequency", value: "63%" },
+  ];
+
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-10 bg-[#F5F5F5]">
-      <div className="w-full py-5 px-10">
+      <div className="w-full py-5 px-4 md:px-10">
         <DashboardSearchBar />
       </div>
 
-      <main className="px-10 w-full mt-4  flex flex-col flex-1">
+      <main className=" px-4 md:px-10 w-full mt-4  flex flex-col flex-1">
         <div className="flex gap-x-4 mb-6 items-center">
           <Link to="/" className="text-sm opacity-60">
             Dashboard
@@ -78,7 +85,7 @@ export default function AdminCustomer({ customer }: { customer: string }) {
         </div>
         <section
           id="customer-data"
-          className="flex justify-between items-center"
+          className="flex flex-col md:flex-row md:justify-between items-center"
         >
           <div className="flex flex-col gap-y-1.5">
             <h1 className="text-3xl font-bold flex items-start">
@@ -114,7 +121,7 @@ export default function AdminCustomer({ customer }: { customer: string }) {
                   Notifications
                 </Link>
                 <Link
-                  to={`/${customer}s/${customer}/feedback`}
+                  to={`/admin/${customer}s/${customer}/feedback`}
                   className="text-sm px-4 py-3 whitespace-nowrap hover:underline"
                 >
                   Feedback & Reviews
@@ -126,28 +133,26 @@ export default function AdminCustomer({ customer }: { customer: string }) {
 
         <section
           id="customer-metrics"
-          className="w-full rounded-lg mt-7 py-2 grid grid-cols-4 border border-primaryBorder bg-white"
+          className="w-full rounded-lg mt-7 py-2 grid grid-cols-2 items-center md:items-start md:grid-cols-4 border border-primaryBorder bg-white"
         >
-          <div className="flex flex-col gap-y-2 px-5 py-4 border-r border-r-primaryBorder">
-            <p className="text-xs text-[#6D6D6D]">Orders</p>
-            <p className="text-xl font-medium">6</p>
-          </div>
-          <div className="flex flex-col gap-y-2 px-5 py-4 border-r border-r-primaryBorder">
-            <p className="text-xs text-[#6D6D6D]">Amount spent</p>
-            <p className="text-xl font-medium">₦23,000</p>
-          </div>
-          <div className="flex flex-col gap-y-2 px-5 py-4 border-r border-r-primaryBorder">
-            <p className="text-xs text-[#6D6D6D]">Conversion</p>
-            <p className="text-xl font-medium">80%</p>
-          </div>
-          <div className="flex flex-col gap-y-2 px-5 py-4">
-            <p className="text-xs text-[#6D6D6D]">Frequency</p>
-            <p className="text-xl font-medium">63%</p>
-          </div>
+          {metrices.map((metric, index) => (
+            <div
+              key={index}
+              className={`flex flex-col gap-y-2 px-5 py-4 items-center md:items-start md:border-b-0 md:border-r md:border-r-primaryBorder ${
+                index < 2 ? "border-b  border-b-primaryBorder" : ""
+              }`}
+            >
+              <p className="text-xs text-[#6D6D6D]">{metric.label}</p>
+              <p className="text-xl font-medium">{metric.value}</p>
+            </div>
+          ))}
         </section>
 
-        <section id="customer-information" className="flex gap-x-4 mt-5">
-          <div className="w-[50%] flex flex-col text-sm rounded-lg border border-primaryBorder bg-white">
+        <section
+          id="customer-information"
+          className="flex flex-col md:flex-row  gap-4 mt-5"
+        >
+          <div className=" w-full md:w-[50%] flex flex-col text-sm rounded-lg border border-primaryBorder bg-white">
             <h3 className="font-medium text-base p-4 border-b border-b-primaryBorder">
               Basic information
             </h3>
@@ -168,7 +173,7 @@ export default function AdminCustomer({ customer }: { customer: string }) {
               <p className="font-medium">Sept 2, 2023</p>
             </div>
           </div>
-          <div className="w-[50%] flex flex-col text-sm rounded-lg border border-primaryBorder bg-white">
+          <div className="w-full md:w-[50%] flex flex-col text-sm rounded-lg border border-primaryBorder bg-white">
             <h3 className="font-medium text-base p-4 border-b border-b-primaryBorder">
               Shipping
             </h3>

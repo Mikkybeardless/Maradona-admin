@@ -25,9 +25,7 @@ export default function AdminLogin() {
 
   const [resetData, setResetData] = useState({
     email: "",
-    send_code_by: "email",
   });
-
   const [error, setError] = useState("");
   const [phase, setPhase] = useState(1);
   const [otp, setOtp] = useState("");
@@ -65,63 +63,57 @@ export default function AdminLogin() {
       setError("Please fill in all fields");
       return;
     }
-    // try {
-    //   const response = await authService.login({
-    //     email: email,
-    //     password: password,
-    //     login_by: "email",
-    //     user_type: "admin",
-    //   });
+    try {
+      const response = await authService.login(loginData);
 
-    //   if (response.status == 200) {
-    //     const data = response.data;
+      if (response.status == 200) {
+        const data = response.data;
 
-    //     // Dispatch to Redux (optional: include token if needed)
-    //     // const expiresAt = new Date(new Date().getTime() + 1 * 60 * 60 * 1000);
-    //     Cookies.set("token", data.access_token);
-    //     dispatch(login(data.user));
-    //     toast.success("Login successful");
-    //     // Redirect
-    //     return setTimeout(() => {
-    //       navigate("/");
-    //     }, 3000);
-    //   }
-    // } catch (err: any) {
-    //   console.error("Login error:", err.status);
-    //   toast.error("Login failed");
-    //   setError(() => {
-    //     if (err.status == 401) {
-    //       return "Invalid credentials";
-    //     } else if (err.response.status == 403) {
-    //       return "You are not authorized to access this page";
-    //     } else if (err.response.status == 404) {
-    //       return "User not found";
-    //     } else {
-    //       return "An error occurred. Please try again.";
-    //     }
-    //   });
-    // } finally {
-    //   setIsLoading(false);
-    // }
+        // Dispatch to Redux (optional: include token if needed)
+        // const expiresAt = new Date(new Date().getTime() + 1 * 60 * 60 * 1000);
+        Cookies.set("token", data.access_token);
+        dispatch(login(data.user));
+        toast.success("Login successful");
+        // Redirect
+        return setTimeout(() => {
+          navigate("/");
+        }, 3000);
+      }
+    } catch (err: any) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      console.error("Login error:", err.status);
+      toast.error("Login failed");
+      setError(() => {
+        switch (err.status) {
+          case 401:
+            return "Invalid credentials";
+          case 403:
+            return "You are not authorized to access this page";
+          case 404:
+            return "User not found";
+          default:
+            return "An error occurred. Please try again.";
+        }
+      });
+    } finally {
+      setIsLoading(false);
+    }
 
-    setTimeout(() => {
-      navigate("/");
-    }, 3000);
+    // setTimeout(() => {
+    //   navigate("/");
+    // }, 3000);
   };
 
   const handleResetPassword = async (e: FormEvent) => {
     e.preventDefault();
-    const { email, send_code_by } = resetData;
+    const { email } = resetData;
     if (!email) {
       setError("Please fill in all fields");
       return;
     }
     setIsLoading(true);
     try {
-      const response = await authService.reqPasswordReset({
-        email: email,
-        send_code_by: send_code_by,
-      });
+      const response = await authService.reqPasswordReset(resetData);
 
       if (response.status == 200) {
         toast.success("Password reset code sent");
@@ -143,23 +135,23 @@ export default function AdminLogin() {
 
   const handleConfirmReset = async (e: FormEvent) => {
     e.preventDefault();
+    const { password, confirm_password } = newPasswordData;
     if (newPasswordData.password !== newPasswordData.confirm_password) {
       toast.error("Passwords do not match");
       return;
     }
-    const { verification_code, password } = {
-      verification_code: otp,
-      password: newPasswordData.password,
-    };
-    if (!verification_code || !password) {
+
+    if (!otp || !password) {
       setError("Please fill in all fields");
       return;
     }
     setIsLoading(true);
     try {
       const response = await authService.doPassReset({
-        verification_code: verification_code,
-        password: password,
+        email: resetData.email,
+        otp,
+        password,
+        password_confirmation: confirm_password,
       });
       if (response.status == 200) {
         toast.success("Password reset successful");

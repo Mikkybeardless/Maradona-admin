@@ -18,6 +18,8 @@ import { logout } from "../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { GiBlockHouse } from "react-icons/gi";
 import { FaHandHoldingUsd } from "react-icons/fa";
+import authService from "../api/services/auth.service";
+import { toast } from "react-toastify";
 
 export default function AdminSidebar() {
   const { windowWidth, isMobile } = useWindowResizer();
@@ -78,9 +80,20 @@ export default function AdminSidebar() {
     return pathname === path;
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     isMobile && setIsSidebarOpen(false);
-    dispatch(logout());
+    try {
+      const response = await authService.logout();
+      if (response.status === 200) {
+        toast.success("Logout successful");
+        setTimeout(() => {
+          dispatch(logout());
+        }, 3000);
+      }
+    } catch (error) {
+      toast.error("Logout failed. Please try again.");
+      console.error("Logout error:", error);
+    }
   };
 
   return (

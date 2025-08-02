@@ -99,15 +99,19 @@ export default function AddProducts() {
     const videos = newMedia.filter((file) => file.type.startsWith("video/"));
     setMedia((prevMedia) => ({
       ...prevMedia,
-      images: [...prevMedia.images, ...images],
-      documents: [...prevMedia.documents, ...documents],
-      videos: [...prevMedia.videos, ...videos],
+      images: [...images],
+      documents: [...documents],
+      videos: [...videos],
     }));
-    console.log("Updated Media:", {
-      images: [...media.images, ...images],
-      documents: [...media.documents, ...documents],
-      videos: [...media.videos, ...videos],
-    });
+    setProductDetails((prev) => ({
+      ...prev,
+      media: [...newMedia],
+    }));
+    // console.log("Updated Media:", {
+    //   images: [...media.images, ...images],
+    //   documents: [...media.documents, ...documents],
+    //   videos: [...media.videos, ...videos],
+    // });
   };
 
   // document change
@@ -119,25 +123,26 @@ export default function AddProducts() {
     const videos = newdocument.filter((file) => file.type.startsWith("video/"));
     setDocuments((prevDocument) => ({
       ...prevDocument,
-      images: [...prevDocument.images, ...images],
-      documents: [...prevDocument.documents, ...docs],
-      videos: [...prevDocument.videos, ...videos],
+      images: [...images],
+      documents: [...docs],
+      videos: [...videos],
     }));
-    console.log("Updated document:", {
-      images: [...documents.images, ...images],
-      documents: [...documents.documents, ...docs],
-      videos: [...documents.videos, ...videos],
-    });
+    setProductDetails((prev) => ({
+      ...prev,
+      documents: [...newdocument],
+    }));
+    // console.log("Updated document:", {
+    //   images: [...documents.images, ...images],
+    //   documents: [...documents.documents, ...docs],
+    //   videos: [...documents.videos, ...videos],
+    // });
   };
   const handleSubmit = () => {
     // e.preventDefault();
 
     const { images, documents, videos } = media;
     // Here you would typically send the Media to your backend
-    console.log("Submitting form with:");
-    console.log("Images:", images);
-    console.log("Documents:", documents);
-    console.log("Videos:", videos);
+
     console.log("Product Details:", productDetails);
 
     // Example of creating FormData for submission
@@ -157,6 +162,8 @@ export default function AddProducts() {
     videos.forEach((file, index) => {
       formData.append(`videos[${index}]`, file);
     });
+
+    console.log("Form Data:", formData);
 
     // You would then submit formData to your backend
     // axios.post('/api/upload', formData)
@@ -476,6 +483,7 @@ export default function AddProducts() {
                         onChange={(e) =>
                           handleConditionAuctionTypeChange(e, "condition")
                         }
+                        checked={productDetails.condition === "new"}
                         type="checkbox"
                       />
                       <label htmlFor="new">New</label>
@@ -484,6 +492,7 @@ export default function AddProducts() {
                       <input
                         className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
                         id="old"
+                        checked={productDetails.condition === "old"}
                         onChange={(e) =>
                           handleConditionAuctionTypeChange(e, "condition")
                         }
@@ -503,6 +512,7 @@ export default function AddProducts() {
                       onChange={(e) =>
                         handleConditionAuctionTypeChange(e, "auctionType")
                       }
+                      checked={productDetails.auctionType === "auctioned"}
                       type="checkbox"
                     />
                     <label htmlFor="auctioned">Auctioned</label>
@@ -514,6 +524,7 @@ export default function AddProducts() {
                       onChange={(e) =>
                         handleConditionAuctionTypeChange(e, "auctionType")
                       }
+                      checked={productDetails.auctionType === "non-auctioned"}
                       type="checkbox"
                     />
                     <label htmlFor="condition2">Non-auctioned</label>
