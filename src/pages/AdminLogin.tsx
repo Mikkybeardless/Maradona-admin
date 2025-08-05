@@ -61,6 +61,7 @@ export default function AdminLogin() {
     const { email, password } = loginData;
     if (!email || !password) {
       setError("Please fill in all fields");
+      setIsLoading(false);
       return;
     }
     try {

@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight, FaPlus } from "react-icons/fa6";
 import ReactQuill from "react-quill";
@@ -8,7 +8,6 @@ import { FileUpload } from "../components/FileUpload";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import StateCitySelector2 from "../components/common/stateCitySelector";
 import { CustomCheckbox } from "../components/common/customCheckInput";
-// import { GrVmMaintenance } from "react-icons/gr";
 
 type FileUpload = {
   images: File[];
@@ -18,7 +17,7 @@ type FileUpload = {
 export default function AddProducts() {
   const location = useLocation();
   const { pathname } = location;
-
+  const navigate = useNavigate();
   const [productDetails, setProductDetails] = useState<Product>({
     productType: "land",
     productName: "",
@@ -267,6 +266,49 @@ export default function AddProducts() {
       [name]: value,
     });
   };
+
+  const handleCancel = () => {
+    const initialProductDetails: Product = {
+      productType: "land",
+      productName: "",
+      description: "",
+      productPrice: 0,
+      salePrice: 0,
+      address: "",
+      city: "",
+      houseType: "",
+      continueSelling: false,
+      state: "",
+      furnishedStatus: "furnished",
+      propertySize: 0,
+      weightUnit: "kg",
+      skuNumber: "",
+      media: [],
+      documents: [],
+      status: "draft",
+      tags: "",
+      inventory: "",
+      weight: 0,
+      bodyType: "SUV",
+      engineType: "",
+      accessibility: "main-road",
+      fencing: "fenced",
+      topography: "dry-land",
+      landType: "residential",
+      duration: "days",
+      auctionDuration: 0,
+      transmission: "",
+      condition: "new",
+      houseCondition: "newly-built",
+      auctionType: "auctioned",
+      landSize: 0,
+      gearType: "manual",
+      mileage: "",
+    };
+    // Reset product details or navigate away
+    setProductDetails(initialProductDetails);
+    navigate("/admin/products");
+  };
   return (
     <div className="w-full h-full overflow-hidden overflow-y-auto custom-scrollbar pb-10 bg-[#F5F5F5]">
       <div className="w-full py-5 px-4 md:px-24 border-b bg-white border-b-primaryBorder">
@@ -290,7 +332,10 @@ export default function AddProducts() {
           <h1 className="md:text-3xl font-bold">Add Products</h1>
 
           <div className="flex gap-x-5 items-center">
-            <button className="text-sm text-defaultOrange hover:underline">
+            <button
+              onClick={handleCancel}
+              className="text-sm text-defaultOrange hover:underline"
+            >
               Cancel
             </button>
             <button

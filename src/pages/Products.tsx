@@ -129,7 +129,7 @@ export default function Products() {
 
   const handleRowClick = (params: GridRowParams) => {
     console.log("Row clicked:", params.row);
-    navigate(`/products/product/${params.row.id}`);
+    navigate(`/admin/products/product/${params.row.id}`);
   };
 
   useClickAway(dotsPopupRef, () => {
@@ -234,7 +234,7 @@ export default function Products() {
           <h1 className="text-3xl font-bold">Products</h1>
           <Link
             to={`/admin/products/add-product`}
-            className="rounded-lg px-5 py-3 flex gap-x-3 items-center text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
+            className="rounded-lg px-3 py-1 md:px-5 md:py-3 flex gap-x-3 items-center text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
           >
             <FaPlus size={20} /> Add product
           </Link>
