@@ -1,7 +1,6 @@
 // product types
-
-declare type ProductType = "land" | "car" | "house";
-declare type ProductStatus = "draft" | "publish";
+declare type ProductType = "LAND" | "CAR" | "HOUSE";
+declare type ProductStatus = "draft" | "published";
 declare type ProductBodyType = "SUV" | "Sedan" | "Coupe" | "Truck" | "Bus";
 declare type ProductFurnishedStatus = "furnished" | "unfurnished";
 declare type ProductAccessibility = "main-road" | "inner-road";
@@ -15,41 +14,234 @@ declare type ProductGearType = "manual" | "automatic";
 declare type WeightUnit = "kg" | "g";
 declare type Media = File[];
 declare type HouseCondition = "newly-built" | "old" | "needs-renovation";
+declare type Category_id = "1" | "2" | "3";
 
 declare interface Product {
-  productType: ProductType;
-  productName: string;
+  name: string;
+  type: ProductType;
   description: string;
-  productPrice: number;
-  salePrice: number;
+  category_id: Category_id;
+  price: number;
   address: string;
   city: string;
-  houseType: string;
-  continueSelling: boolean;
+  sale_price: number;
+  continue_selling: boolean;
   state: string;
-  furnishedStatus: ProductFurnishedStatus;
-  propertySize: number;
-  weightUnit: WeightUnit;
-  skuNumber: string;
+  weight_unit: WeightUnit;
+  sku: string;
   media: Media;
   documents: Media;
   status: ProductStatus;
-  tags: string;
-  inventory: string;
-  weight: number;
-  bodyType: ProductBodyType;
-  engineType: string;
-  accessibility: ProductAccessibility;
-  fencing: ProductFencing;
-  topography: ProductTopography;
-  landType: ProductLandType;
-  duration: ProductDuration;
-  auctionDuration: number;
-  transmission: string;
-  condition: ProductCondition;
-  houseCondition: HouseCondition;
-  auctionType: ProductAuctionType;
-  landSize: number;
-  gearType: ProductGearType;
-  mileage: string;
+  tags: number[];
+  inventory: number;
+  // weight: number;
+  // duration: ProductDuration | null;
+  auction_duration: number | null;
+  condition: ProductCondition | null;
+  auction_type: ProductAuctionType;
 }
+
+declare interface Auction {
+  name: string;
+  type: string;
+  description: string;
+  category_id: Category_id;
+  sku: string;
+  price: string;
+  // sale_price: string;
+  inventory: number;
+  media: Media;
+  documents: Media;
+  status: ProductStatus;
+  starting_bid: string;
+  reserve_price: string;
+  start_time: string;
+  end_time: string;
+  tags: string[];
+  incremental_bid_amount: string;
+  minimum_bid_increment: string;
+  auto_extend: string;
+}
+
+declare interface ApiAuction extends Auction, ApiRes {
+  winning_bid_id: string;
+  seller_id: string;
+  approved_by: string;
+  approved_at: string;
+  time_left: string;
+}
+
+declare interface House extends Product {
+  house_type: string;
+  house_beds: number;
+  house_furnished: ProductFurnishedStatus;
+  house_condition: HouseCondition;
+  house_size: number;
+  accessibility: ProductAccessibility;
+  topography: ProductTopography;
+  fencing: ProductFencing;
+}
+
+declare interface Land extends Product {
+  land_type: ProductLandType;
+  land_size: number;
+  accessibility: ProductAccessibility;
+  topography: ProductTopography;
+  fencing: ProductFencing;
+}
+declare interface Car extends Product {
+  body_type: ProductBodyType;
+  engine_type: string;
+  transmission: string;
+  mileage: string;
+  gear_type: ProductGearType | null;
+}
+declare type ProductDetails = House | Land | Car;
+declare interface ApiProduct extends Product {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  seller: Seller;
+  belongs_to_admin: boolean;
+}
+
+declare type ProductPayloadMap = {
+  LAND: Pick<
+    Land,
+    | "name"
+    | "description"
+    | "price"
+    | "category_id"
+    | "type"
+    | "land_type"
+    | "land_size"
+    | "accessibility"
+    | "topography"
+    | "fencing"
+    | "status"
+    | "media"
+    | "tags"
+    | "documents"
+    | "condition"
+    | "inventory"
+  >;
+  HOUSE: Pick<
+    House,
+    | "name"
+    | "description"
+    | "price"
+    | "category_id"
+    | "type"
+    | "house_type"
+    | "house_beds"
+    | "house_furnished"
+    | "house_condition"
+    | "house_size"
+    | "accessibility"
+    // | "fencing"
+    // | "status"
+    | "media"
+    | "tags"
+    | "documents"
+    // | "condition"
+    | "inventory"
+  >;
+  CAR: Pick<
+    Car,
+    | "name"
+    | "description"
+    | "price"
+    | "category_id"
+    | "type"
+    | "body_type"
+    | "engine_type"
+    // | "transmission"
+    | "mileage"
+    | "gear_type"
+    | "status"
+    | "media"
+    | "tags"
+    | "documents"
+    | "condition"
+    | "inventory"
+  >;
+};
+
+interface ApiRes {
+  id: number;
+  created_at: string;
+  updated_at: string;
+}
+// tags
+declare interface Tag {
+  name: string;
+  slug: string;
+  picture: string | null;
+  description: string;
+}
+declare interface ApiTag extends Tag, ApiRes {}
+
+declare interface Category {
+  name: string;
+  slug: string;
+  picture: string | null;
+  description: string;
+}
+declare interface ApiCategory extends Category, ApiRes {}
+// user
+interface User {
+  name: string;
+  email: string;
+  email_verified_at: string | null;
+  type: string;
+}
+declare interface ApiUser extends User, ApiRes {}
+declare interface Agent extends User {
+  agent_profile: {
+    id: number;
+    user_id: string;
+    created_at: string;
+    updated_at: string;
+  };
+}
+declare interface ApiAgent extends Agent, ApiRes {}
+declare interface Admin extends User {
+  admin_profile: {
+    id: number;
+    user_id: string;
+    created_at: string;
+    updated_at: string;
+  };
+}
+declare interface ApiAdmin extends Admin, ApiRes {}
+declare interface Seller extends User {
+  seller_profile: {
+    id: number;
+    user_id: string;
+    shop_name: string | null;
+    email: string | null;
+    phone: string | null;
+    profile_pic: string | null;
+    is_approved: boolean;
+    created_at: string;
+    updated_at: string;
+  };
+}
+declare interface ApiSeller extends Seller, ApiRes {}
+
+declare interface Inspection {
+  product_type: string;
+  product_id: string;
+  seller_id: string;
+  agent_id: string;
+  scheduled_at: string;
+  status: string;
+  notes: string;
+  assigned_at: string;
+  completed_at: string;
+  auction_product: null;
+  product: Product;
+  agent: Agent;
+  seller: Seller;
+}
+declare interface ApiInspection extends Inspection, ApiRes {}

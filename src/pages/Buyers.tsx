@@ -1,7 +1,6 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
-
-import MuiTableComponent from "../components/TableComponent";
+import MuiTableComponent from "../components/table/TableComponent";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { formatPrice } from "../helper/helperFunctions";
 import { useState } from "react";
@@ -12,6 +11,10 @@ import { useDebounce } from "../hooks/useDebounce";
 import { Dayjs } from "dayjs";
 import { ExportModal } from "../components/modals/export-modal";
 import { FaPlus } from "react-icons/fa6";
+import formatDayJs from "../helper/formatDateJs";
+import UserService from "../api/services/userMgt.service";
+import { usePaginatedData } from "../hooks/usePaginatedData";
+import { BuyerColumns } from "../components/table/columns";
 
 type UserTableType = {
   id: any;
@@ -23,22 +26,22 @@ type UserTableType = {
   status: string;
 };
 
-const rows = (): UserTableType[] => {
-  const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-  const returnArray: UserTableType[] = [];
-  loopArray.forEach((num) => {
-    returnArray.push({
-      id: num,
-      name: "Rosemary Sunday",
-      phone: "07071234323",
-      location: "Lugbe Abuja",
-      orders: 22,
-      totalSpent: 100000,
-      status: "Active",
-    });
-  });
-  return returnArray;
-};
+// const rows = (): UserTableType[] => {
+//   const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+//   const returnArray: UserTableType[] = [];
+//   loopArray.forEach((num) => {
+//     returnArray.push({
+//       id: num,
+//       name: "Rosemary Sunday",
+//       phone: "07071234323",
+//       location: "Lugbe Abuja",
+//       orders: 22,
+//       totalSpent: 100000,
+//       status: "Active",
+//     });
+//   });
+//   return returnArray;
+// };
 
 type IFilter = {
   status: string;
@@ -46,6 +49,7 @@ type IFilter = {
 };
 
 export default function Buyers() {
+  const navigate = useNavigate();
   const [exportModal, setExportModal] = useState(false);
   const [selectedData, setSelectedData] = useState<UserTableType[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,15 +59,21 @@ export default function Buyers() {
     date: null,
   });
 
-  const navigate = useNavigate();
-
-  function openExportModal() {
-    setExportModal(true);
-  }
-
-  function closeExportModal() {
-    setExportModal(false);
-  }
+  const formatedDate = formatDayJs(filters.date);
+  const [buyersData, setBuyersData] = usePaginatedData(
+    UserService.getAllBuyers,
+    {
+      initialPage: 1,
+      initialPageSize: 10,
+      filters: {
+        status: filters.status,
+        date: formatedDate,
+        created_at: formatedDate,
+        search: debouncedSearchQuery,
+      },
+      dataName: "buyers",
+    }
+  );
 
   const handleRowClick = (params: GridRowParams) => {
     navigate(`/admin/buyers/buyer/:${params.row.id}`);
@@ -71,52 +81,13 @@ export default function Buyers() {
   const handleTableSelectionChange = (newSelection: UserTableType[]) => {
     setSelectedData(newSelection);
   };
-  const columns: GridColDef[] = [
-    { field: "name", headerName: "Customer name", flex: 1 },
-    { field: "id", headerName: "ID", flex: 0.2, sortable: false },
-    { field: "phone", headerName: "Phone", flex: 1, sortable: false },
-    { field: "location", headerName: "Location", flex: 1, sortable: false },
-    { field: "orders", headerName: "Order(s)" },
-    {
-      field: "totalSpent",
-      headerName: "Total Spent",
-      flex: 0.8,
-      renderCell: ({ row }) => (
-        <span className="">₦{formatPrice(row.totalSpent)}</span>
-      ),
-    },
-    { field: "status", headerName: "Status", sortable: false },
-  ];
-
-  // useEffect(() => {
-  //   const normalizedQuery = debouncedSearchQuery.toLowerCase();
-
-  //   const filtered = allRows.filter((row) => {
-
-  //     // Search filter (e.g., match against name or details)
-  //     const searchMatch =
-  //       row.name.toLowerCase().includes(normalizedQuery) ||
-  //       row.details.toLowerCase().includes(normalizedQuery);
-
-  //     // Custom filters
-  //     const categoryMatch = filters.category ? row.category === filters.category : true;
-  //     const statusMatch = filters.status ? row.status === filters.status : true;
-  //     const dateMatch = filters.date
-  //       ? row.date.startsWith(filters.date.toISOString().slice(0, 10))
-  //       : true;
-
-  //     // Combine
-  //     return dateMatch && searchMatch && categoryMatch && statusMatch;
-  //   });
-
-  // }, [filters, debouncedSearchQuery]);
 
   return (
     <section className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-7 bg-[#F5F5F5]">
       <ExportModal
         isOpen={exportModal}
-        onClose={closeExportModal}
-        allData={rows()}
+        onClose={() => setExportModal(false)}
+        allData={buyersData.rows}
         // currentPageData={currentPageData}
         selectedData={selectedData}
         filename="buyers-data"
@@ -129,12 +100,14 @@ export default function Buyers() {
         <div className="flex justify-between items-center mt-1">
           <h1 className="text-3xl font-bold flex items-start">
             Buyers
-            <span className="text-xs text-defaultOrange">{rows().length}</span>
+            <span className="text-xs text-defaultOrange">
+              {buyersData.totalRowCount}
+            </span>
           </h1>
 
           <div className="flex items-center gap-x-5">
             <button
-              onClick={openExportModal}
+              onClick={() => setExportModal(true)}
               className="text-sm hover:underline text-defaultOrange"
             >
               Export
@@ -193,14 +166,25 @@ export default function Buyers() {
         >
           <div className="min-w-[900px]">
             <MuiTableComponent
-              columns={columns}
-              rows={rows()}
+              columns={BuyerColumns}
+              rows={buyersData.rows}
               onRowClick={handleRowClick}
-              paginationActive={true}
               showCheckbox={true}
               onSelect={handleTableSelectionChange}
               rowHeight={60}
-              pageSize={10}
+              loading={buyersData.loading}
+              currentPage={buyersData.pagination.page}
+              totalRowCount={buyersData.totalRowCount}
+              onPageChange={(model) => {
+                setBuyersData((prev) => ({
+                  ...prev,
+                  pagination: {
+                    page: model.page,
+                    pageSize: model.pageSize,
+                  },
+                }));
+              }}
+              pageSize={buyersData.pagination.pageSize}
             />
           </div>
         </section>

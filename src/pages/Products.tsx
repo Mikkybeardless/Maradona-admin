@@ -1,219 +1,67 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
-import { FaChevronRight } from "react-icons/fa6";
-import MuiTableComponent from "../components/TableComponent";
-import { GridColDef, GridRowParams } from "@mui/x-data-grid";
-import { SetStateAction, useEffect, useRef, useState } from "react";
+import { FaChevronRight, FaRegEye } from "react-icons/fa6";
+import MuiTableComponent from "../components/table/TableComponent";
+import { GridRowParams } from "@mui/x-data-grid";
+import { useRef, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { useClickAway } from "react-use";
 import productService from "../api/services/product.service";
-import Cookies from "js-cookie";
 import { DateSelect } from "../components/common/dateSelect";
 import { TableSearchInput } from "../components/common/TableSearchInput";
 import { FilterGroup } from "../components/common/FilterGroup";
 import { Dayjs } from "dayjs";
 import { useDebounce } from "../hooks/useDebounce";
 import { StatusSelect } from "../components/common/statusSelect";
-
-type ProdcutTableType = {
-  name: string;
-  type: "LAND" | "CAR" | "HOUSE";
-  description: string;
-  category_id: null | number;
-  sku: null | string;
-  price: string;
-  sale_price: null | string;
-  status: "draft" | "publish";
-  inventory: null | string;
-  weight: null | string;
-  body_type: null | string;
-  auction_duration: null | string;
-  condition: null | string;
-  mode: null | string;
-  gear_type: null | string;
-  engine_type: null | string;
-  mileage: null | string;
-  location_state: null | string;
-  location_city: null | string;
-  location_address: null | string;
-};
-
-// const rows = (): ProdcutTableType[] => {
-//   const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-//   const returnArray: ProdcutTableType[] = [];
-//   loopArray.forEach((num) => {
-//     const statusPicker = generateRandomNumber(3, 1);
-//     returnArray.push({
-//       id: num,
-//       thumbnail_img: Car,
-//       name: "Toyota Camry LE (2024)",
-//       category: "Car",
-//       price: generateRandomNumber(5000000, 100000),
-//       stock: generateRandomNumber(10, 0),
-//       status:
-//         statusPicker === 1
-//           ? "Published"
-//           : statusPicker === 2
-//           ? "Archived"
-//           : statusPicker === 3
-//           ? "Draft"
-//           : "",
-//     });
-//   });
-//   return returnArray;
-// };
-
-// function renderStatusColor(status: string) {
-//   if (status.toLowerCase() === "published")
-//     return "bg-[#E8F8E8] text-[#0C560B]";
-//   else if (status.toLowerCase() === "archived")
-//     return "bg-[#FEF3B8] text-[#D7B813]";
-//   else if (status.toLowerCase() === "draft")
-//     return "bg-[#DAE9FB] text-[#0B283E]";
-// }
+// import { toast } from "react-toastify";
+import formatDayJs from "../helper/formatDateJs";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { Popper } from "@mui/material";
+import { BiEditAlt } from "react-icons/bi";
+import { GoTrash } from "react-icons/go";
+import { usePaginatedData } from "../hooks/usePaginatedData";
+import { ProductColumns } from "../components/table/columns";
 
 type IFilter = {
-  category: string;
+  type: string;
   status: string;
   date: Dayjs | null;
 };
 
 export default function Products() {
-  // const location = useLocation();
-  // const { pathname } = location;
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const dotsPopupRef = useRef(null);
   const navigate = useNavigate();
-  const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl2);
-  const [rows, setRows] = useState<ProdcutTableType[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery);
   const [filters, setFilters] = useState<IFilter>({
-    category: "",
+    type: "",
     status: "",
     date: null,
   });
 
-  useEffect(() => {
-    const fetProducts = async () => {
-      const response = await productService.getAllProducts();
-      console.log("Products:", response.data.data);
-      // setRows(response.data.data);
-    };
-    fetProducts();
-  }, []);
+  const handleTableSelectionChange = (selectedRows: any[]) => {
+    console.log("Selected Rows:", selectedRows);
+  };
 
-  // useEffect(() => {
-  //   const normalizedQuery = debouncedSearchQuery.toLowerCase();
-
-  //   const filtered = allRows.filter((row) => {
-
-  //     // Search filter (e.g., match against name or details)
-  //     const searchMatch =
-  //       row.name.toLowerCase().includes(normalizedQuery) ||
-  //       row.details.toLowerCase().includes(normalizedQuery);
-
-  //     // Custom filters
-  //     const categoryMatch = filters.category ? row.category === filters.category : true;
-  //     const statusMatch = filters.status ? row.status === filters.status : true;
-  //     const dateMatch = filters.date
-  //       ? row.date.startsWith(filters.date.toISOString().slice(0, 10))
-  //       : true;
-
-  //     // Combine
-  //     return dateMatch && searchMatch && categoryMatch && statusMatch;
-  //   });
-
-  // }, [filters, debouncedSearchQuery]);
+  const formatedDate = formatDayJs(filters.date);
+  const [productData, setProductData] = usePaginatedData(
+    productService.getAllProducts,
+    {
+      initialPage: 1,
+      initialPageSize: 10,
+      filters: {
+        status: filters.status,
+        type: filters.type,
+        created_at: formatedDate,
+        search: debouncedSearchQuery,
+      },
+      dataName: "Products",
+    }
+  );
 
   const handleRowClick = (params: GridRowParams) => {
     console.log("Row clicked:", params.row);
     navigate(`/admin/products/product/${params.row.id}`);
   };
-
-  useClickAway(dotsPopupRef, () => {
-    setAnchorEl(null);
-  });
-
-  const handleClick = (event: any) => {
-    setAnchorEl2(anchorEl2 ? null : event.currentTarget);
-  };
-
-  const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", flex: 0.1 },
-    {
-      field: "name",
-      headerName: "Product",
-      description: "This column has a value getter and is not sortable.",
-      sortable: false,
-      renderCell: ({ row }) => {
-        return (
-          <div className="flex flex-1 h-full items-center gap-x-2">
-            <img
-              className="w-20 h-auto rounded-lg object-contain bg-gray-100"
-              src={row.thumbnail_img}
-              alt="Product"
-            />
-            <span className="text-sm">{row.productName}</span>
-          </div>
-        );
-      },
-      flex: 4,
-    },
-    { field: "category", headerName: "Category" },
-    { field: "price", headerName: "Price(₦)", type: "number" },
-    { field: "current_stock", headerName: "Stock", type: "number", flex: 1 },
-    // {
-    //   field: "status",
-    //   headerName: "Status",
-    //   renderCell: ({ row }) => {
-    //     return (
-    //       <div className="w-full h-full items-center flex justify-center">
-    //         <span
-    //           className={`${renderStatusColor(
-    //             row.status
-    //           )} rounded-[100px] !text-xs px-2.5 py-1`}
-    //         >
-    //           {row.status}
-    //         </span>
-    //       </div>
-    //     );
-    //   },
-    //   flex: 1,
-    // },
-    // {
-    //   field: "Action",
-    //   flex: 0.5,
-    //   renderCell: () => {
-    //     return (
-    //       <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
-    //         <BsThreeDotsVertical
-    //           aria-describedby={id}
-    //           type="button"
-    //           onClick={handleClick}
-    //           size={16}
-    //           className="cursor-pointer"
-    //         />
-    //         <Popper
-    //           ref={dotsPopupRef}
-    //           className="p-3 text-sm z-10 flex gap-x-4 items-center rounded-lg border border-primaryBorder bg-white"
-    //           id={id}
-    //           open={open}
-    //           anchorEl={anchorEl}
-    //         >
-    //           <Link to={`/products/product`}>
-    //             <FaRegEye size={18} />
-    //           </Link>
-
-    //           <BiEditAlt size={18} />
-    //           <GoTrash size={18} />
-    //         </Popper>
-    //       </div>
-    //     );
-    //   },
-    // },
-  ];
 
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-10 bg-[#F5F5F5]">
@@ -249,12 +97,13 @@ export default function Products() {
             }}
             selects={[
               {
-                name: "category",
+                name: "type",
                 placeholder: "Category",
                 options: [
-                  { label: "House", value: "house" },
-                  { label: "Cars", value: "cars" },
-                  { label: "Land", value: "land" },
+                  { label: "All", value: "" },
+                  { label: "House", value: "HOUSE" },
+                  { label: "Cars", value: "CAR" },
+                  { label: "Land", value: "LAND" },
                 ],
               },
             ]}
@@ -262,9 +111,9 @@ export default function Products() {
               <>
                 <StatusSelect
                   options={[
+                    { label: "All", value: "" },
                     { label: "Published", value: "published" },
                     { label: "Pending", value: "pending" },
-                    { label: "Cancelled", value: "cancelled" },
                   ]}
                   onChange={(value) => {
                     setFilters((prev) => ({ ...prev, status: value }));
@@ -295,14 +144,25 @@ export default function Products() {
         >
           <div className="min-w-[900px]">
             <MuiTableComponent
-              columns={columns}
-              rows={rows}
+              columns={ProductColumns}
+              rows={productData.rows}
               onRowClick={handleRowClick}
-              paginationActive={true}
+              loading={productData.loading}
+              currentPage={productData.pagination.page}
+              totalRowCount={productData.totalRowCount}
+              onPageChange={(model) => {
+                setProductData((prev) => ({
+                  ...prev,
+                  pagination: {
+                    page: model.page,
+                    pageSize: model.pageSize,
+                  },
+                }));
+              }}
               showCheckbox={true}
-              // onSelect={handleTableSelectionChange}
+              onSelect={handleTableSelectionChange}
               rowHeight={60}
-              pageSize={10}
+              pageSize={productData.pagination.pageSize}
             />
           </div>
         </section>
@@ -310,3 +170,77 @@ export default function Products() {
     </div>
   );
 }
+
+export const ProductActionCellComponent = ({ row }: { row: any }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const dotsPopupRef = useRef(null);
+  const open = Boolean(anchorEl);
+  const id = open ? `popper-${row.id}` : undefined;
+
+  useClickAway(dotsPopupRef, () => {
+    setAnchorEl(null);
+  });
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const handleDelete = (id: number) => {
+    console.log("deleting product with id:", id);
+  };
+
+  const handleEdit = (id: number) => {
+    console.log("editing product id:", id);
+  };
+
+  return (
+    <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
+      <button
+        aria-describedby={id}
+        type="button"
+        onClick={handleClick}
+        className="cursor-pointer bg-transparent border-none p-2 m-0 rounded-full hover:bg-gray-100"
+        style={{ lineHeight: 0 }}
+      >
+        <BsThreeDotsVertical size={16} />
+      </button>
+      <Popper
+        ref={dotsPopupRef}
+        className="p-3 text-sm z-10 flex gap-x-4 items-center rounded-lg border border-primaryBorder bg-white"
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        placement="bottom-end"
+        style={{ zIndex: 1300 }}
+        modifiers={[
+          {
+            name: "offset",
+            options: {
+              offset: [0, 8],
+            },
+          },
+          {
+            name: "preventOverflow",
+            options: {
+              boundary: "viewport",
+              padding: 8,
+            },
+          },
+        ]}
+      >
+        <Link to={`/products/product/${row.id}`}>
+          <FaRegEye size={18} />
+        </Link>
+        <button onClick={() => handleEdit(row.id)}>
+          <BiEditAlt size={18} />
+        </button>
+
+        <button onClick={() => handleDelete(row.id)}>
+          <GoTrash size={18} />
+        </button>
+      </Popper>
+    </div>
+  );
+};

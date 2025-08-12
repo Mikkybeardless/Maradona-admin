@@ -4,7 +4,6 @@ const API_BASE_URL = "/api";
 const apiClient = axios.create({
   headers: {
     "System-Key": "1234",
-    "Content-Type": "application/json",
   },
   baseURL: API_BASE_URL,
 });

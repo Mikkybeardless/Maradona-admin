@@ -3,7 +3,7 @@ import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight } from "react-icons/fa6";
 import { FaDotCircle, FaHandHoldingUsd } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
-import MuiTableComponent from "../components/TableComponent";
+import MuiTableComponent from "../components/table/TableComponent";
 import { generateRandomNumber } from "../helper/helperFunctions";
 import { GridColDef } from "@mui/x-data-grid";
 import { useRef, useState } from "react";

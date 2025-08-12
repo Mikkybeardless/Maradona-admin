@@ -24,7 +24,7 @@ export default function ProductCarousel({ images }: { images: string[] }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-2">
+    <div className="max-w-lg mx-auto p-2">
       <div className="relative">
         {/* Main image with navigation controls positioned outside */}
         <div className="flex items-center">

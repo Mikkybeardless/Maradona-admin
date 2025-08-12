@@ -4,7 +4,7 @@ import DashboardSearchBar from "../components/DashboardSearchBar";
 import { BsEnvelopeOpenFill } from "react-icons/bs";
 import { RiErrorWarningFill } from "react-icons/ri";
 import { useState } from "react";
-import MuiTableComponent from "../components/TableComponent";
+import MuiTableComponent from "../components/table/TableComponent";
 import { CiSearch } from "react-icons/ci";
 import { HiSortDescending } from "react-icons/hi";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";

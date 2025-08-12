@@ -1,13 +1,29 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import Cookies from "js-cookie";
+import { useEffect } from "react";
 
 export default function LoggedInAuthenticator() {
   const location = useLocation();
   const { pathname } = location;
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  if (!isAuthenticated && location.pathname !== "/admin/login") {
+  const token = Cookies.get("token");
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = Cookies.get("token");
+    console.log("Checking authentication status...");
+    console.log("Is authenticated:", isAuthenticated);
+    console.log("Current pathname:", pathname);
+    console.log("Token exists:", !!token);
+
+    if (!token) {
+      navigate("/admin/login");
+    }
+  }, [isAuthenticated, pathname]);
+  // If not authenticated and not on the login page, redirect to login
+  if (!isAuthenticated && !token && location.pathname !== "/admin/login") {
     return <Navigate to="/admin/login" replace />;
   }
 

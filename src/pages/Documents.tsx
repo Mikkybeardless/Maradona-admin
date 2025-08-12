@@ -1,7 +1,7 @@
 import { FaPlus } from "react-icons/fa6";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { CiSearch } from "react-icons/ci";
-import MuiTableComponent from "../components/TableComponent";
+import MuiTableComponent from "../components/table/TableComponent";
 import { GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";

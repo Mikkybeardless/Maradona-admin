@@ -2,7 +2,7 @@ import { FaChevronRight, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { PiCoinVerticalDuotone } from "react-icons/pi";
 import { CiSearch } from "react-icons/ci";
-import MuiTableComponent from "../components/TableComponent";
+import MuiTableComponent from "../components/table/TableComponent";
 import { GridColDef } from "@mui/x-data-grid";
 import { Link, useLocation } from "react-router-dom";
 import { generateRandomNumber } from "../helper/helperFunctions";
@@ -20,6 +20,8 @@ import { TableSearchInput } from "../components/common/TableSearchInput";
 import { StatusSelect } from "../components/common/statusSelect";
 import orderService from "../api/services/order.service";
 import { ExportModal } from "../components/modals/export-modal";
+import { usePaginatedData } from "../hooks/usePaginatedData";
+import formatDayJs from "../helper/formatDateJs";
 type UserTableType = {
   id: any;
   name: string;
@@ -75,10 +77,7 @@ export type IFilter = {
 export default function Orders() {
   const [exportModal, setExportModal] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
-
   const [selectedData, setSelectedData] = useState<UserTableType[]>([]);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const dotsPopupRef = useRef(null);
 
   const [filters, setFilters] = useState<IFilter>({
     type: "",
@@ -89,21 +88,23 @@ export default function Orders() {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery);
 
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popper" : undefined;
-
-  useClickAway(dotsPopupRef, () => {
-    setAnchorEl(null);
-  });
-
+  const formatedDate = formatDayJs(filters.date);
+  const [orderData, setOrderData] = usePaginatedData(
+    orderService.getAllOrderShipments,
+    {
+      initialPage: 1,
+      initialPageSize: 10,
+      filters: {
+        status: filters.status,
+        type: filters.type,
+        created_at: formatedDate,
+        search: debouncedSearchQuery,
+      },
+      dataName: "orders",
+    }
+  );
   const handleTableSelectionChange = (newSelection: UserTableType[]) => {
     setSelectedData(newSelection);
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.stopPropagation(); // Prevents bubbling
-    setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
   function openExportModal() {
@@ -125,86 +126,10 @@ export default function Orders() {
       field: "Action",
       flex: 0.5,
       renderCell: ({ row }) => {
-        return (
-          <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
-            <button
-              aria-describedby={id}
-              type="button"
-              onClick={(e) => handleClick(e)}
-              className="cursor-pointer bg-transparent border-none p-0 m-0"
-              style={{ lineHeight: 0 }}
-            >
-              <BsThreeDots size={16} />
-            </button>
-            <Popper
-              ref={dotsPopupRef}
-              className="p-3 text-sm z-10 flex gap-x-4 items-center rounded-lg border border-primaryBorder bg-white"
-              id={id}
-              open={open}
-              anchorEl={anchorEl}
-            >
-              <Link
-                className="text-xs text-[#C38D00] hover:underline"
-                to={`/orders/order/${row.id}`}
-                state={
-                  row.status === "Processed" ? { isProcessed: true } : null
-                }
-              >
-                View
-              </Link>
-              {row.status === "Pending" && (
-                <>
-                  <button className="text-xs p-1 px-1.5 rounded-lg bg-[#E5FFE5] text-[#008000] hover:underline">
-                    Process
-                  </button>
-                  <button className="text-xs p-1 px-1.5 rounded-lg bg-[#FFB8B8] text-[#FF0000] hover:underline">
-                    Cancel
-                  </button>
-                </>
-              )}
-              {row.status === "Returned" && (
-                <button className="text-xs p-1 px-1.5 rounded-lg bg-[#FFB8B8] text-[#FF0000] hover:underline">
-                  Cancel
-                </button>
-              )}
-            </Popper>
-          </div>
-        );
+        return <OrderActionCellComponent row={row} />;
       },
     },
   ];
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      const response = await orderService.getAllOrderShipments();
-      console.log("Orders:", response.data.data);
-      // setRows(response.data.data);
-    };
-    fetchOrders();
-  }, []);
-
-  // useEffect(() => {
-  //   const normalizedQuery = debouncedSearchQuery.toLowerCase();
-
-  //   const filtered = allRows.filter((row) => {
-
-  //     // Search filter (e.g., match against name or details)
-  //     const searchMatch =
-  //       row.name.toLowerCase().includes(normalizedQuery) ||
-  //       row.details.toLowerCase().includes(normalizedQuery);
-
-  //     // Custom filters
-  //     const categoryMatch = filters.category ? row.category === filters.category : true;
-  //     const statusMatch = filters.status ? row.status === filters.status : true;
-  //     const dateMatch = filters.date
-  //       ? row.date.startsWith(filters.date.toISOString().slice(0, 10))
-  //       : true;
-
-  //     // Combine
-  //     return dateMatch && searchMatch && categoryMatch && statusMatch;
-  //   });
-
-  // }, [filters, debouncedSearchQuery]);
 
   return (
     <div className="w-full h-full bg-white overflow-y-auto flex flex-col custom-scrollbar py-20">
@@ -335,7 +260,6 @@ export default function Orders() {
               showCheckbox={true}
               rows={rows()}
               onSelect={handleTableSelectionChange}
-              paginationActive={true}
               rowHeight={60}
               pageSize={10}
             />
@@ -345,3 +269,64 @@ export default function Orders() {
     </div>
   );
 }
+
+export const OrderActionCellComponent = ({ row }: { row: any }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const dotsPopupRef = useRef(null);
+  const open = Boolean(anchorEl);
+  const id = open ? `popper-${row.id}` : undefined;
+
+  useClickAway(dotsPopupRef, () => {
+    setAnchorEl(null);
+  });
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  return (
+    <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
+      <button
+        aria-describedby={id}
+        type="button"
+        onClick={(e) => handleClick(e)}
+        className="cursor-pointer bg-transparent border-none p-0 m-0"
+        style={{ lineHeight: 0 }}
+      >
+        <BsThreeDots size={16} />
+      </button>
+      <Popper
+        ref={dotsPopupRef}
+        className="p-3 text-sm z-10 flex gap-x-4 items-center rounded-lg border border-primaryBorder bg-white"
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+      >
+        <Link
+          className="text-xs text-[#C38D00] hover:underline"
+          to={`/orders/order/${row.id}`}
+          state={row.status === "Processed" ? { isProcessed: true } : null}
+        >
+          View
+        </Link>
+        {row.status === "Pending" && (
+          <>
+            <button className="text-xs p-1 px-1.5 rounded-lg bg-[#E5FFE5] text-[#008000] hover:underline">
+              Process
+            </button>
+            <button className="text-xs p-1 px-1.5 rounded-lg bg-[#FFB8B8] text-[#FF0000] hover:underline">
+              Cancel
+            </button>
+          </>
+        )}
+        {row.status === "Returned" && (
+          <button className="text-xs p-1 px-1.5 rounded-lg bg-[#FFB8B8] text-[#FF0000] hover:underline">
+            Cancel
+          </button>
+        )}
+      </Popper>
+    </div>
+  );
+};

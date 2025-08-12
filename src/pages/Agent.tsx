@@ -3,7 +3,7 @@ import DashboardSearchBar from "../components/DashboardSearchBar";
 import Profile from "../assets/sign-in-image.png";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import { PiPencilSimpleBold } from "react-icons/pi";
-import MuiTableComponent from "../components/TableComponent";
+import MuiTableComponent from "../components/table/TableComponent";
 import { GridColDef } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 import { useRef, useState } from "react";

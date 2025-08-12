@@ -1,16 +1,20 @@
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DashboardSearchBar from "../components/DashboardSearchBar";
-import { CiSearch } from "react-icons/ci";
-import MuiTableComponent from "../components/TableComponent";
+import MuiTableComponent from "../components/table/TableComponent";
 import { FaPlus } from "react-icons/fa6";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { TbAward } from "react-icons/tb";
 import { generateRandomNumber } from "../helper/helperFunctions";
-import { HiSortDescending } from "react-icons/hi";
 import AddAgentModal from "../components/modals/addAgent-modal";
 import InspectionModal from "../components/modals/inspection-modal";
 import { TableSearchInput } from "../components/common/TableSearchInput";
+import { StatusSelect } from "../components/common/statusSelect";
+import { useDebounce } from "../hooks/useDebounce";
+import UserService from "../api/services/userMgt.service";
+import InspectionService from "../api/services/inspection.service";
+import { usePaginatedData } from "../hooks/usePaginatedData";
+import { AgentColumns, InspectionColumns, RequestColumns } from "../components/table/columns";
 
 const rows = (): any[] => {
   const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
@@ -49,8 +53,14 @@ export default function FieldAgents() {
   const { pathname, state } = location;
   const locationAgentType: string = state?.fieldAgent;
   const [newAgentModal, setNewAgentModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearchQuery = searchQuery; // useDebounce(searchQuery);
+  const [searchQuery, setSearchQuery] = useState({
+    agent: "",
+    request: "",
+    inspection: "",
+  });
+  const debouncedAgentSearchQuery = useDebounce(searchQuery.agent);
+  const debouncedRequestSearchQuery = useDebounce(searchQuery.request);
+  const debouncedInspectionSearchQuery = useDebounce(searchQuery.inspection);
   const [agentType, setAgentType] = useState(locationAgentType || "agent");
   const [inspectionModal, setInspectionModal] = useState(false);
   const [currentAgent, setCurrentAgent] = useState({
@@ -60,6 +70,15 @@ export default function FieldAgents() {
     phone: "",
     status: "",
     verifiedListings: 0,
+  });
+  const [filters, setFilters] = useState({
+    agent: "",
+    request: "",
+    inspection: "",
+  });
+  const [formattedData, setFormattedData] = useState({
+    inspections: [] as Product[],
+    requests: [] as Product[],
   });
 
   function openNewAgentModal() {
@@ -78,197 +97,59 @@ export default function FieldAgents() {
     console.log("Row clicked:", params.row);
     navigate(`/agents/agent/:${params.row.id}`);
   };
-  const columns: GridColDef[] = [
-    { field: "id", headerName: "Agent ID", flex: 0.4, sortable: false },
-    {
-      field: "name",
-      headerName: "Customer name",
-      flex: 1,
-      sortable: false,
-    },
-    { field: "email", headerName: "Email", flex: 1, sortable: false },
-    { field: "phone", headerName: "Phone", flex: 1, sortable: false },
-    {
-      field: "status",
-      headerName: "Status",
-      renderCell: ({ value }) => {
-        return (
-          <span
-            className={`${
-              value === "Active" ? "text-[#0C560B]" : "text-[#DC1313]"
-            }`}
-          >
-            {value}
-          </span>
-        );
-      },
-      flex: 0.5,
-      sortable: false,
-    },
-    {
-      field: "verifiedListings",
-      headerName: "Verified Listings",
-      flex: 0.5,
-      sortable: false,
-      renderCell: () => {
-        return (
-          <div className="h-full w-full relative flex justify-center items-center gap-x-0.5">
-            <TbAward size={18} className="flex-shrink-0" />
-            <span className="text-xs text-defaultOrange">10</span>
-          </div>
-        );
-      },
-    },
-  ];
 
-  const columns2: GridColDef[] = [
-    {
-      field: "product",
-      headerName: "Product",
-      flex: 1,
-      sortable: false,
-    },
-    { field: "category", headerName: "Category", flex: 0.5, sortable: false },
-    { field: "price", headerName: "Price(₦)", flex: 0.7 },
-    { field: "stock", headerName: "Stock", flex: 0.5, type: "number" },
-    {
-      field: "Action",
-      headerName: "Action",
-      renderCell: ({ row }) => {
-        return (
-          <div className="h-full w-full relative flex justify-center items-center gap-x-4">
-            <Link
-              to={`/admin/agents/request/${row.id}`}
-              state={{ fieldAgent: true }}
-              className="text-sm text-[#C38D00] hover:underline"
-            >
-              View
-            </Link>
-            <span className="text-sm text-green-600">Approve</span>
-            <span className="text-sm text-red-500">Reject</span>
-          </div>
-        );
-      },
-      flex: 0.7,
-      sortable: false,
-    },
-  ];
+  const [agentData, setAgentData] = usePaginatedData(UserService.getAllAgents, {
+    initialPage: 1,
+    initialPageSize: 10,
+    filters: { status: filters.agent, search: debouncedAgentSearchQuery },
+    dataName: "field Agents"
+  });
 
-  const columns3: GridColDef[] = [
+  const [requestData, setRequestData] = usePaginatedData(
+    InspectionService.getAllInspections, 
     {
-      field: "product",
-      headerName: "Product",
-      flex: 1,
-      sortable: false,
-    },
-    { field: "category", headerName: "Category", flex: 1, sortable: false },
-    { field: "price", headerName: "Price(₦)", flex: 1 },
-    { field: "stock", headerName: "Stock", flex: 0.5, type: "number" },
-    {
-      field: "Action",
-      headerName: "Action",
-      renderCell: ({ row }) => {
-        return (
-          <div className="h-full w-full relative flex justify-center items-center gap-x-4">
-            <button
-              onClick={() => openInspectionModal(row.id)}
-              className="text-sm text-[#C38D00] hover:underline"
-            >
-              View
-            </button>
-            <span className="text-sm text-green-800">Approve</span>
-            <span className="text-sm text-red-500">Reject</span>
-          </div>
-        );
+      initialPage: 1,
+      initialPageSize: 10,
+      filters: {
+        category: filters.request,
+        search: debouncedRequestSearchQuery,
       },
-      flex: 1,
-      sortable: false,
-    },
-  ];
+        dataName: "inspection requests"
+    }
+  );
+
+  const [inspectionData, setInspectionData] = usePaginatedData(
+    InspectionService.getAllInspections,
+    {
+      initialPage: 1,
+      initialPageSize: 10,
+      filters: {
+        category: filters.request,
+        search: debouncedInspectionSearchQuery,
+      },
+        dataName: "inspections"
+    }
+  );
+
+
+  // reformats inspection data on data change
+  useEffect(() => {
+    const formattedInspectionData: Product[] = inspectionData.rows.map((item) => (
+      (item as Inspection).product
+    ));
+    setFormattedData((prev) => ({ ...prev, inspections: formattedInspectionData }));
+  }, [inspectionData]);
+
+    // reformats request data on data change
+  useEffect(() => {
+    const formattedRequestData: Product[] = requestData.rows.map((item) => (
+      (item as Inspection).product,
+    ));
+    setFormattedData((prev) => ({ ...prev, requests: formattedRequestData }));
+  }, [requestData]);
+
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-7 bg-[#F5F5F5]">
-      {/* {newAgentModal ? (
-        <div className="w-screen h-screen flex justify-center items-center fixed top-0 left-0 z-30 bg-black/50 backdrop-blur-sm">
-          <div
-            ref={newAgentModalRef}
-            className="md:w-[50%] h-[90%] rounded-[24px] flex flex-col p-8 bg-white"
-          >
-            <h2 className="text-2xl font-bold">Add New Agent</h2>
-            <div className="w-full flex flex-col flex-1 gap-y-3.5 mt-2 overflow-y-auto custom-scrollbar-low-opacity">
-              <div className="flex flex-col gap-y-2 text-sm">
-                <label className="">Full Name:</label>
-                <input
-                  type="text"
-                  className="w-full p-3 rounded-lg border border-primaryBorder outline-none"
-                  placeholder="Type"
-                />
-              </div>
-              <div className="flex flex-col gap-y-2 text-sm">
-                <label className="">Email:</label>
-                <input
-                  type="email"
-                  className="w-full p-3 rounded-lg border border-primaryBorder outline-none"
-                  placeholder="Type"
-                />
-              </div>
-              <div className="flex flex-col gap-y-2 text-sm">
-                <label className="">Passowrd:</label>
-                <input
-                  type="password"
-                  className="w-full p-3 rounded-lg border border-primaryBorder outline-none"
-                  placeholder="Type"
-                />
-              </div>
-              <div className="flex flex-col gap-y-2 text-sm">
-                <label className="">Confirm Password:</label>
-                <input
-                  type="password"
-                  className="w-full p-3 rounded-lg border border-primaryBorder outline-none"
-                  placeholder="Type"
-                />
-              </div>
-              <div className="flex flex-col gap-y-2 text-sm">
-                <label className="">Phone Number:</label>
-                <input
-                  type="text"
-                  className="w-full p-3 rounded-lg border border-primaryBorder outline-none"
-                  placeholder="Type"
-                />
-              </div>
-              <div className="flex flex-col">
-                <h6 className="text-sm">Identification Upload:</h6>
-                <div className="w-full grid grid-cols-2 gap-x-4 mt-2">
-                  <div className="w-full flex flex-col gap-y-2">
-                    <p className="text-sm text-[#A3A3B3]">Upload Front</p>
-                    <button className="w-full py-3.5 flex justify-center items-center gap-x-3 rounded-lg bg-[#F4F1F3] border border-primaryBorder border-dashed">
-                      <IoCloudUploadOutline size={24} color="#e65800" />
-                      <span className="text-sm">Upload File</span>
-                    </button>
-                  </div>
-                  <div className="w-full flex flex-col gap-y-2">
-                    <p className="text-sm text-[#A3A3B3]">Upload Back</p>
-                    <button className="w-full py-3.5 flex justify-center items-center gap-x-3 rounded-lg bg-[#F4F1F3] border border-primaryBorder border-dashed">
-                      <IoCloudUploadOutline size={24} color="#e65800" />
-                      <span className="text-sm">Upload File</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-5 flex items-center justify-end gap-x-3 text-sm">
-              <button
-                onClick={closeNewAgentModal}
-                className="rounded-lg hover:underline"
-              >
-                Cancel
-              </button>
-              <button className="px-5 py-3 rounded-lg text-white bg-defaultOrange">
-                Add Agent
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null} */}
       <AddAgentModal
         newAgentModal={newAgentModal}
         setNewAgentModal={setNewAgentModal}
@@ -284,7 +165,7 @@ export default function FieldAgents() {
         <DashboardSearchBar />
       </div>
 
-      <main className=" px-5 md:px-10 w-full mt-4 flex flex-col flex-1">
+      <main className=" px-5 md:px-10 w-full mt-20 flex flex-col flex-1">
         <section
           id="agents-tab"
           className="flex flex-wrap-reverse gap-y-3 justify-between items-center mt-1"
@@ -300,7 +181,7 @@ export default function FieldAgents() {
                 agentType !== "agent" ? setAgentType("agent") : null
               }
             >
-              Agents <span className="text-xs text-defaultOrange">10</span>
+              Agents <span className="text-xs text-defaultOrange">{agentData.totalRowCount}</span>
             </button>
             <button
               className={`${
@@ -312,7 +193,7 @@ export default function FieldAgents() {
                 agentType !== "request" ? setAgentType("request") : null
               }
             >
-              Requests <span className="text-xs text-defaultOrange">23</span>
+              Requests <span className="text-xs text-defaultOrange">{requestData.totalRowCount}</span>
             </button>
 
             <button
@@ -325,7 +206,7 @@ export default function FieldAgents() {
                 agentType !== "inspection" ? setAgentType("inspection") : null
               }
             >
-              Inspection <span className="text-xs text-defaultOrange">10</span>
+              Inspection <span className="text-xs text-defaultOrange">{inspectionData.totalRowCount}</span>
             </button>
           </div>
 
@@ -342,34 +223,25 @@ export default function FieldAgents() {
         {agentType === "agent" ? (
           <>
             <div className="flex flex-wrap gap-2 justify-between items-end mt-3 w-full">
-              <div className="flex  flex-wrap gap-x-5 gap-y-3 items-center">
-                <div className="flex flex-col gap-y-1">
-                  <div className="px-2.5 relative flex items-center gap-x-1 rounded-lg border border-primaryBorder bg-white">
-                    <HiSortDescending />
-                    <select
-                      id="selectSort"
-                      // value={selects.status}
-                      name="status"
-                      // onChange={handleSelectChange}
-                      className="text-sm outline-none h-full py-2.5"
-                    >
-                      <option value="">Sort by status</option>
-                      <option value="published">Published</option>
-                      <option value="pending">Pending</option>
-                      <option value="canceled">Canceled</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+              <StatusSelect
+                options={[
+                  { label: "All", value: "" },
+                  { label: "Active", value: "active" },
+                  { label: "Inactive", value: "inactive" },
+                ]}
+                onChange={(value) => {
+                  setFilters((prev) => ({ ...prev, agent: value }));
+                }}
+                value={filters.agent}
+              />
 
-              <div className="flex gap-x-2 px-3 basis-[25%] rounded-lg border border-primaryBorder">
-                <CiSearch className="h-fit w-fit my-auto" size={24} />
-                <input
-                  className="flex-1 py-2.5 outline-none border-none text-sm bg-transparent"
-                  placeholder="Search"
-                  type="text"
-                />
-              </div>
+              <TableSearchInput
+                searchQuery={searchQuery.agent}
+                setSearchQuery={(val) =>
+                  setSearchQuery((prev) => ({ ...prev, agent: val }))
+                }
+                placeholder="Search agents"
+              />
             </div>
 
             <section
@@ -379,12 +251,23 @@ export default function FieldAgents() {
               <div className="min-w-[900px]">
                 <MuiTableComponent
                   showCheckbox={false}
-                  columns={columns}
+                  columns={AgentColumns}
                   onRowClick={handleRowClick}
-                  rows={rows()}
-                  paginationActive={true}
+                  rows={agentData.rows || rows()}
+                  loading={agentData.loading}
                   rowHeight={60}
-                  pageSize={10}
+                  currentPage={agentData.pagination.page}
+                  onPageChange={(model) =>
+                    setAgentData((prev) => ({
+                      ...prev,
+                      pagination: {
+                        page: model.page,
+                        pageSize: model.pageSize,
+                      },
+                    }))
+                  }
+                  pageSize={agentData.pagination.pageSize}
+                  totalRowCount={agentData.totalRowCount}
                 />
               </div>
             </section>
@@ -402,9 +285,11 @@ export default function FieldAgents() {
               </div>
 
               <TableSearchInput
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                placeholder="Search orders"
+                searchQuery={searchQuery.request}
+                setSearchQuery={(val) =>
+                  setSearchQuery((prev) => ({ ...prev, request: val }))
+                }
+                placeholder="Search requests"
               />
             </div>
             <section
@@ -413,11 +298,22 @@ export default function FieldAgents() {
             >
               <div className="min-w-[900px]">
                 <MuiTableComponent
-                  columns={columns2}
-                  rows={rows2()}
-                  paginationActive={true}
+                  columns={RequestColumns}
+                  rows={formattedData.requests || rows2()}
                   rowHeight={60}
-                  pageSize={10}
+                  currentPage={requestData.pagination.page}
+                  onPageChange={(model) =>
+                    setRequestData((prev) => ({
+                      ...prev,
+                      pagination: {
+                        page: model.page,
+                        pageSize: model.pageSize,
+                      },
+                    }))
+                  }
+                  loading={requestData.loading}
+                  totalRowCount={requestData.totalRowCount}
+                  pageSize={requestData.pagination.pageSize}
                 />
               </div>
             </section>
@@ -434,14 +330,13 @@ export default function FieldAgents() {
                 </div>
               </div>
 
-              <div className="flex gap-x-2 px-3 basis-[25%] rounded-lg border bg-white border-primaryBorder">
-                <CiSearch className="h-fit w-fit my-auto" size={24} />
-                <input
-                  className="flex-1 py-2.5 outline-none border-none text-sm bg-transparent"
-                  placeholder="Search"
-                  type="text"
-                />
-              </div>
+              <TableSearchInput
+                searchQuery={searchQuery.inspection}
+                setSearchQuery={(val) =>
+                  setSearchQuery((prev) => ({ ...prev, inspection: val }))
+                }
+                placeholder="Search inspectionss"
+              />
             </div>
             <section
               id="table"
@@ -449,11 +344,23 @@ export default function FieldAgents() {
             >
               <div className="min-w-[900px]">
                 <MuiTableComponent
-                  columns={columns3}
-                  rows={rows2()}
-                  paginationActive={true}
+                  columns={InspectionColumns}
+                  onRowClick={(params) => openInspectionModal(params.row.id)}
+                  rows={formattedData.inspections || rows2()}
+                  currentPage={inspectionData.pagination.page}
+                  onPageChange={(model) =>
+                    setInspectionData((prev) => ({
+                      ...prev,
+                      pagination: {
+                        page: model.page,
+                        pageSize: model.pageSize,
+                      },
+                    }))
+                  }
+                  totalRowCount={inspectionData.totalRowCount}
+                  loading={inspectionData.loading}
                   rowHeight={60}
-                  pageSize={10}
+                  pageSize={inspectionData.pagination.pageSize}
                 />
               </div>
             </section>

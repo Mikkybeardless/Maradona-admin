@@ -55,12 +55,15 @@ type GenProduct = Product & Auction & (House | Car | Land);
 type ProductUpdate = Partial<GenProduct>;
 
 const auctionService = {
-  getAllAuctions: () => apiClient.get("/admin/auctions"),
+  getAllAuctions: (query?: string) => apiClient.get(`/admin/auctions?${query}`),
 
   getAuction: (id: number) => apiClient.get(`/admin/auctions/${id}`),
-  addAuction: (data: GenProduct) => apiClient.post("/admin/auctions", data),
+  addAuction: (data: FormData) =>
+    apiClient.post("/admin/auctions", data, {
+      headers: { "Content-Type": "multipart/form-data" }, // set the Content-Type for multipart
+    }),
   deleteAuction: (id: number) => apiClient.delete(`/admin/auctions/${id}`),
-  updateAuction: (id: number, data: ProductUpdate) =>
+  updateAuction: (id: number, data: ProductUpdate | FormData) =>
     apiClient.post(`/admin/auctions/${id}/edit`, data),
   auctionSearch: (query: string) =>
     apiClient.get(`/admin/auctions/search?query=${query}`),

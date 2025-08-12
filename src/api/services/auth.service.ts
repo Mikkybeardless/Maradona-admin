@@ -27,9 +27,9 @@ const authService = {
   login: (loginData: LoginData) => apiClient.post("/login", loginData),
   register: (registerData: RegisterData) =>
     apiClient.post("/register", registerData),
-  logout: () => apiClient.get("/logout"),
+  logout: () => apiClient.post("/logout"),
   reqPasswordReset: (reqPasswordData: ReqPasswordData) =>
-    apiClient.post("/forget_request", reqPasswordData),
+    apiClient.post("/forgot-password", reqPasswordData),
   doPassReset: (data: DoPassReset) => apiClient.post("/reset-password", data),
 };
 

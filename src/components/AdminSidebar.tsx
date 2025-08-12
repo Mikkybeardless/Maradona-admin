@@ -20,6 +20,7 @@ import { GiBlockHouse } from "react-icons/gi";
 import { FaHandHoldingUsd } from "react-icons/fa";
 import authService from "../api/services/auth.service";
 import { toast } from "react-toastify";
+import Cookies from "js-cookie";
 
 export default function AdminSidebar() {
   const { windowWidth, isMobile } = useWindowResizer();
@@ -88,7 +89,8 @@ export default function AdminSidebar() {
         toast.success("Logout successful");
         setTimeout(() => {
           dispatch(logout());
-        }, 3000);
+          Cookies.remove("token");
+        }, 500);
       }
     } catch (error) {
       toast.error("Logout failed. Please try again.");
@@ -130,7 +132,7 @@ export default function AdminSidebar() {
       <aside
         className={`${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed md:fixed h-full z-30 w-64 flex flex-col px-4 py-5 gap-y-2 border-r border-r-[#E6E6E6] bg-[#E6E6E6] transition-transform duration-300 ease-in-out`}
+        } fixed md:fixed h-full z-30 w-64 overflow-y-auto flex flex-col px-4 py-5 gap-y-2 border-r border-r-[#E6E6E6] bg-[#E6E6E6] transition-transform duration-300 ease-in-out`}
       >
         <div className="flex justify-between items-center">
           <img className="h-[45px] w-fit" src={logo} alt="logo" />

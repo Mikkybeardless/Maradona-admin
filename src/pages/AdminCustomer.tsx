@@ -71,7 +71,7 @@ export default function AdminCustomer({ customer }: { customer: string }) {
         <DashboardSearchBar />
       </div>
 
-      <main className=" px-4 md:px-10 w-full mt-4  flex flex-col flex-1">
+      <main className=" px-2 md:px-10 w-full mt-4  flex flex-col flex-1">
         <div className="flex gap-x-4 mb-6 items-center">
           <Link to="/" className="text-sm opacity-60">
             Dashboard

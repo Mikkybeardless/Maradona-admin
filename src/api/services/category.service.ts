@@ -9,7 +9,8 @@ interface Category {
 type CategoryUpdate = Partial<Category>;
 
 const categoryService = {
-  getCategories: () => apiClient.get("/admin/categories"),
+  getAllCategories: (query?: string) =>
+    apiClient.get(`/admin/categories?${query}`),
   addCategory: (data: Category) => apiClient.post("/admin/categories", data),
   updateCategory: (id: number, data: CategoryUpdate) =>
     apiClient.put(`/admin/categories/${id}/update`, data),

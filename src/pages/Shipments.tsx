@@ -1,8 +1,8 @@
-import MuiTableComponent from "../components/TableComponent";
+import MuiTableComponent from "../components/table/TableComponent";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { GridColDef } from "@mui/x-data-grid";
 import { FaArrowLeftLong, FaPlus } from "react-icons/fa6";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { DateSelect } from "../components/common/dateSelect";
 import { generateRandomNumber } from "../helper/helperFunctions";
@@ -38,7 +38,7 @@ export default function Shipments() {
   const [shipmentModal, setShipmentModal] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearchQuery = useDebounce(searchQuery);
+
   const [actFilters, setActFilters] = useState<IFilter>({
     status: "",
     date: null,
@@ -127,6 +127,12 @@ export default function Shipments() {
     { field: "edd", headerName: "E.D.D", flex: 0.5, type: "date" },
     { field: "address", headerName: "Delivery Address", flex: 1 },
   ];
+
+  useEffect(() => {
+    setTimeout(() => {
+      setShipment((prev) => ({ ...prev, active: false }));
+    }, 2000);
+  }, []);
 
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-7 bg-[#F5F5F5]">
@@ -378,7 +384,6 @@ export default function Shipments() {
                     columns={columns}
                     rows={rows()}
                     showCheckbox={false}
-                    paginationActive={true}
                     rowHeight={60}
                     pageSize={10}
                   />

@@ -1,5 +1,5 @@
 import { CiSearch } from "react-icons/ci";
-import MuiTableComponent from "./TableComponent";
+import MuiTableComponent from "./table/TableComponent";
 import LineChartComponent from "./LineChart";
 import { ProgressUI } from "./common/progressUi";
 import { VscCircleFilled } from "react-icons/vsc";

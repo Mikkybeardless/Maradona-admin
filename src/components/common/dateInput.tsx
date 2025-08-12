@@ -19,7 +19,7 @@ export default function CustomDateInput({
 }: CustomDateInputProps) {
   return (
     <>
-      {label && <label className="font-medium">{label}</label>}
+      {label && <label className="font-medium text-sm">{label}</label>}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <DatePicker
           value={value}
@@ -48,6 +48,9 @@ export default function CustomDateInput({
                 },
                 "& .MuiOutlinedInput-notchedOutline": {
                   border: "none",
+                },
+                "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  border: "2px solid #fdba74", // Tailwind amber-400
                 },
               },
               className: "rounded-lg border border-[#B0B0B0] bg-white",

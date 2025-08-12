@@ -3,11 +3,21 @@ import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight, FaPlus } from "react-icons/fa6";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileUpload } from "../components/FileUpload";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import StateCitySelector2 from "../components/common/stateCitySelector";
 import { CustomCheckbox } from "../components/common/customCheckInput";
+import productService from "../api/services/product.service";
+import { toast } from "react-toastify";
+import { Spinner } from "../components/common/spinner";
+import tagService from "../api/services/tag.service";
+import { usePaginatedData } from "../hooks/usePaginatedData";
+import { SearchableSelect } from "../components/common/SearchAndFilterSelect";
+import { useDebounce } from "../hooks/useDebounce";
+import { getProductShape } from "../helper/ReShapeData";
+import { appendArrayField } from "../helper/appendArrayField";
+import categoryService from "../api/services/category.service";
 
 type FileUpload = {
   images: File[];
@@ -15,158 +25,86 @@ type FileUpload = {
   videos: File[];
 };
 export default function AddProducts() {
-  const location = useLocation();
-  const { pathname } = location;
+  // const location = useLocation();
+  // const { pathname } = location;
   const navigate = useNavigate();
-  const [productDetails, setProductDetails] = useState<Product>({
-    productType: "land",
-    productName: "",
+  const [isLoading, setIsLoading] = useState(false);
+  const [tagOptions, setTagOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [categoryOptions, setCategoryOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+  const [searchQuery, setSearchQuery] = useState({
+    tags: "",
+    categories: "",
+  });
+  const debouncedTagQuery = useDebounce(searchQuery.tags, 300);
+  const debouncedCategoryQuery = useDebounce(searchQuery.categories, 300);
+  const initialProductDetails: ProductDetails = {
+    type: "LAND",
+    name: "",
+    category_id: "2",
     description: "",
-    productPrice: 0,
-    salePrice: 0,
+    price: 0,
+    sale_price: 0,
+    house_type: "",
     address: "",
     city: "",
-    houseType: "",
-    continueSelling: false,
+    // weight: 0,
+    continue_selling: false,
     state: "",
-    furnishedStatus: "furnished",
-    propertySize: 0,
-    weightUnit: "kg",
-    skuNumber: "",
+    house_furnished: "furnished",
+    weight_unit: "kg",
     media: [],
     documents: [],
     status: "draft",
-    tags: "",
-    inventory: "",
-    weight: 0,
-    bodyType: "SUV",
-    engineType: "",
+    tags: [],
+    sku: "",
+    inventory: 0,
+    body_type: "SUV",
+    engine_type: "",
     accessibility: "main-road",
     fencing: "fenced",
     topography: "dry-land",
-    landType: "residential",
-    duration: "days",
-    auctionDuration: 0,
+    land_type: "residential",
+    // duration: "days",
+    auction_duration: 0,
     transmission: "",
     condition: "new",
-    houseCondition: "newly-built",
-    auctionType: "auctioned",
-    landSize: 0,
-    gearType: "manual",
+    house_condition: "newly-built",
+    house_size: 0,
+    house_beds: 0,
+    auction_type: "auctioned",
+    land_size: 0,
+    gear_type: "manual",
     mileage: "",
-  });
-
-  const [media, setMedia] = useState<FileUpload>({
-    images: [],
-    documents: [],
-    videos: [],
-  });
-  const [documents, setDocuments] = useState<FileUpload>({
-    images: [],
-    documents: [],
-    videos: [],
-  });
+  };
+  const [productDetails, setProductDetails] = useState<ProductDetails>(
+    initialProductDetails
+  );
 
   const [checkedDoc, setCheckedDoc] = useState({
     id: "",
     isChecked: false,
   });
   const [checkedCar, setCheckedCar] = useState({
-    bodyType: {
+    body_type: {
       id: "",
       isChecked: false,
     },
-    gearType: { id: "", isChecked: false },
+    gear_type: { id: "", isChecked: false },
   });
   const [checkedLand, setCheckedLand] = useState({
     accessibility: { id: "", isChecked: false },
     fencing: { id: "", isChecked: false },
     topography: { id: "", isChecked: false },
-    landType: { id: "", isChecked: false },
+    land_type: { id: "", isChecked: false },
   });
   const [checkedHouse, setCheckedHouse] = useState({
     accessibility: { id: "", isChecked: false },
-    houseCondition: { id: "", isChecked: false },
+    house_condition: { id: "", isChecked: false },
   });
-
-  // media change
-  const handleMediaChange = (newMedia: File[]) => {
-    const images = newMedia.filter((file) => file.type.startsWith("image/"));
-    const documents = newMedia.filter((file) =>
-      file.type.startsWith("application/")
-    );
-    const videos = newMedia.filter((file) => file.type.startsWith("video/"));
-    setMedia((prevMedia) => ({
-      ...prevMedia,
-      images: [...images],
-      documents: [...documents],
-      videos: [...videos],
-    }));
-    setProductDetails((prev) => ({
-      ...prev,
-      media: [...newMedia],
-    }));
-    // console.log("Updated Media:", {
-    //   images: [...media.images, ...images],
-    //   documents: [...media.documents, ...documents],
-    //   videos: [...media.videos, ...videos],
-    // });
-  };
-
-  // document change
-  const handleDocumentChange = (newdocument: File[]) => {
-    const images = newdocument.filter((file) => file.type.startsWith("image/"));
-    const docs = newdocument.filter((file) =>
-      file.type.startsWith("application/")
-    );
-    const videos = newdocument.filter((file) => file.type.startsWith("video/"));
-    setDocuments((prevDocument) => ({
-      ...prevDocument,
-      images: [...images],
-      documents: [...docs],
-      videos: [...videos],
-    }));
-    setProductDetails((prev) => ({
-      ...prev,
-      documents: [...newdocument],
-    }));
-    // console.log("Updated document:", {
-    //   images: [...documents.images, ...images],
-    //   documents: [...documents.documents, ...docs],
-    //   videos: [...documents.videos, ...videos],
-    // });
-  };
-  const handleSubmit = () => {
-    // e.preventDefault();
-
-    const { images, documents, videos } = media;
-    // Here you would typically send the Media to your backend
-
-    console.log("Product Details:", productDetails);
-
-    // Example of creating FormData for submission
-    const formData = new FormData();
-
-    // Add all image Media
-    images.forEach((file, index) => {
-      formData.append(`images[${index}]`, file);
-    });
-
-    // Add all document Media
-    documents.forEach((file, index) => {
-      formData.append(`documents[${index}]`, file);
-    });
-
-    // Add all video Media
-    videos.forEach((file, index) => {
-      formData.append(`videos[${index}]`, file);
-    });
-
-    console.log("Form Data:", formData);
-
-    // You would then submit formData to your backend
-    // axios.post('/api/upload', formData)
-  };
 
   const handleCheckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, checked } = e.target;
@@ -261,61 +199,154 @@ export default function AddProducts() {
       ...prev,
       [name]: value,
     }));
-    console.log("Updated product details:", {
-      ...productDetails,
-      [name]: value,
-    });
+  };
+
+  const handleSubmit = async () => {
+    const payLoad = getProductShape(productDetails);
+    console.log("Product Details:", payLoad);
+
+    // Convert to FormData
+    const formData = new FormData();
+
+    for (const [key, value] of Object.entries(payLoad)) {
+      // Global empty check for all fields
+      if (
+        value === null ||
+        value === undefined ||
+        (typeof value === "string" && value.trim() === "") ||
+        (Array.isArray(value) && value.length === 0)
+      ) {
+        toast.error(`The field "${key}" cannot be empty.`);
+        return;
+      }
+
+      // Special handling for array-required fields
+      if (key === "documents") {
+        appendArrayField(formData, key, value as File[], true);
+        continue;
+      }
+      if (key === "media") {
+        appendArrayField(formData, key, value as File[], true);
+        continue;
+      }
+      if (key === "tags") {
+        appendArrayField(formData, key, value as number[], false);
+        continue;
+      }
+
+      // Append the rest
+      if (Array.isArray(value) || typeof value === "object") {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, value as string | Blob);
+      }
+    }
+
+    for (const [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await productService.addProduct(formData);
+
+      if (response.status === 201) {
+        toast.success("Product created successfully!");
+        setProductDetails(initialProductDetails);
+      }
+    } catch (err: any) {
+      toast.error(() => {
+        switch (err.status) {
+          case 500:
+            return `Failed to create product.\nCheck your internet connection`;
+          default:
+            return "An error occurred. Please try again.";
+        }
+      });
+      console.error("Error adding product:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
-    const initialProductDetails: Product = {
-      productType: "land",
-      productName: "",
-      description: "",
-      productPrice: 0,
-      salePrice: 0,
-      address: "",
-      city: "",
-      houseType: "",
-      continueSelling: false,
-      state: "",
-      furnishedStatus: "furnished",
-      propertySize: 0,
-      weightUnit: "kg",
-      skuNumber: "",
-      media: [],
-      documents: [],
-      status: "draft",
-      tags: "",
-      inventory: "",
-      weight: 0,
-      bodyType: "SUV",
-      engineType: "",
-      accessibility: "main-road",
-      fencing: "fenced",
-      topography: "dry-land",
-      landType: "residential",
-      duration: "days",
-      auctionDuration: 0,
-      transmission: "",
-      condition: "new",
-      houseCondition: "newly-built",
-      auctionType: "auctioned",
-      landSize: 0,
-      gearType: "manual",
-      mileage: "",
-    };
     // Reset product details or navigate away
+    setIsLoading(false);
     setProductDetails(initialProductDetails);
     navigate("/admin/products");
   };
+
+  const [tags] = usePaginatedData(tagService.getAllTags, {
+    initialPage: 1,
+    initialPageSize: 20,
+    dataName: "Tags",
+    filters: {
+      search: debouncedTagQuery,
+    },
+  });
+
+  const [categories] = usePaginatedData(categoryService.getAllCategories, {
+    initialPage: 1,
+    initialPageSize: 20,
+    dataName: "Categories",
+    filters: {
+      search: debouncedCategoryQuery,
+    },
+  });
+  const handleSelectionChange = (
+    option: { value: string; label: string },
+    type: "tags" | "categories"
+  ) => {
+    if (type === "tags") {
+      const tag = parseInt(option.value, 10);
+      setProductDetails((prev) => {
+        return {
+          ...prev,
+          tags: (prev.tags || []).includes(tag)
+            ? prev.tags
+            : [...(prev.tags || []), tag],
+        };
+      });
+    } else if (type === "categories") {
+      const id = option.value as Category_id;
+      setProductDetails((prev) => {
+        return {
+          ...prev,
+          category_id: id,
+        };
+      });
+    }
+  };
+
+  useEffect(() => {
+    const options: { value: string; label: string }[] = (
+      tags.rows as ApiTag[]
+    ).map((tag) => ({
+      value: String(tag.id),
+      label: tag.name,
+    }));
+    console.log("Tag options:", options);
+    setTagOptions(options);
+  }, [tags]);
+
+  useEffect(() => {
+    const options: { value: string; label: string }[] = (
+      categories.rows as ApiCategory[]
+    ).map((category) => ({
+      value: String(category.id),
+      label: category.name,
+    }));
+    console.log("Category options:", options);
+    setCategoryOptions(options);
+  }, [categories]);
+
   return (
     <div className="w-full h-full overflow-hidden overflow-y-auto custom-scrollbar pb-10 bg-[#F5F5F5]">
-      <div className="w-full py-5 px-4 md:px-24 border-b bg-white border-b-primaryBorder">
+      <div className="w-full py-5 px-4 md:px-14 border-b bg-white border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
-      <div className="px-4 md:px-24 w-full mt-4 flex flex-col flex-1">
+      <div className="px-4 md:px-14 w-full mt-4 flex flex-col flex-1">
         <div className="flex gap-x-4 items-center">
           <Link to={`/`} className="text-sm opacity-60">
             Dashboard
@@ -342,13 +373,14 @@ export default function AddProducts() {
               onClick={handleSubmit}
               className="px-5 py-3 rounded-lg text-sm bg-defaultOrange hover:bg-defaultOrangeHover text-white"
             >
-              Publish
+              {isLoading ? <Spinner /> : "Publish"}
             </button>
           </div>
         </div>
 
         <main className="w-full flex  flex-col md:flex-row gap-y-5 gap-x-8 mt-8">
-          <div className=" w-full md:w-[70%] flex flex-col gap-y-5 overflow-hidden">
+          {/* left */}
+          <section className=" w-full md:w-[70%] flex flex-col gap-y-5 overflow-hidden">
             <div className="w-full rounded-lg p-5 flex flex-col gap-y-3 bg-white border border-primaryBorder">
               <h4 className="text-lg font-semibold">Product type</h4>
               <div className="w-full flex flex-col  gap-2">
@@ -356,19 +388,37 @@ export default function AddProducts() {
                   Select product type
                 </label>
                 <select
+                  id="productType"
                   onChange={handleInputChange}
-                  name="productType"
+                  name="type"
                   className="p-3 outline-none w-full rounded-lg border border-primaryBorder"
                 >
                   <option disabled value="">
                     Select
                   </option>
-                  <option value="land">Land</option>
-                  <option value="car">Car</option>
-                  <option value="house">House</option>
+                  <option value="LAND">Land</option>
+                  <option value="CAR">Car</option>
+                  <option value="HOUSE">House</option>
                 </select>
               </div>
+              <SearchableSelect
+                name="categories"
+                label="Category"
+                data={categoryOptions}
+                loading={categories.loading}
+                onSearch={(q) =>
+                  setSearchQuery((prev) => ({ ...prev, categories: q }))
+                }
+                placeholder="Choose a category..."
+                onSelectionChange={(option) =>
+                  handleSelectionChange(option, "categories")
+                }
+                // fetchOptions={refetchCategory}
+                initialValue="selected category"
+                isBold
+              />
             </div>
+
             {/* product type */}
 
             <div className="w-full rounded-lg p-5 flex flex-col gap-y-3 bg-white border border-primaryBorder">
@@ -377,8 +427,8 @@ export default function AddProducts() {
                 <h5 className="text-sm mb-2 font-medium">Product name:</h5>
                 <input
                   type="text"
-                  name="productName"
-                  value={productDetails.productName}
+                  name="name"
+                  value={productDetails.name}
                   onChange={handleInputChange}
                   className="p-3 w-full rounded-lg border border-primaryBorder text-sm outline-none"
                   placeholder="Enter name"
@@ -424,14 +474,14 @@ export default function AddProducts() {
                   Product description:
                 </h5>
                 <ReactQuill
-                  onChange={(e) =>
-                    setProductDetails((prev) => {
-                      return {
-                        ...prev,
-                        description: e.valueOf() as string,
-                      };
-                    })
-                  }
+                  onChange={(...args) => {
+                    const editor = args[3];
+                    const text = editor.getText().trim();
+                    setProductDetails((prev) => ({
+                      ...prev,
+                      description: text,
+                    }));
+                  }}
                   theme="snow"
                   className="!rounded-lg"
                 />
@@ -441,9 +491,9 @@ export default function AddProducts() {
                 <h5 className="text-sm mb-2 font-medium">SKU number:</h5>
                 <input
                   type="text"
-                  name="skuNumber"
-                  value={productDetails.skuNumber}
-                  onChange={handleInputChange}
+                  name="sku"
+                  // value={productDetails.sku}
+                  // onChange={handleInputChange}
                   placeholder="######"
                   className="p-3 outline-none w-full rounded-lg border border-primaryBorder"
                 />
@@ -467,7 +517,17 @@ export default function AddProducts() {
                   "video/mp4": [],
                 }}
                 maxSizeMB={20}
-                onFilesChange={handleMediaChange}
+                // onFilesChange={handleMediaChange}
+                files={productDetails.media}
+                setFiles={(newFiles) => {
+                  setProductDetails((prev) => ({
+                    ...prev,
+                    media:
+                      typeof newFiles === "function"
+                        ? newFiles(prev.media)
+                        : newFiles,
+                  }));
+                }}
               />
 
               <button className="flex gap-x-2 ml-auto hover:underline items-center text-[#898989]">
@@ -486,8 +546,8 @@ export default function AddProducts() {
                   <div className="w-full px-3 flex gap-x-2 items-center rounded-lg border border-primaryBorder">
                     <input
                       type="number"
-                      name="productPrice"
-                      value={productDetails.productPrice}
+                      name="price"
+                      value={productDetails.price}
                       onChange={handleInputChange}
                       placeholder="0.00"
                       className="py-3 outline-none w-full"
@@ -500,8 +560,8 @@ export default function AddProducts() {
                   <div className="w-full px-3 flex gap-x-2 items-center rounded-lg border border-primaryBorder">
                     <input
                       type="number"
-                      name="salePrice"
-                      value={productDetails.salePrice}
+                      name="sale_price"
+                      value={productDetails.sale_price}
                       onChange={handleInputChange}
                       placeholder="0.00"
                       className="py-3 outline-none w-full"
@@ -555,9 +615,9 @@ export default function AddProducts() {
                       className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
                       id="auctioned"
                       onChange={(e) =>
-                        handleConditionAuctionTypeChange(e, "auctionType")
+                        handleConditionAuctionTypeChange(e, "auction_type")
                       }
-                      checked={productDetails.auctionType === "auctioned"}
+                      checked={productDetails.auction_type === "auctioned"}
                       type="checkbox"
                     />
                     <label htmlFor="auctioned">Auctioned</label>
@@ -567,9 +627,9 @@ export default function AddProducts() {
                       className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
                       id="non-auctioned"
                       onChange={(e) =>
-                        handleConditionAuctionTypeChange(e, "auctionType")
+                        handleConditionAuctionTypeChange(e, "auction_type")
                       }
-                      checked={productDetails.auctionType === "non-auctioned"}
+                      checked={productDetails.auction_type === "non-auctioned"}
                       type="checkbox"
                     />
                     <label htmlFor="condition2">Non-auctioned</label>
@@ -578,7 +638,7 @@ export default function AddProducts() {
               </div>
             </div>
             {/* product condition */}
-            {productDetails.productType === "land" ? (
+            {productDetails.type === "LAND" ? (
               <div className="w-full rounded-lg p-5 flex flex-col gap-y-3 bg-white border border-primaryBorder">
                 <h4 className="text-sm">Product Document</h4>
 
@@ -607,7 +667,16 @@ export default function AddProducts() {
                               </p>
                             </>
                           }
-                          onFilesChange={handleDocumentChange}
+                          files={productDetails.documents}
+                          setFiles={(newFiles) => {
+                            setProductDetails((prev) => ({
+                              ...prev,
+                              documents:
+                                typeof newFiles === "function"
+                                  ? newFiles(prev.documents)
+                                  : newFiles,
+                            }));
+                          }}
                         />
                       </div>
                       <p className="text-secondaryTextColor">
@@ -647,81 +716,86 @@ export default function AddProducts() {
                   </div>
                 </div>
               </div>
-            ) : productDetails.productType === "car" ? (
-              <>
-                <h4 className="text-lg font-semibold">
-                  Select engine Transmission
-                </h4>
-                <div className="w-full rounded-lg p-5 bg-white border border-primaryBorder">
-                  <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-5">
-                    <div>
-                      <h5 className="text-sm mb-2 font-medium">Gear type</h5>
-                      <div className="flex flex-col gap-2">
-                        <div className="flex gap-x-2 items-center text-sm">
-                          <input
-                            className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
-                            id="manual"
-                            onChange={(e) =>
-                              handleCarCheckChange(e, "gearType")
-                            }
-                            checked={
-                              checkedCar.gearType.id === "manual" &&
-                              checkedCar.gearType.isChecked
-                            }
-                            type="checkbox"
-                          />
-                          <label htmlFor="manual">Manual</label>
-                        </div>
+            ) : (
+              productDetails.type === "CAR" && (
+                <>
+                  <h4 className="text-lg font-semibold">
+                    Select engine Transmission
+                  </h4>
+                  <div className="w-full rounded-lg p-5 bg-white border border-primaryBorder">
+                    <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-5">
+                      <div>
+                        <h5 className="text-sm mb-2 font-medium">Gear type</h5>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex gap-x-2 items-center text-sm">
+                            <input
+                              className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
+                              id="manual"
+                              onChange={(e) =>
+                                handleCarCheckChange(e, "gear_type")
+                              }
+                              checked={
+                                checkedCar.gear_type.id === "manual" &&
+                                checkedCar.gear_type.isChecked
+                              }
+                              type="checkbox"
+                            />
+                            <label htmlFor="manual">Manual</label>
+                          </div>
 
-                        <div className="flex gap-x-2 items-center text-sm">
-                          <input
-                            className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
-                            id="automatic"
-                            onChange={(e) =>
-                              handleCarCheckChange(e, "gearType")
-                            }
-                            checked={
-                              checkedCar.gearType.id === "automatic" &&
-                              checkedCar.gearType.isChecked
-                            }
-                            type="checkbox"
-                          />
-                          <label htmlFor="automatic">Automatic</label>
+                          <div className="flex gap-x-2 items-center text-sm">
+                            <input
+                              className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
+                              id="automatic"
+                              onChange={(e) =>
+                                handleCarCheckChange(e, "gear_type")
+                              }
+                              checked={
+                                checkedCar.gear_type.id === "automatic" &&
+                                checkedCar.gear_type.isChecked
+                              }
+                              type="checkbox"
+                            />
+                            <label htmlFor="automatic">Automatic</label>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div>
-                      <h5 className="text-sm mb-2 font-medium">Engine Type</h5>
-                      <input
-                        type="text"
-                        name="engineType"
-                        value={productDetails.engineType}
-                        onChange={handleInputChange}
-                        className="p-3 w-full rounded-lg border border-primaryBorder text-sm outline-none"
-                        placeholder="2.5L 4-cylinder"
-                      />
-                    </div>
+                      <div>
+                        <h5 className="text-sm mb-2 font-medium">
+                          Engine Type
+                        </h5>
+                        <input
+                          type="text"
+                          name="engine_type"
+                          value={(productDetails as Car).engine_type}
+                          onChange={handleInputChange}
+                          className="p-3 w-full rounded-lg border border-primaryBorder text-sm outline-none"
+                          placeholder="2.5L 4-cylinder"
+                        />
+                      </div>
 
-                    <div>
-                      <h5 className="text-sm mb-2 font-medium">
-                        Mileage (miles)
-                      </h5>
-                      <input
-                        type="text"
-                        name="mileage"
-                        value={productDetails.mileage}
-                        onChange={handleInputChange}
-                        className="p-3 w-full rounded-lg border border-primaryBorder text-sm outline-none"
-                        placeholder="30,000"
-                      />
+                      <div>
+                        <h5 className="text-sm mb-2 font-medium">
+                          Mileage (miles)
+                        </h5>
+                        <input
+                          type="text"
+                          name="mileage"
+                          value={(productDetails as Car).mileage}
+                          onChange={handleInputChange}
+                          className="p-3 w-full rounded-lg border border-primaryBorder text-sm outline-none"
+                          placeholder="30,000"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </>
-            ) : null}
-          </div>
+                </>
+              )
+            )}
+          </section>
 
-          <div className="w-full md:w-[30%] flex flex-col gap-y-5 overflow-hidden">
+          {/* right */}
+          <section className="w-full md:w-[30%] flex flex-col gap-y-5 overflow-hidden">
             <div className="rounded-lg p-5 flex flex-col gap-y-2 bg-white border border-primaryBorder">
               <h5 className="text-sm">Status</h5>
               <select
@@ -730,30 +804,48 @@ export default function AddProducts() {
                 className="p-3 rounded-lg border border-primaryBorder text-sm outline-none"
               >
                 <option value="draft">Draft</option>
-                <option value="publish">Publish</option>
+                <option value="published">Publish</option>
               </select>
             </div>
             {/* status */}
 
             <div className="w-full flex flex-col rounded-lg bg-white border border-primaryBorder">
-              <div className="p-5 flex flex-col gap-y-2 border-b border-b-primaryBorder">
-                <h5 className="text-sm">Tags</h5>
-                <input
-                  type="text"
+              <div className="flex flex-col gap-3">
+                <SearchableSelect
                   name="tags"
-                  value={productDetails.tags}
-                  onChange={handleInputChange}
-                  className="p-3 rounded-lg border border-primaryBorder text-sm outline-none"
-                  placeholder="Type to search"
+                  label="Tags"
+                  data={tagOptions}
+                  loading={tags.loading}
+                  onSearch={(q) =>
+                    setSearchQuery((prev) => ({ ...prev, tags: q }))
+                  }
+                  placeholder="Choose a tag..."
+                  onSelectionChange={(option) =>
+                    handleSelectionChange(option, "tags")
+                  }
+                  // fetchOptions={refetchTag}
+                  initialValue="Select tag"
                 />
+                {/* {productDetails.tags.length > 0 && (
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      Selected tag:{" "}
+                      <strong>{productDetails.tags.join(", ")}</strong>
+                    </p>
+                  </div>
+                )} */}
               </div>
 
               <div className="p-5 flex flex-col gap-y-2 border-b border-b-primaryBorder">
-                <h5 className="text-sm">Inventory</h5>
+                <label htmlFor="inventory" className="text-sm">
+                  Inventory
+                </label>
                 <input
                   type="number"
                   name="inventory"
+                  id="inventory"
                   value={productDetails.inventory}
+                  onChange={handleInputChange}
                   className="p-3 rounded-lg border border-primaryBorder text-sm outline-none"
                 />
                 <div className="flex gap-x-1.5 text-xs">
@@ -761,11 +853,11 @@ export default function AddProducts() {
                     className="w-[18px] h-[18px]"
                     type="checkbox"
                     id="continue-selling"
-                    checked={productDetails.continueSelling}
+                    checked={productDetails.continue_selling}
                     onChange={(e) =>
                       setProductDetails((prev) => ({
                         ...prev,
-                        continueSelling: e.target.checked,
+                        continue_selling: e.target.checked,
                       }))
                     }
                   />
@@ -775,7 +867,7 @@ export default function AddProducts() {
                 </div>
               </div>
 
-              {productDetails.productType === "car" ? (
+              {productDetails.type === "CAR" ? (
                 <div className="w-full flex flex-col gap-y-6">
                   <div className="w-full p-5 flex flex-col gap-y-6 border-b border-b-primaryBorder">
                     <div className="flex flex-col gap-y-2">
@@ -784,8 +876,8 @@ export default function AddProducts() {
                         <input
                           type="number"
                           name="weight"
-                          value={productDetails.weight}
-                          onChange={handleInputChange}
+                          // value={productDetails.weight}
+                          // onChange={handleInputChange}
                           className="outline-none w-full"
                         />
                         <select
@@ -806,64 +898,64 @@ export default function AddProducts() {
                       <CustomCheckbox
                         id="SUV"
                         checked={
-                          checkedCar.bodyType.id === "SUV" &&
-                          checkedCar.bodyType.isChecked
+                          checkedCar.body_type.id === "SUV" &&
+                          checkedCar.body_type.isChecked
                         }
-                        onChange={(e) => handleCarCheckChange(e, "bodyType")}
+                        onChange={(e) => handleCarCheckChange(e, "body_type")}
                         label="SUV"
                       />
 
                       <CustomCheckbox
                         id="Sedan"
                         checked={
-                          checkedCar.bodyType.id === "Sedan" &&
-                          checkedCar.bodyType.isChecked
+                          checkedCar.body_type.id === "Sedan" &&
+                          checkedCar.body_type.isChecked
                         }
-                        onChange={(e) => handleCarCheckChange(e, "bodyType")}
+                        onChange={(e) => handleCarCheckChange(e, "body_type")}
                         label="Sedan"
                       />
 
                       <CustomCheckbox
                         id="Coupe"
                         checked={
-                          checkedCar.bodyType.id === "Coupe" &&
-                          checkedCar.bodyType.isChecked
+                          checkedCar.body_type.id === "Coupe" &&
+                          checkedCar.body_type.isChecked
                         }
-                        onChange={(e) => handleCarCheckChange(e, "bodyType")}
+                        onChange={(e) => handleCarCheckChange(e, "body_type")}
                         label="Coupe"
                       />
 
                       <CustomCheckbox
                         id="Truck"
                         checked={
-                          checkedCar.bodyType.id === "Truck" &&
-                          checkedCar.bodyType.isChecked
+                          checkedCar.body_type.id === "Truck" &&
+                          checkedCar.body_type.isChecked
                         }
-                        onChange={(e) => handleCarCheckChange(e, "bodyType")}
+                        onChange={(e) => handleCarCheckChange(e, "body_type")}
                         label="Truck"
                       />
 
                       <CustomCheckbox
                         id="Bus"
                         checked={
-                          checkedCar.bodyType.id === "Bus" &&
-                          checkedCar.bodyType.isChecked
+                          checkedCar.body_type.id === "Bus" &&
+                          checkedCar.body_type.isChecked
                         }
-                        onChange={(e) => handleCarCheckChange(e, "bodyType")}
+                        onChange={(e) => handleCarCheckChange(e, "body_type")}
                         label="Bus"
                       />
                       <p className="text-xs opacity-70">
                         What is the body of the car?
                       </p>
                     </div>
-                    <div className="flex flex-col gap-y-2">
+                    {/* <div className="flex flex-col gap-y-2">
                       <h5 className="text-sm">Auction Duration</h5>
                       <div className="pl-3 py-0.5 flex gap-x-2 rounded-lg border border-primaryBorder text-sm">
                         <input
                           type="number"
-                          name="auctionDuration"
+                          name="auction_duration"
                           onChange={handleInputChange}
-                          value={productDetails.auctionDuration}
+                          value={productDetails.auction_duration}
                           className="outline-none w-full"
                         />
                         <select
@@ -879,7 +971,7 @@ export default function AddProducts() {
                       <p className="text-xs opacity-70">
                         This is the Auction duration of the product
                       </p>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="w-full p-5 flex flex-col gap-y-6 border-b border-b-primaryBorder">
@@ -906,7 +998,16 @@ export default function AddProducts() {
                             </p>
                           </>
                         }
-                        onFilesChange={handleDocumentChange}
+                        files={productDetails.documents}
+                        setFiles={(newFiles) => {
+                          setProductDetails((prev) => ({
+                            ...prev,
+                            documents:
+                              typeof newFiles === "function"
+                                ? newFiles(prev.documents)
+                                : newFiles,
+                          }));
+                        }}
                       />
                     </div>
                     <p className="text-xs text-secondaryTextColor">
@@ -914,15 +1015,15 @@ export default function AddProducts() {
                     </p>
                   </div>
                 </div>
-              ) : productDetails.productType === "land" ? (
+              ) : productDetails.type === "LAND" ? (
                 <div className="w-full p-5 flex flex-col gap-y-6 ">
                   <div className="flex flex-col gap-y-2">
                     <h5 className="text-sm">Land size</h5>
 
                     <input
                       type="number"
-                      name="landSize"
-                      value={productDetails.landSize}
+                      name="land_size"
+                      value={(productDetails as Land).land_size}
                       onChange={handleInputChange}
                       className="p-3 rounded-lg border border-primaryBorder text-sm outline-none"
                     />
@@ -1027,41 +1128,41 @@ export default function AddProducts() {
                     <CustomCheckbox
                       id="residential"
                       checked={
-                        checkedLand.landType.id === "residential" &&
-                        checkedLand.landType.isChecked
+                        checkedLand.land_type.id === "residential" &&
+                        checkedLand.land_type.isChecked
                       }
-                      onChange={(e) => handleLandCheckChange(e, "landType")}
+                      onChange={(e) => handleLandCheckChange(e, "land_type")}
                       label="Residential"
                     />
                     <CustomCheckbox
                       id="commercial"
                       checked={
-                        checkedLand.landType.id === "commercial" &&
-                        checkedLand.landType.isChecked
+                        checkedLand.land_type.id === "commercial" &&
+                        checkedLand.land_type.isChecked
                       }
-                      onChange={(e) => handleLandCheckChange(e, "landType")}
+                      onChange={(e) => handleLandCheckChange(e, "land_type")}
                       label="Commercial"
                     />
                     <CustomCheckbox
                       id="agricultural"
                       checked={
-                        checkedLand.landType.id === "agricultural" &&
-                        checkedLand.landType.isChecked
+                        checkedLand.land_type.id === "agricultural" &&
+                        checkedLand.land_type.isChecked
                       }
-                      onChange={(e) => handleLandCheckChange(e, "landType")}
+                      onChange={(e) => handleLandCheckChange(e, "land_type")}
                       label="Agricultural"
                     />
                     <p className="text-xs opacity-70">What is the land type?</p>
                   </div>
 
-                  <div className="flex flex-col gap-y-2">
+                  {/* <div className="flex flex-col gap-y-2">
                     <h5 className="text-sm">Auction Duration</h5>
                     <div className="pl-3 py-0.5 flex gap-x-2 rounded-lg border border-primaryBorder text-sm">
                       <input
                         type="number"
-                        name="auctionDuration"
+                        name="auction_duration"
                         onChange={handleInputChange}
-                        value={productDetails.auctionDuration}
+                        value={productDetails.auction_duration}
                         className="outline-none w-full"
                       />
                       <select
@@ -1077,7 +1178,7 @@ export default function AddProducts() {
                     <p className="text-xs opacity-70">
                       This is the Auction duration of the product
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               ) : (
                 <div className="w-full p-5 flex flex-col gap-y-6 ">
@@ -1085,29 +1186,32 @@ export default function AddProducts() {
                     <h5 className="text-sm">How many bed(s)</h5>
                     <input
                       type="number"
+                      name="house_beds"
+                      value={(productDetails as House).house_beds}
+                      onChange={handleInputChange}
                       className="p-3 rounded-lg border border-primaryBorder text-sm outline-none"
                     />
                     <p className="text-xs opacity-70">how many bedrooms?</p>
                   </div>
 
                   <div className="flex flex-col gap-y-2">
-                    <h5 className="text-sm">Property size</h5>
+                    <h5 className="text-sm">House size</h5>
                     <input
                       type="number"
-                      name="propertySize"
-                      value={productDetails.propertySize}
+                      name="house_size"
+                      value={(productDetails as House).house_size}
                       onChange={handleInputChange}
                       className="p-3 rounded-lg border border-primaryBorder text-sm outline-none"
                     />
                     <p className="text-xs opacity-70">
-                      What is the size of the house Sqm
+                      What is the size of the house in Sqm
                     </p>
                   </div>
 
                   <div className="flex flex-col gap-y-2">
                     <h5 className="text-sm">House type</h5>
                     <select
-                      name="houseType"
+                      name="house_type"
                       onChange={handleInputChange}
                       className="p-3 rounded-lg border border-primaryBorder text-sm outline-none"
                     >
@@ -1153,22 +1257,22 @@ export default function AddProducts() {
                     <CustomCheckbox
                       id="new"
                       checked={
-                        checkedHouse.houseCondition.id === "new" &&
-                        checkedHouse.houseCondition.isChecked
+                        checkedHouse.house_condition.id === "new" &&
+                        checkedHouse.house_condition.isChecked
                       }
                       onChange={(e) =>
-                        handleHouseCheckChange(e, "houseCondition")
+                        handleHouseCheckChange(e, "house_condition")
                       }
                       label="Newly built"
                     />
                     <CustomCheckbox
                       id="needs-renovation"
                       checked={
-                        checkedHouse.houseCondition.id === "need-renovation" &&
-                        checkedHouse.houseCondition.isChecked
+                        checkedHouse.house_condition.id === "need-renovation" &&
+                        checkedHouse.house_condition.isChecked
                       }
                       onChange={(e) =>
-                        handleHouseCheckChange(e, "houseCondition")
+                        handleHouseCheckChange(e, "house_condition")
                       }
                       label="Needs renovation"
                     />
@@ -1176,11 +1280,11 @@ export default function AddProducts() {
                     <CustomCheckbox
                       id="old"
                       checked={
-                        checkedHouse.houseCondition.id === "old" &&
-                        checkedHouse.houseCondition.isChecked
+                        checkedHouse.house_condition.id === "old" &&
+                        checkedHouse.house_condition.isChecked
                       }
                       onChange={(e) =>
-                        handleHouseCheckChange(e, "houseCondition")
+                        handleHouseCheckChange(e, "house_condition")
                       }
                       label="Old"
                     />
@@ -1190,7 +1294,7 @@ export default function AddProducts() {
                   <div className="flex flex-col gap-y-2">
                     <h5 className="text-sm">Furnished status</h5>
                     <select
-                      name="furnishedStatus"
+                      name="house_furnished"
                       onChange={handleInputChange}
                       className="p-3 rounded-lg border border-primaryBorder text-sm outline-none"
                     >
@@ -1201,14 +1305,14 @@ export default function AddProducts() {
                     </p>
                   </div>
 
-                  <div className="flex flex-col gap-y-2">
+                  {/* <div className="flex flex-col gap-y-2">
                     <h5 className="text-sm">Auction Duration</h5>
                     <div className="pl-3 py-0.5 flex gap-x-2 rounded-lg border border-primaryBorder text-sm">
                       <input
                         type="number"
-                        name="auctionDuration"
+                        name="auction_duration"
                         onChange={handleInputChange}
-                        value={productDetails.auctionDuration}
+                        value={productDetails.auction_duration}
                         className="outline-none w-full"
                       />
                       <select
@@ -1224,11 +1328,11 @@ export default function AddProducts() {
                     <p className="text-xs opacity-70">
                       This is the Auction duration of the product
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               )}
             </div>
-          </div>
+          </section>
         </main>
       </div>
     </div>

@@ -27,15 +27,65 @@ import House from "../assets/BHouse.png";
 import Lexus from "../assets/Lexus.png";
 import { generateRandomNumber } from "../helper/helperFunctions";
 import { GridColDef } from "@mui/x-data-grid";
-import MuiTableComponent from "../components/TableComponent";
+import MuiTableComponent from "../components/table/TableComponent";
 import Car2 from "../assets/Dashboard-listing-car.png";
 import { Props } from "recharts/types/component/DefaultLegendContent";
 import { useWindowResizer } from "../hooks/useWindowResize";
 import { ProgressUI } from "../components/common/progressUi";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import auctionService from "../api/services/auction.service";
+
+type BidTableType = {
+  id: number;
+  bidder: any;
+  product: string;
+  price: string;
+  status: string;
+  date: Date | string;
+};
 
 export default function Dashboard() {
   const { isMobile } = useWindowResizer();
+  const [bidData, setBidData] = useState({
+    rows: [] as Product[],
+    pagination: {
+      page: 1,
+      pageSize: 10,
+    },
+    totalRowCount: 0,
+    loading: false,
+  });
 
+  const fetchBids = useCallback(async () => {
+    setBidData((prev) => ({ ...prev, loading: true }));
+    try {
+      const query = new URLSearchParams({
+        page: bidData.pagination.page.toString(),
+        per_page: bidData.pagination.pageSize.toString(),
+      }).toString();
+      const response = await auctionService.getAllAuctions(query);
+      console.log("Bids:", response.data.data);
+      setBidData({
+        rows: response.data.data,
+        pagination: {
+          page: response.data.current_page,
+          pageSize: response.data.per_page,
+        },
+        totalRowCount: response.data.total,
+        loading: false,
+      });
+    } catch (error) {
+      toast.error("Failed to fetch products");
+      console.error("Error fetching products:", error);
+    } finally {
+      setBidData((prev) => ({ ...prev, loading: false }));
+    }
+  }, [bidData.pagination.page, bidData.pagination.pageSize]);
+
+  useEffect(() => {
+    fetchBids();
+  }, [fetchBids]);
   const tableTheme = useTheme([
     getTheme(),
     {
@@ -54,15 +104,6 @@ export default function Dashboard() {
     `,
     },
   ]);
-
-  type BidTableType = {
-    id: number;
-    bidder: any;
-    product: string;
-    price: string;
-    status: string;
-    date: Date | string;
-  };
 
   const rows = (): BidTableType[] => {
     return Array.from({ length: 15 }, (_, i) => {
@@ -404,17 +445,26 @@ export default function Dashboard() {
           className="bg-white shadow-md rounded-lg p-6 my-5"
         >
           <div className="flex text-darkBlue justify-between items-center">
-            <h2 className="md:text-2xl  font-bold">Active Bides</h2>
+            <h2 className="md:text-2xl  font-bold">Active Bids</h2>
           </div>
           {/* table */}
           <div className="mt-0 h-[500px] flex flex-1 w-full overflow-hidden">
             <MuiTableComponent
               columns={columns}
+              currentPage={bidData.pagination.page}
               showCheckbox={false}
               rows={rows()}
-              paginationActive={true}
               rowHeight={60}
               pageSize={10}
+              onPageChange={(model) => {
+                setBidData((prev) => ({
+                  ...prev,
+                  pagination: {
+                    page: model.page,
+                    pageSize: model.pageSize,
+                  },
+                }));
+              }}
               headerStyle={{
                 backgroundColor: "#f3f4f6",
                 fontWeight: "bold",

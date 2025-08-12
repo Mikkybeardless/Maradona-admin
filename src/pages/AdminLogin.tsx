@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Logo from "../assets/logo.svg";
 import { FaArrowLeftLong, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ import { login } from "../redux/slices/authSlice";
 import { toast } from "react-toastify";
 import { Spinner } from "../components/common/spinner";
 import Cookies from "js-cookie";
+import CountdownTimer from "../components/CountDown";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -70,9 +71,7 @@ export default function AdminLogin() {
       if (response.status == 200) {
         const data = response.data;
 
-        // Dispatch to Redux (optional: include token if needed)
-        // const expiresAt = new Date(new Date().getTime() + 1 * 60 * 60 * 1000);
-        Cookies.set("token", data.access_token);
+        Cookies.set("token", data.token);
         dispatch(login(data.user));
         toast.success("Login successful");
         // Redirect
@@ -105,8 +104,7 @@ export default function AdminLogin() {
     // }, 3000);
   };
 
-  const handleResetPassword = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleResetPassword = async () => {
     const { email } = resetData;
     if (!email) {
       setError("Please fill in all fields");
@@ -117,7 +115,7 @@ export default function AdminLogin() {
       const response = await authService.reqPasswordReset(resetData);
 
       if (response.status == 200) {
-        toast.success("Password reset code sent");
+        toast.success("Check your email for otp code");
         resetTime();
         setPhase(3);
       }
@@ -169,6 +167,27 @@ export default function AdminLogin() {
       setIsLoading(false);
     }
   };
+  const countDown = () => {
+    let timer: NodeJS.Timeout;
+    const start = Date.now();
+    const duration = 300; // 5 minutes in seconds
+
+    const updateTimer = () => {
+      const elapsed = Math.floor((Date.now() - start) / 1000);
+      const remaining = duration - elapsed;
+      if (remaining <= 0) {
+        clearInterval(timer);
+        setPhase(5);
+      }
+    };
+
+    timer = setInterval(updateTimer, 1000);
+    return () => clearInterval(timer);
+  };
+  useEffect(() => {
+    // Reset error message when phase changes
+    setError("");
+  }, [phase]);
 
   return (
     <div className="w-screen h-screen flex flex-col gap-y-5 justify-center items-center bg-[#F5F5F5]">
@@ -291,12 +310,10 @@ export default function AdminLogin() {
       ) : phase === 3 ? (
         <div className="w-[35%] flex flex-col items-center p-10 rounded-[24px] bg-white shadow-[0px_0px_34.9px_0px_rgba(31,14,28,0.05)]">
           <h1 className="text-lg font-semibold text-center">Enter OTP</h1>
-
           <p className="text-secondaryTextColor text-sm text-center mt-2.5 max-w-[75%]">
             Please check your mail, and enter the 4 digit code that was sent to{" "}
             <span className="italic font-medium">{resetData.email}</span>
           </p>
-
           <OTPInput
             value={otp}
             onChange={setOtp}
@@ -306,21 +323,16 @@ export default function AdminLogin() {
             inputStyle="border border-primaryBorder rounded-[15px] h-[50px] !w-[50px] flex-shrink-0"
             renderInput={(props) => <input {...props} />}
           />
-
-          <p className="mt-5 text-sm">
-            {time === 60 ? "1:00" : `0:${String(time).padStart(2, "0")}`}
-          </p>
-
+          <CountdownTimer time={3} />
           <p className="text-secondaryTextColor text-sm text-center mt-12 max-w-[75%]">
             Didn't get a code?{" "}
-            <span
+            <button
               onClick={handleResetPassword}
               className="font-medium cursor-pointer hover:underline"
             >
-              {isLoading ? <Spinner /> : "Send again"}
-            </span>
+              Send again
+            </button>
           </p>
-
           <button
             onClick={() => {
               setPhase(4);

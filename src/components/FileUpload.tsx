@@ -1,5 +1,5 @@
 import { useDropzone } from "react-dropzone";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { IoCloudUploadOutline } from "react-icons/io5";
 
 interface FileUploadProps {
@@ -8,21 +8,31 @@ interface FileUploadProps {
   maxFiles?: number;
   className?: string;
   Child?: React.ReactNode;
+  files?: File[]; // controlled prop
+  setFiles?: React.Dispatch<React.SetStateAction<File[]>>; // setter from parent
   onFilesChange?: (files: File[]) => void;
 }
-// Reusable FileUpload component that can be used multiple times
+
 export const FileUpload = ({
   acceptedFileTypes,
   maxSizeMB = 20,
   maxFiles = undefined,
   className = "",
   Child,
+  files: controlledFiles,
+  setFiles: setControlledFiles,
   onFilesChange = () => {},
 }: FileUploadProps) => {
-  const [files, setFiles] = useState<File[]>([]);
-  // Function to check if two files are the same based on name, size, and lastModified
+  const [internalFiles, setInternalFiles] = useState<File[]>([]);
+  const [objectUrls, setObjectUrls] = useState<string[]>([]);
+
+  // If parent passes files, use them; otherwise use internal state
+  const files = controlledFiles ?? internalFiles;
+  const setFiles = setControlledFiles ?? setInternalFiles;
+
   const isSameFile = (a: File, b: File) =>
     a.name === b.name && a.size === b.size && a.lastModified === b.lastModified;
+
   const onDrop = useCallback(
     (newFiles: File[]) => {
       setFiles((prevFiles) => {
@@ -35,13 +45,14 @@ export const FileUpload = ({
         return updatedFiles;
       });
     },
-    [onFilesChange]
+    [setFiles, onFilesChange]
   );
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: acceptedFileTypes,
     maxSize: maxSizeMB * 1000000,
     maxFiles: maxFiles,
-    onDrop, // 👈 use this instead of acceptedFiles + useEffect
+    onDrop,
   });
 
   const removeFile = (fileToRemove: File) => {
@@ -53,11 +64,26 @@ export const FileUpload = ({
       return updatedFiles;
     });
   };
+  useEffect(() => {
+    const urls = files
+      .filter(
+        (file) =>
+          file.type.startsWith("image/") || file.type.startsWith("video/")
+      )
+      .map((file) => URL.createObjectURL(file));
+
+    setObjectUrls(urls);
+
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [files]);
 
   const fileList = files.map((file, index) => {
     const isImage = file.type.startsWith("image/");
     const isVideo = file.type.startsWith("video/");
     const isPDF = file.type === "application/pdf";
+    const objectUrl = objectUrls[index]; // Use precomputed URL
 
     return (
       <div className="relative" key={index}>
@@ -72,11 +98,11 @@ export const FileUpload = ({
         {isImage ? (
           <img
             className="w-full h-[5rem] object-cover rounded-lg bg-gray-100"
-            src={URL.createObjectURL(file)}
+            src={objectUrl}
             alt="Uploaded preview"
           />
         ) : isVideo ? (
-          <VideoPreview file={file} />
+          <VideoPreview objectUrl={objectUrl} />
         ) : isPDF ? (
           <PDFPreview />
         ) : (
@@ -92,14 +118,19 @@ export const FileUpload = ({
     );
   });
 
+  // Cleanup all object URLs
+  useEffect(() => {
+    return () => {
+      objectUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [objectUrls]);
+
   return (
     <div className={`w-full ${className}`}>
-      {/* <h2 className="font-medium text-lg mb-2">{title}</h2> */}
-
       <div
         {...getRootProps({
           "aria-label": "drag and drop area",
-          className: ` ${
+          className: `${
             isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"
           }`,
         })}
@@ -107,9 +138,7 @@ export const FileUpload = ({
       >
         <input {...getInputProps()} />
         {isDragActive ? (
-          <>
-            <p className="">Drop file(s) here...</p>
-          </>
+          <p>Drop file(s) here...</p>
         ) : Child ? (
           Child
         ) : (
@@ -155,12 +184,12 @@ export const PDFPreview = () => {
   );
 };
 
-const VideoPreview = ({ file }: { file: File }) => {
+const VideoPreview = ({ objectUrl }: { objectUrl: string }) => {
   return (
     <div className="w-full h-[5rem] rounded-lg bg-gray-100 overflow-hidden">
       <video
         className="w-full h-full object-cover"
-        src={URL.createObjectURL(file)}
+        src={objectUrl}
         controls={false}
         muted
         onMouseOver={(e) => e.currentTarget.play()}
