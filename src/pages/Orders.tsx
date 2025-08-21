@@ -1,13 +1,12 @@
 import { FaChevronRight, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { PiCoinVerticalDuotone } from "react-icons/pi";
-import { CiSearch } from "react-icons/ci";
 import MuiTableComponent from "../components/table/TableComponent";
 import { GridColDef } from "@mui/x-data-grid";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { generateRandomNumber } from "../helper/helperFunctions";
 import LineAreaChart from "../components/LineAreaChart";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import { FaFileDownload } from "react-icons/fa";
 import { Popper } from "@mui/material";
@@ -18,10 +17,11 @@ import { Dayjs } from "dayjs";
 import { useDebounce } from "../hooks/useDebounce";
 import { TableSearchInput } from "../components/common/TableSearchInput";
 import { StatusSelect } from "../components/common/statusSelect";
-import orderService from "../api/services/order.service";
 import { ExportModal } from "../components/modals/export-modal";
 import { usePaginatedData } from "../hooks/usePaginatedData";
 import formatDayJs from "../helper/formatDateJs";
+import purchaseEnquiriesService from "../api/services/purchaseEnquiries.service";
+import { purchaseEnqColumns } from "../components/table/columns";
 type UserTableType = {
   id: any;
   name: string;
@@ -87,10 +87,10 @@ export default function Orders() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery);
-
+  const navigate = useNavigate();
   const formatedDate = formatDayJs(filters.date);
-  const [orderData, setOrderData] = usePaginatedData(
-    orderService.getAllOrderShipments,
+  const [purchaseEnquiries, setPurchaseEnquiries] = usePaginatedData(
+    purchaseEnquiriesService.getPurchaseEnquiries,
     {
       initialPage: 1,
       initialPageSize: 10,
@@ -100,7 +100,7 @@ export default function Orders() {
         created_at: formatedDate,
         search: debouncedSearchQuery,
       },
-      dataName: "orders",
+      dataName: "purchase Enquiries",
     }
   );
   const handleTableSelectionChange = (newSelection: UserTableType[]) => {
@@ -114,22 +114,6 @@ export default function Orders() {
   function closeExportModal() {
     setExportModal(false);
   }
-
-  const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", flex: 0.3 },
-    { field: "name", headerName: "Customer", flex: 0.9 },
-    { field: "type", headerName: "Item type", flex: 0.4 },
-    { field: "details", headerName: "Item Details", flex: 1 },
-    { field: "date", headerName: "Order Date", flex: 1 },
-    { field: "status", headerName: "Status", flex: 0.5 },
-    {
-      field: "Action",
-      flex: 0.5,
-      renderCell: ({ row }) => {
-        return <OrderActionCellComponent row={row} />;
-      },
-    },
-  ];
 
   return (
     <div className="w-full h-full bg-white overflow-y-auto flex flex-col custom-scrollbar py-20">
@@ -150,13 +134,15 @@ export default function Orders() {
             Dashboard
           </Link>
           <FaChevronRight size={18} />
-          <span className="text-sm">Orders</span>
+          <span className="text-sm">Purchase Enquiries</span>
         </div>
 
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold flex items-start">
-            Orders{" "}
-            <span className="text-xs text-defaultOrange">{rows().length}</span>
+          <h1 className="md:text-3xl font-bold flex items-start">
+            Purchase Enquiries
+            <span className="text-xs text-defaultOrange">
+              {purchaseEnquiries.rows.length}
+            </span>
           </h1>
 
           <div className="flex items-center gap-x-5">
@@ -191,7 +177,7 @@ export default function Orders() {
               <span className="text-xs text-[#686677]">Total earnings</span>
             </div>
             <div className="flex items-baseline gap-x-2">
-              <span className="text-3xl text-defaultOrange font-semibold">
+              <span className="text-xl md:text-3xl text-defaultOrange font-semibold">
                 $450,000
               </span>
               <span className="text-xs text-[#686677]">+5,300 this week</span>
@@ -256,12 +242,27 @@ export default function Orders() {
         >
           <div className="min-w-[900px]">
             <MuiTableComponent
-              columns={columns}
+              columns={purchaseEnqColumns}
               showCheckbox={true}
-              rows={rows()}
+              rows={purchaseEnquiries.rows}
+              onRowClick={(row) => {
+                navigate(`/admin/purchase-enquiries/enquiry/${row.id}`);
+              }}
+              onPageChange={(model) => {
+                setPurchaseEnquiries((prev) => ({
+                  ...prev,
+                  pagination: {
+                    page: model.page,
+                    pageSize: model.pageSize,
+                  },
+                }));
+              }}
+              loading={purchaseEnquiries.loading}
+              totalRowCount={purchaseEnquiries.totalRowCount}
+              currentPage={purchaseEnquiries.pagination.page}
               onSelect={handleTableSelectionChange}
               rowHeight={60}
-              pageSize={10}
+              pageSize={purchaseEnquiries.pagination.pageSize}
             />
           </div>
         </section>

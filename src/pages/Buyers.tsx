@@ -1,8 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import MuiTableComponent from "../components/table/TableComponent";
-import { GridColDef, GridRowParams } from "@mui/x-data-grid";
-import { formatPrice } from "../helper/helperFunctions";
+import { GridRowParams } from "@mui/x-data-grid";
 import { useState } from "react";
 import { TableSearchInput } from "../components/common/TableSearchInput";
 import { DateSelect } from "../components/common/dateSelect";
@@ -15,43 +14,26 @@ import formatDayJs from "../helper/formatDateJs";
 import UserService from "../api/services/userMgt.service";
 import { usePaginatedData } from "../hooks/usePaginatedData";
 import { BuyerColumns } from "../components/table/columns";
-
-type UserTableType = {
-  id: any;
-  name: string;
-  phone: string;
-  location: string;
-  orders: number;
-  totalSpent: number;
-  status: string;
-};
-
-// const rows = (): UserTableType[] => {
-//   const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-//   const returnArray: UserTableType[] = [];
-//   loopArray.forEach((num) => {
-//     returnArray.push({
-//       id: num,
-//       name: "Rosemary Sunday",
-//       phone: "07071234323",
-//       location: "Lugbe Abuja",
-//       orders: 22,
-//       totalSpent: 100000,
-//       status: "Active",
-//     });
-//   });
-//   return returnArray;
-// };
+import formatDateToYYYYMMDD from "../helper/formatDate";
+import { formatIsoString } from "../helper/formatIIsoString";
 
 type IFilter = {
   status: string;
   date: Dayjs | null;
 };
+type SelectedBuyerData = {
+  "Buyer Id": number;
+  "Buyer Name": string;
+  Email: string;
+  created_at: string;
+  updated_at: string;
+};
 
 export default function Buyers() {
   const navigate = useNavigate();
   const [exportModal, setExportModal] = useState(false);
-  const [selectedData, setSelectedData] = useState<UserTableType[]>([]);
+
+  const [selectedData, setSelectedData] = useState<SelectedBuyerData[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery);
   const [filters, setFilters] = useState<IFilter>({
@@ -78,8 +60,15 @@ export default function Buyers() {
   const handleRowClick = (params: GridRowParams) => {
     navigate(`/admin/buyers/buyer/:${params.row.id}`);
   };
-  const handleTableSelectionChange = (newSelection: UserTableType[]) => {
-    setSelectedData(newSelection);
+  const handleTableSelectionChange = (newSelection: ApiUser[]) => {
+    const formatedData = newSelection.map((item) => ({
+      ["Buyer Id"]: item.id,
+      ["Buyer Name"]: item.name,
+      ["Email"]: item.email,
+      created_at: formatIsoString(item.created_at).formattedDate,
+      updated_at: formatIsoString(item.updated_at).formattedDate,
+    }));
+    setSelectedData(formatedData);
   };
 
   return (
@@ -87,8 +76,13 @@ export default function Buyers() {
       <ExportModal
         isOpen={exportModal}
         onClose={() => setExportModal(false)}
-        allData={buyersData.rows}
-        // currentPageData={currentPageData}
+        allData={(buyersData.rows as ApiUser[]).map((item) => ({
+          ["Buyer Id"]: item.id,
+          ["Buyer Name"]: item.name,
+          ["Email"]: item.email,
+          created_at: formatIsoString(item.created_at).formattedDate,
+          updated_at: formatIsoString(item.updated_at).formattedDate,
+        }))}
         selectedData={selectedData}
         filename="buyers-data"
       />
@@ -108,16 +102,10 @@ export default function Buyers() {
           <div className="flex items-center gap-x-5">
             <button
               onClick={() => setExportModal(true)}
-              className="text-sm hover:underline text-defaultOrange"
+              className="flex gap-x-1 md:gap-x-3 items-center rounded-lg px-3 md:px-5 py-1.5 md:py-3  text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
             >
               Export
             </button>
-            <Link
-              to={`/admin/buyers/add-buyer`}
-              className="flex gap-x-1 md:gap-x-3 items-center rounded-lg px-3 md:px-5 py-1.5 md:py-3  text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
-            >
-              <FaPlus size={20} /> Add buyer
-            </Link>
           </div>
         </div>
 

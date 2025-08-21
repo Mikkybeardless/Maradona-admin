@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight, FaPlus } from "react-icons/fa6";
 import ReactQuill from "react-quill";
@@ -216,7 +216,8 @@ export default function AddProducts() {
         (typeof value === "string" && value.trim() === "") ||
         (Array.isArray(value) && value.length === 0)
       ) {
-        toast.error(`The field "${key}" cannot be empty.`);
+        const capitalized = key.charAt(0).toUpperCase() + key.slice(1);
+        toast.error(`The field "${capitalized}" cannot be empty.`);
         return;
       }
 

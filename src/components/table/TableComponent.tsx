@@ -40,9 +40,9 @@ export default function MuiTableComponent({
   totalRowCount = rows.length, // Default to rows length if not provided
   loading = false,
 }: TableComponentProps) {
-  const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>(
-    []
-  );
+  // const [selectedRowIds, setSelectedRowIds] = useState<GridRowSelectionModel>(
+  //   []
+  // );
 
   // Handle row click
   const handleRowClick = (params: GridRowParams) => {
@@ -52,12 +52,12 @@ export default function MuiTableComponent({
   };
 
   const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
-    setSelectedRowIds(newSelection);
+    // setSelectedRowIds(newSelection);
     // Get full selected rows (optional)
     const selectedRowsData = rows.filter((row) =>
       newSelection.includes(row.id)
     );
-    // console.log("Selected Rows Data:", selectedRowsData);
+    console.log("Selected Rows Data:", selectedRowsData);
     onSelect?.(selectedRowsData);
   };
 
@@ -75,7 +75,7 @@ export default function MuiTableComponent({
               pageSize: pageSize,
             }}
             onPaginationModelChange={onPageChange}
-            pageSizeOptions={[5, 10, 15, 20]}
+            pageSizeOptions={[5, 10, 20, 50]}
             checkboxSelection={showCheckbox}
             disableColumnFilter={true}
             disableColumnMenu={true}

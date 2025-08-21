@@ -17,6 +17,7 @@ import { Spinner } from "../components/common/spinner";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import formatDateToYYYYMMDD from "../helper/formatDate";
 import PriceInput from "../components/common/priceInput";
+import { AxiosError } from "axios";
 
 export default function AddAuction() {
   const [isLoading, setIsLoading] = useState(false);
@@ -99,7 +100,7 @@ export default function AddAuction() {
       end_time: fullEndTime,
       inventory: String(auctionDetails.inventory),
     };
-    console.log("API Data:", apiData);
+
     // Convert to FormData
     const formData = new FormData();
 
@@ -111,7 +112,8 @@ export default function AddAuction() {
         (typeof value === "string" && value.trim() === "") ||
         (Array.isArray(value) && value.length === 0)
       ) {
-        toast.error(`The field "${key}" cannot be empty.`);
+        const capitalized = key.charAt(0).toUpperCase() + key.slice(1);
+        toast.error(`The field "${capitalized}" cannot be empty.`);
         return;
       }
 
@@ -137,9 +139,9 @@ export default function AddAuction() {
       }
     }
 
-    for (const [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
+    // for (const [key, value] of formData.entries()) {
+    //   console.log(key, value);
+    // }
 
     try {
       setIsLoading(true);
@@ -152,6 +154,12 @@ export default function AddAuction() {
     } catch (err: any) {
       toast.error(() => {
         switch (err.status) {
+          case 422: {
+            const errors = err.response.data.errors;
+            const secondKey = Object.keys(errors)[0];
+
+            return `<${secondKey[0]}>`;
+          }
           case 500:
             return `Failed to create product.\nCheck your internet connection`;
           default:

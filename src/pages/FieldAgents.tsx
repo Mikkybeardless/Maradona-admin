@@ -1,4 +1,4 @@
-import { GridColDef, GridRowParams } from "@mui/x-data-grid";
+import {  GridRowParams } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import MuiTableComponent from "../components/table/TableComponent";
@@ -166,7 +166,7 @@ export default function FieldAgents() {
       </div>
 
       <main className=" px-5 md:px-10 w-full mt-20 flex flex-col flex-1">
-        <section
+        {/* <section
           id="agents-tab"
           className="flex flex-wrap-reverse gap-y-3 justify-between items-center mt-1"
         >
@@ -217,9 +217,70 @@ export default function FieldAgents() {
             <FaPlus size={18} />
             New Agent
           </button>
-        </section>
-        <h1 className="text-3xl font-bold my-6">Field Agents</h1>
+        </section> */}
+        <div className="flex justify-between items-center mt-2">
+        <h1 className="text-3xl font-bold ">Field Agents</h1>
+           <button
+            onClick={openNewAgentModal}
+            className="rounded-lg flex gap-x-2 items-center px-2 py-3 text-white text-xs md:text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
+          >
+            <FaPlus size={18} />
+            New Agent
+          </button>
+        </div>
+        
+             <>
+            <div className="flex flex-wrap gap-2 justify-between items-end mt-3 w-full">
+              <StatusSelect
+                options={[
+                  { label: "All", value: "" },
+                  { label: "Active", value: "active" },
+                  { label: "Inactive", value: "inactive" },
+                ]}
+                onChange={(value) => {
+                  setFilters((prev) => ({ ...prev, agent: value }));
+                }}
+                value={filters.agent}
+              />
 
+              <TableSearchInput
+                searchQuery={searchQuery.agent}
+                setSearchQuery={(val) =>
+                  setSearchQuery((prev) => ({ ...prev, agent: val }))
+                }
+                placeholder="Search agents"
+              />
+            </div>
+
+            <section
+              id="table"
+              className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
+            >
+              <div className="min-w-[900px]">
+                <MuiTableComponent
+                  showCheckbox={false}
+                  columns={AgentColumns}
+                  onRowClick={handleRowClick}
+                  rows={agentData.rows || rows()}
+                  loading={agentData.loading}
+                  rowHeight={60}
+                  currentPage={agentData.pagination.page}
+                  onPageChange={(model) =>
+                    setAgentData((prev) => ({
+                      ...prev,
+                      pagination: {
+                        page: model.page,
+                        pageSize: model.pageSize,
+                      },
+                    }))
+                  }
+                  pageSize={agentData.pagination.pageSize}
+                  totalRowCount={agentData.totalRowCount}
+                />
+              </div>
+            </section>
+          </>
+{/* 
         {agentType === "agent" ? (
           <>
             <div className="flex flex-wrap gap-2 justify-between items-end mt-3 w-full">
@@ -365,7 +426,7 @@ export default function FieldAgents() {
               </div>
             </section>
           </>
-        )}
+        )} */}
       </main>
     </div>
   );

@@ -1,11 +1,8 @@
-import { FaPlus, FaStar } from "react-icons/fa6";
+import { FaPlus } from "react-icons/fa6";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import MuiTableComponent from "../components/table/TableComponent";
-import { GridColDef, GridRowParams } from "@mui/x-data-grid";
+import { GridRowParams } from "@mui/x-data-grid";
 import { Link, useNavigate } from "react-router-dom";
-import Car2 from "../assets/Dashboard-listing-car.png";
-import { generateRandomNumber } from "../helper/helperFunctions";
-import { HiSortDescending } from "react-icons/hi";
 import { useState } from "react";
 import { DateSelect } from "../components/common/dateSelect";
 import { TableSearchInput } from "../components/common/TableSearchInput";
@@ -13,102 +10,16 @@ import { FilterGroup } from "../components/common/FilterGroup";
 import { Dayjs } from "dayjs";
 import { useDebounce } from "../hooks/useDebounce";
 import { StatusSelect } from "../components/common/statusSelect";
-import { set } from "js-cookie";
 import formatDayJs from "../helper/formatDateJs";
 import { usePaginatedData } from "../hooks/usePaginatedData";
 import auctionService from "../api/services/auction.service";
 import { AuctionColumns } from "../components/table/columns";
 
-type BidTableType = {
-  id: number;
-  bidder: any;
-  product: string;
-  price: string;
-  status: string;
-  date: Date | string;
-};
 type IFilter = {
   category: string;
   status: string;
   date: Dayjs | null;
 };
-
-// const rows = (): BidTableType[] => {
-//   return Array.from({ length: 15 }, (_, i) => {
-//     const num = i + 1;
-//     const randomNum = generateRandomNumber(4, 1);
-
-//     return {
-//       id: num, // Required by MUI
-//       bidder: randomNum === 2 ? "No Bid" : `#E${num}HH`,
-//       product: "Toyota Camery LE (2024)",
-//       price: "N5,500,000",
-//       status:
-//         randomNum === 1
-//           ? "Pending"
-//           : randomNum === 2
-//           ? "Closed"
-//           : randomNum === 3
-//           ? "Sold"
-//           : "Active",
-//       date: new Date().toUTCString(),
-//     };
-//   });
-// };
-
-// const columns: GridColDef[] = [
-//   {
-//     field: "bidder",
-//     headerName: "Bidders",
-//     renderCell: ({ value }) => {
-//       return (
-//         <span className={`${value === "No Bid" && "text-[#DC1313]"}`}>
-//           {value}
-//         </span>
-//       );
-//     },
-//     flex: 0.7,
-//   },
-//   {
-//     field: "product",
-//     headerName: "Product",
-//     renderCell: ({ value }) => {
-//       return (
-//         <div className="flex gap-x-2 items-center">
-//           <img className="w-[40px] h-[40px]" src={Car2} alt="product" />
-//           <p className="text-sm font-medium text-darkBlue">{value}</p>
-//         </div>
-//       );
-//     },
-//     flex: 1,
-//   },
-//   { field: "price", headerName: "Price", flex: 0.7 },
-//   {
-//     field: "status",
-//     headerName: "Status",
-//     flex: 0.7,
-//     renderCell: ({ value }) => {
-//       return (
-//         <span
-//           className={`px-3 py-1 rounded-full font-medium text-sm
-//           ${
-//             value === "Active"
-//               ? "bg-[#FE8E49] text-white"
-//               : value === "Sold"
-//               ? "bg-[#E8F8E8] text-[#0C560B]"
-//               : value === "Pending"
-//               ? "bg-[#FEF3B8] "
-//               : "bg-[#DC1313] text-white"
-//           }`}
-//         >
-//           {value}
-//         </span>
-//       );
-//     },
-//   },
-
-//   { field: "date", headerName: "Time", flex: 1 },
-// ];
 
 export default function Auction() {
   const navigate = useNavigate();
@@ -145,14 +56,6 @@ export default function Auction() {
     navigate(`/admin/auctions/auction/${params.row.id}`);
   };
 
-  // const handleSelectChange = (event: {
-  //   target: { name: string; value: string };
-  // }) => {
-  //   setSelects((prev) => ({
-  //     ...prev,
-  //     [event.target.name]: event.target.value,
-  //   }));
-  // };
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar py-20 bg-[#F5F5F5]">
       <div className="w-full py-5 px-5 md:px-10 fixed z-10 left-2 top-0 bg-white border-b border-b-primaryBorder">

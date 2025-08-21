@@ -4,43 +4,88 @@ import { TbAward } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import { ProductActionCellComponent } from "../../pages/Products";
 import { formatIsoString } from "../../helper/formatIIsoString";
-import { OrderActionCellComponent } from "../../pages/Orders";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { Popper } from "@mui/material";
+import { useRef, useState } from "react";
+import { useClickAway } from "react-use";
+import { GoDotFill } from "react-icons/go";
+import purchaseEnquiriesService from "../../api/services/purchaseEnquiries.service";
 
 // buyer columns
 export const BuyerColumns: GridColDef[] = [
   { field: "name", headerName: "Customer name", flex: 1 },
   { field: "id", headerName: "ID", flex: 0.2, sortable: false },
-  { field: "phone", headerName: "Phone", flex: 1, sortable: false },
+
   { field: "email", headerName: "Email", flex: 1, sortable: false },
-  { field: "location", headerName: "Location", flex: 1, sortable: false },
-  { field: "orders", headerName: "Order(s)" },
   {
-    field: "totalSpent",
-    headerName: "Total Spent",
-    flex: 0.8,
-    renderCell: ({ row }) => (
-      <span className="">₦{formatPrice(row.totalSpent)}</span>
-    ),
+    field: "created_at",
+    headerName: "Created At",
+    renderCell: ({ row }) => formatIsoString(row.created_at).formattedDate,
+    flex: 1,
+    sortable: false,
   },
-  { field: "status", headerName: "Status", sortable: false },
+  {
+    field: "updated_at",
+    headerName: "Updated At",
+    renderCell: ({ row }) => formatIsoString(row.updated_at).formattedDate,
+    flex: 1,
+    sortable: false,
+  },
+
+  {
+    field: "email_verified_at",
+    headerName: "Verification Status",
+    renderCell: ({ row }) => (
+      <span
+        className={`text-sm ${
+          row.email_verified_at !== null ? "text-green-600" : "text-red-600"
+        }`}
+      >
+        {row.email_verified_at !== null
+          ? formatIsoString(row.email_verified_at).formattedDate
+          : "Not Verified"}
+      </span>
+    ),
+    sortable: false,
+  },
 ];
 // sellers
 export const sellerColumns: GridColDef[] = [
   { field: "name", headerName: "Customer name", flex: 1 },
   { field: "id", headerName: "ID", flex: 0.2, sortable: false },
-  { field: "phone", headerName: "Phone", flex: 1, sortable: false },
+
   { field: "email", headerName: "Email", flex: 1, sortable: false },
-  { field: "location", headerName: "Location", flex: 1, sortable: false },
-  { field: "orders", headerName: "Order(s)" },
   {
-    field: "totalSpent",
-    headerName: "Total Spent",
-    flex: 0.8,
-    renderCell: ({ row }) => (
-      <span className="">₦{formatPrice(row.totalSpent)}</span>
-    ),
+    field: "created_at",
+    headerName: "Created At",
+    renderCell: ({ row }) => formatIsoString(row.created_at).formattedDate,
+    flex: 1,
+    sortable: false,
   },
-  { field: "status", headerName: "Status", sortable: false },
+  {
+    field: "updated_at",
+    headerName: "Updated At",
+    renderCell: ({ row }) => formatIsoString(row.updated_at).formattedDate,
+    flex: 1,
+    sortable: false,
+  },
+
+  {
+    field: "email_verified_at",
+    headerName: "Verification Status",
+    renderCell: ({ row }) => (
+      <span
+        className={`text-sm ${
+          row.email_verified_at !== null ? "text-green-600" : "text-red-600"
+        }`}
+      >
+        {row.email_verified_at !== null
+          ? formatIsoString(row.email_verified_at).formattedDate
+          : "Not Verified"}
+      </span>
+    ),
+    sortable: false,
+  },
 ];
 
 //   field agents
@@ -53,24 +98,20 @@ export const AgentColumns: GridColDef[] = [
     sortable: false,
   },
   { field: "email", headerName: "Email", flex: 1, sortable: false },
-  // { field: "phone", headerName: "Phone", flex: 1, sortable: false },
-  // {
-  //   field: "status",
-  //   headerName: "Status",
-  //   renderCell: ({ value }) => {
-  //     return (
-  //       <span
-  //         className={`${
-  //           value === "Active" ? "text-[#0C560B]" : "text-[#DC1313]"
-  //         }`}
-  //       >
-  //         {value}
-  //       </span>
-  //     );
-  //   },
-  //   flex: 0.5,
-  //   sortable: false,
-  // },
+  {
+    field: "created_at",
+    headerName: "Created At",
+    renderCell: ({ row }) => formatIsoString(row.created_at).formattedDate,
+    flex: 1,
+    sortable: false,
+  },
+  {
+    field: "updated_at",
+    headerName: "Updated At",
+    renderCell: ({ row }) => formatIsoString(row.updated_at).formattedDate,
+    flex: 1,
+    sortable: false,
+  },
   {
     field: "verifiedListings",
     headerName: "Verified Listings",
@@ -94,8 +135,13 @@ export const RequestColumns: GridColDef[] = [
     sortable: false,
   },
   { field: "type", headerName: "Category", flex: 0.5, sortable: false },
-  { field: "price", headerName: "Price(₦)", flex: 0.7 },
-  { field: "stock", headerName: "Stock", flex: 0.5, type: "number" },
+  {
+    field: "price",
+    headerName: "Price(₦)",
+    renderCell: ({ row }) => formatPrice(row.price),
+    flex: 0.7,
+  },
+  // { field: "stock", headerName: "Stock", flex: 0.5, type: "number" },
   {
     field: "Action",
     headerName: "Action",
@@ -109,12 +155,12 @@ export const RequestColumns: GridColDef[] = [
           >
             View
           </Link>
-          <span className="text-sm text-green-600">Approve</span>
-          <span className="text-sm text-red-500">Reject</span>
+          <button className="text-sm text-green-600">Approve</button>
+          <button className="text-sm text-red-500">Reject</button>
         </div>
       );
     },
-    flex: 0.7,
+    flex: 0.5,
     sortable: false,
   },
 ];
@@ -140,8 +186,8 @@ export const InspectionColumns: GridColDef[] = [
           >
             View
           </button>
-          <span className="text-sm text-green-800">Approve</span>
-          <span className="text-sm text-red-500">Reject</span>
+          <button className="text-sm text-green-800">Approve</button>
+          <button className="text-sm text-red-500">Reject</button>
         </div>
       );
     },
@@ -170,10 +216,16 @@ export const ProductColumns: GridColDef[] = [
         </div>
       );
     },
-    flex: 4,
+    flex: 2,
   },
   { field: "type", headerName: "Category" },
-  { field: "price", headerName: "Price(₦)", type: "number" },
+  {
+    field: "price",
+    headerName: "Price(₦)",
+    renderCell: ({ row }) => formatPrice(row.price),
+    type: "number",
+    flex: 1,
+  },
   // { field: "current_stock", headerName: "Stock", type: "number", flex: 1 },
   {
     field: "status",
@@ -191,7 +243,7 @@ export const ProductColumns: GridColDef[] = [
         </div>
       );
     },
-    flex: 1,
+    flex: 0.5,
   },
   {
     field: "Action",
@@ -286,19 +338,191 @@ export const AuctionColumns: GridColDef[] = [
   },
 ];
 
-// order
-export const OrderColumns: GridColDef[] = [
-  { field: "id", headerName: "ID", flex: 0.3 },
-  { field: "name", headerName: "Customer", flex: 0.9 },
-  { field: "type", headerName: "Item type", flex: 0.4 },
-  { field: "details", headerName: "Item Details", flex: 1 },
-  { field: "date", headerName: "Order Date", flex: 1 },
-  { field: "status", headerName: "Status", flex: 0.5 },
+export const purchaseEnqColumns: GridColDef[] = [
+  {
+    field: "id",
+    headerName: "Enquiry ID",
+    flex: 0.5,
+  },
+  {
+    field: "buyer",
+    headerName: "Buyer",
+    renderCell: ({ value }) => {
+      return (
+        <div className="flex flex-col">
+          <span className="text-xs text-gray-500">{value?.id}</span>
+          <span className=" text-sm font-medium">{value?.name}</span>
+          <span className="text-xs text-gray-500">{value?.email}</span>
+        </div>
+      );
+    },
+    flex: 0.5,
+  },
+
+  {
+    field: "product",
+    headerName: "Product",
+    renderCell: ({ value }) => {
+      return (
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1">
+            <span className="text-sm font-medium truncate">{value?.name}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-sm font-medium">{value?.type}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-sm font-medium">
+              N{formatPrice(Number(value?.price))}
+            </span>
+          </div>
+        </div>
+      );
+    },
+    flex: 1,
+    sortable: false,
+  },
+  {
+    field: "agent",
+    headerName: "Agent",
+    renderCell: ({ value }) => {
+      return (
+        <div className="flex flex-col">
+          <span className="text-xs text-gray-500">{value?.id}</span>
+          <span className="text-sm font-medium">{value?.name}</span>
+          <span className="text-xs text-gray-500">{value?.email}</span>
+        </div>
+      );
+    },
+    flex: 0.5,
+  },
+  {
+    field: "message",
+    headerName: "Message",
+    flex: 1,
+    renderCell: ({ value }) => (
+      <span className="font-medium truncate">{value}</span>
+    ),
+  },
+  {
+    field: "inspection_request",
+    headerName: "Inspection Request",
+    renderCell: ({ value }) => {
+      return (
+        <div className="flex flex-col">
+          <span className="text-xs text-gray-500">
+            {formatIsoString(value?.scheduled_at).formattedDate} at{" "}
+            {formatIsoString(value?.scheduled_at).formattedTime}
+          </span>
+          <span className="text-xs text-gray-500">
+            {formatIsoString(value?.completed_at).formattedDate} at{" "}
+            {formatIsoString(value?.completed_at).formattedTime}
+          </span>
+          <span className="text-xs text-gray-500">{value?.notes}</span>
+        </div>
+      );
+    },
+    flex: 1,
+  },
+  {
+    field: "status",
+    headerName: "Status",
+    flex: 0.5,
+    renderCell: ({ value }) => {
+      return (
+        <span
+          className={`flex gap-x-1 items-center justify-start w-[120px] px-2 py-1 rounded-full font-medium text-sm
+              ${getStatusClassPurchaseEnquiry(value)}`}
+        >
+          <GoDotFill size={20} /> {value}
+        </span>
+      );
+    },
+  },
   {
     field: "Action",
     flex: 0.5,
     renderCell: ({ row }) => {
-      return <OrderActionCellComponent row={row} />;
+      return <PurchaseActionCellComponent rowId={row.id} />;
     },
   },
 ];
+
+export const PurchaseActionCellComponent = ({ rowId }: { rowId: number }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const dotsPopupRef = useRef(null);
+  const open = Boolean(anchorEl);
+  const id = open ? `popper-${rowId}` : undefined;
+
+  useClickAway(dotsPopupRef, () => {
+    setAnchorEl(null);
+  });
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  return (
+    <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
+      <button
+        aria-describedby={id}
+        type="button"
+        onClick={handleClick}
+        className="cursor-pointer bg-transparent border-none p-2 m-0 rounded-full hover:bg-gray-100"
+        style={{ lineHeight: 0 }}
+      >
+        <BsThreeDotsVertical size={16} />
+      </button>
+      <Popper
+        ref={dotsPopupRef}
+        className="p-3 px-4 text-sm z-10 flex flex-col gap-3 items-center rounded-lg border border-primaryBorder bg-white"
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        placement="bottom-end"
+        style={{ zIndex: 1300 }}
+        modifiers={[
+          {
+            name: "offset",
+            options: {
+              offset: [0, 8],
+            },
+          },
+          {
+            name: "preventOverflow",
+            options: {
+              boundary: "viewport",
+              padding: 8,
+            },
+          },
+        ]}
+      >
+        <button className="text-xs hover:underline hover:text-green-600">
+          Assign Agent
+        </button>
+        <button className="text-xs hover:underline hover:text-blue-600">
+          Mark as Sold
+        </button>
+        <button className="text-xs hover:underline hover:text-red-600">
+          Close Enquiry
+        </button>
+      </Popper>
+    </div>
+  );
+};
+const getStatusClassPurchaseEnquiry = (status: string) => {
+  switch (status) {
+    case "closed":
+      return "text-red-500 bg-red-100";
+    case "scheduled":
+      return "text-yellow-500 bg-yellow-100";
+    case "sold":
+      return "text-green-500 bg-green-100";
+    case "assigned":
+      return "text-[#9F1AB1] bg-[#FBE8FF]";
+    default:
+      return "";
+  }
+};

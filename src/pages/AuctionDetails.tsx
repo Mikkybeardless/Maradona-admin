@@ -5,7 +5,6 @@ import DashboardSearchBar from "../components/DashboardSearchBar";
 import ProductCarousel from "../components/ProductCarousel";
 // import { generateRandomNumber } from "../helper/helperFunctions";
 import MuiTableComponent from "../components/table/TableComponent";
-// import { GridColDef } from "@mui/x-data-grid";
 import image1 from "../assets/detail1.png";
 import image2 from "../assets/detail2.png";
 import image3 from "../assets/detail3.png";
@@ -14,97 +13,45 @@ import auctionService from "../api/services/auction.service";
 import { useEffect, useState } from "react";
 import { AuctionColumns } from "../components/table/columns";
 import { usePaginatedData } from "../hooks/usePaginatedData";
-
-// const rows = (): BidTableType[] => {
-//   return Array.from({ length: 15 }, (_, i) => {
-//     const num = i + 1;
-//     const randomNum = generateRandomNumber(4, 1);
-
-//     return {
-//       id: num, // Required by MUI
-//       bidder: randomNum === 2 ? "No Bid" : `#E${num}HH`,
-//       product: "Toyota Camery LE (2024)",
-//       price: "N5,500,000",
-//       status:
-//         randomNum === 1
-//           ? "Pending"
-//           : randomNum === 2
-//           ? "Closed"
-//           : randomNum === 3
-//           ? "Sold"
-//           : "Active",
-//       date: new Date().toUTCString(),
-//     };
-//   });
-// };
-
-// const columns: GridColDef[] = [
-//   {
-//     field: "bidder",
-//     headerName: "Bidders",
-//     renderCell: ({ value }) => {
-//       return (
-//         <span className={`${value === "No Bid" && "text-[#DC1313]"}`}>
-//           {value}
-//         </span>
-//       );
-//     },
-//     flex: 0.7,
-//   },
-//   {
-//     field: "product",
-//     headerName: "Product",
-//     renderCell: ({ value }) => {
-//       return (
-//         <div className="flex gap-x-2 items-center">
-//           <img className="w-[40px] h-[40px]" src={Car2} alt="product" />
-//           <p className="text-sm font-medium text-darkBlue">{value}</p>
-//         </div>
-//       );
-//     },
-//     flex: 1,
-//   },
-//   { field: "price", headerName: "Price", flex: 0.7 },
-//   {
-//     field: "status",
-//     headerName: "Status",
-//     flex: 0.7,
-//     renderCell: ({ value }) => {
-//       return (
-//         <span
-//           className={`px-3 py-1 rounded-full font-medium text-sm
-//           ${
-//             value === "Active"
-//               ? "bg-[#FE8E49] text-white"
-//               : value === "Sold"
-//               ? "bg-[#E8F8E8] text-[#0C560B]"
-//               : value === "Pending"
-//               ? "bg-[#FEF3B8] text-[#0C560B]"
-//               : "bg-[#DC1313] text-white"
-//           }`}
-//         >
-//           {value}
-//         </span>
-//       );
-//     },
-//   },
-
-//   { field: "date", headerName: "Time", flex: 1 },
-// ];
+import { formatPrice } from "../helper/helperFunctions";
 
 const images = [image1, image2, image3, image4];
 
 export default function AuctionDetails() {
   const { id } = useParams();
-  const [auction, setAuction] = useState(null);
+  const [auction, setAuction] = useState({
+    name: "",
+    type: "",
+    description: "",
+    category_id: "",
+    sku: "",
+    price: "",
+    inventory: "",
+    media: [],
+    documents: [],
+    status: "active",
+    starting_bid: "",
+    reserve_price: "",
+    start_time: "",
+    end_time: "",
+    tags: [],
+    incremental_bid_amount: "",
+    minimum_bid_increment: "",
+    auto_extend: "",
+    winning_bid_id: "",
+    seller_id: "",
+    approved_by: "",
+    approved_at: "",
+    time_left: "",
+  });
 
   useEffect(() => {
     const fetchAuctionDetails = async () => {
       if (id) {
         try {
           const response = await auctionService.getAuction(parseInt(id));
-          console.log("Auction details:", response.data.product);
-          setAuction(response.data.product);
+          console.log("Auction details:", response);
+          setAuction(response.data);
         } catch (error) {
           console.error("Error fetching auction details:", error);
         }
@@ -114,7 +61,7 @@ export default function AuctionDetails() {
     };
 
     fetchAuctionDetails();
-  }, []);
+  }, [id]);
 
   const [auctionData, setAuctionData] = usePaginatedData(
     auctionService.getAllAuctions,
@@ -148,9 +95,10 @@ export default function AuctionDetails() {
             <div className="w-full bg-white rounded-xl p-6 flex flex-col gap-y-1.5">
               <span className="text-sm font-semibold">Description</span>
               <span className="opacity-70 text-sm">
-                A well-maintained Toyota Camry 2018 model with a sleek design
+                {auction?.description}
+                {/* A well-maintained Toyota Camry 2018 model with a sleek design
                 and advanced features. Perfect for both city and highway
-                driving.
+                driving. */}
               </span>
             </div>
           </div>
@@ -160,28 +108,28 @@ export default function AuctionDetails() {
             <div className="w-full bg-white space-y-6 flex flex-col rounded-xl p-6">
               <div className="space-y-2 flex flex-col">
                 <span className="text-sm opacity-70 ">Product Name:</span>
-                <span className=" text-2xl font-bold">
-                  Toyota Camry LE (2024)
-                </span>
+                <span className=" text-2xl font-bold">{auction?.name}</span>
                 <div className="w-full flex items-center gap-x-1">
                   <span className="opacity-70 text-[#008000] rounded-3xl bg-[#D3FFD3] px-2 py-1 text-sm">
-                    Active
+                    {auction.status}
                   </span>
                   <div className="flex gap-1 bg-black text-white rounded-full px-2 py-1 text-xs font-semibold">
                     <span className="text-sm font-semibold">Category:</span>
-                    <span className=" text-sm">CAR</span>
+                    <span className=" text-sm">{auction.type}</span>
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col gap-y-1.5">
                 <span className="text-secondaryTextColor">starting Price</span>
-                <span className="text-3xl text-lightBlue">22,000,000</span>
+                <span className="text-3xl text-lightBlue">
+                  N{formatPrice(Number(auction.starting_bid))}
+                </span>
               </div>
               <div className="flex flex-col gap-y-1.5">
                 <span className="text-secondaryTextColor">Current Price</span>
                 <span className="text-[50px] font-bold text-[#21C45D]">
-                  28,500,000
+                  N{formatPrice(Number(auction.price))}
                 </span>
               </div>
             </div>

@@ -99,9 +99,9 @@ function App() {
             />
           </Route>
 
-          <Route path="orders">
+          <Route path="purchase-enquiries">
             <Route index element={<Orders />} />
-            <Route path="order/:id" element={<AdminOrder />} />
+            <Route path="enquiry/:id" element={<AdminOrder />} />
           </Route>
           <Route path="reports">
             <Route index element={<Reports />} />

@@ -118,7 +118,6 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         <h6 className="font-medium mt-5">Export</h6>
         <div className="flex flex-col gap-y-2 mt-2">
           {[
-            { id: "current", label: "Current page" },
             { id: "all", label: "All data" },
             {
               id: "selected",

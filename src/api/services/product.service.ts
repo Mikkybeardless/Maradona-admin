@@ -18,9 +18,6 @@ const productService = {
     data: ProductUpdate<T> | FormData
   ) => apiClient.post(`/admin/products/${id}/edit`, data),
   deleteProduct: (id: number) => apiClient.delete(`/admin/products/${id}`),
-
-  productSearch: (query: string) =>
-    apiClient.get(`/seller/products/search?search_key=${query}&show_all=true`),
 };
 
 export default productService;

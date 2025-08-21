@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight, FaRegEye } from "react-icons/fa6";
 import MuiTableComponent from "../components/table/TableComponent";
-import { GridRowParams } from "@mui/x-data-grid";
+import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { useRef, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { useClickAway } from "react-use";

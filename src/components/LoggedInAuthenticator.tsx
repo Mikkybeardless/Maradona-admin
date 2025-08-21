@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
@@ -9,7 +9,7 @@ export default function LoggedInAuthenticator() {
   const location = useLocation();
   const { pathname } = location;
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const token = Cookies.get("token");
+  // const token = Cookies.get("token");
   const navigate = useNavigate();
   useEffect(() => {
     const token = Cookies.get("token");
@@ -23,9 +23,9 @@ export default function LoggedInAuthenticator() {
     }
   }, [isAuthenticated, pathname]);
   // If not authenticated and not on the login page, redirect to login
-  if (!isAuthenticated && !token && location.pathname !== "/admin/login") {
-    return <Navigate to="/admin/login" replace />;
-  }
+  // if (!isAuthenticated && !token && location.pathname !== "/admin/login") {
+  //   return <Navigate to="/admin/login" replace />;
+  // }
 
   return (
     <div className="flex h-screen w-screen">

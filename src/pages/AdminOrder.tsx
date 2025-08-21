@@ -2,17 +2,20 @@ import { Link, useLocation } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { HiDotsHorizontal } from "react-icons/hi";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import Car from "../assets/Product-page-car.png";
 import Paystack from "../assets/paystack-logo.svg";
 import { GrEdit } from "react-icons/gr";
 import { FaTimes } from "react-icons/fa";
 import ShipmentModal from "../components/ShipmentModal";
+import { formatIsoString } from "../helper/formatIIsoString";
 
 export default function AdminOrder() {
   const location = useLocation();
-  const { state, pathname } = location;
+  const { state } = location;
+  // retrieve the state object
+  const { enquiry } = state || {};
   const [showDropdown, setShowDropdown] = useState(false);
   const [markModal, setMarkModal] = useState(false);
   const [cancelModal, setCancelModal] = useState(false);
@@ -72,6 +75,13 @@ export default function AdminOrder() {
   function openInvoiceModal() {
     setInvoiceModal(true);
   }
+
+  useEffect(() => {
+    if (enquiry) {
+      // Do something with the enquiry data
+      console.log("enquiry", enquiry);
+    }
+  }, [enquiry]);
 
   return (
     <>
@@ -239,17 +249,23 @@ export default function AdminOrder() {
               Dashboard
             </Link>
             <FaChevronRight size={18} />
-            <Link to={`/admin/orders`} className="text-sm opacity-60">
-              Order
+            <Link
+              to={`/admin/purchase-enquiries`}
+              className="text-sm opacity-60"
+            >
+              Purchase Enquiries
             </Link>
             <FaChevronRight size={18} />
-            <span className="text-sm">Order detail</span>
+            <span className="text-sm">Enquiry detail</span>
           </div>
 
           <section className="w-full flex justify-between items-center mt-6">
             <div className="flex flex-col gap-y-1">
-              <h2 className="text-2xl font-semibold">#1011</h2>
-              <p className="text-xs">Purchased - {new Date().toDateString()}</p>
+              {/* <h2 className="text-2xl font-semibold">{enquiry.id}</h2> */}
+              <p className="text-xs">
+                Enquiry Date -{" "}
+                {/* {formatIsoString(enquiry.created_at).formattedDate} */}
+              </p>
             </div>
 
             <div className="flex gap-x-5 items-center">
@@ -308,9 +324,9 @@ export default function AdminOrder() {
             <div className=" w-full md:w-[70%] flex flex-col gap-y-5">
               <div className="w-full flex flex-col rounded-lg border border-primaryBorder bg-white">
                 <h4 className="py-5 px-4 flex gap-x-2 items-center font-medium">
-                  Order ID: #1011
+                  {/* Enquiry ID: #{enquiry.id} */}
                   <span className="rounded-[100px] text-xs font-normal px-2 py-1 bg-defaultOrange text-white">
-                    On transit
+                    {/* {enquiry.status} */}
                   </span>
                 </h4>
 
@@ -329,7 +345,7 @@ export default function AdminOrder() {
                   </div>
                 </div>
 
-                {!state?.fromTransaction ? (
+                {/* {!state?.fromTransaction ? (
                   <div className="flex justify-end py-3 px-4 border-t border-t-primaryBorder">
                     {state?.isProcessed ? (
                       <button
@@ -347,7 +363,7 @@ export default function AdminOrder() {
                       </button>
                     )}
                   </div>
-                ) : null}
+                ) : null} */}
               </div>
               {/* create shipment approve */}
 

@@ -60,20 +60,24 @@ export default function AdminSidebar() {
   // Navigation links configuration
   const navLinks = [
     { to: "auctions", icon: <RiAuctionLine size={18} />, label: "Auctions" },
-    { to: "orders", icon: <BsCart3 size={16} />, label: "Orders" },
+    {
+      to: "purchase-enquiries",
+      icon: <BsCart3 size={16} />,
+      label: "Purchase Enquiries",
+    },
     { to: "reports", icon: <SlChart size={16} />, label: "Reports" },
-    {
-      to: "promotions",
-      icon: <PiSealPercent size={16} />,
-      label: "Promotions & Discounts",
-    },
-    { to: "shipments", icon: <BsBoxSeam size={16} />, label: "Shipments" },
+    // {
+    //   to: "promotions",
+    //   icon: <PiSealPercent size={16} />,
+    //   label: "Promotions & Discounts",
+    // },
+    // { to: "shipments", icon: <BsBoxSeam size={16} />, label: "Shipments" },
     { to: "agents", icon: <TbTie size={16} />, label: "Field Agents" },
-    {
-      to: "customer-care",
-      icon: <MdOutlineHeadsetMic size={16} />,
-      label: "Customer Care",
-    },
+    // {
+    //   to: "customer-care",
+    //   icon: <MdOutlineHeadsetMic size={16} />,
+    //   label: "Customer Care",
+    // },
   ];
   // Function to check if a link is active for root (/admin) dashboard
   const isActiveLink = (path: string) => {
@@ -145,7 +149,7 @@ export default function AdminSidebar() {
           />
         </div>
 
-        <div className="flex flex-col gap-y-2 flex-1 w-full mt-7">
+        <div className="flex flex-col gap-y-6 flex-1 w-full mt-7">
           {/* Map through navigation links */}
           <NavLink
             to={"/admin"}

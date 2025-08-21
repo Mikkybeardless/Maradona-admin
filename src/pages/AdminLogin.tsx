@@ -16,21 +16,18 @@ import CountdownTimer from "../components/CountDown";
 export default function AdminLogin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
-
   const [isLoading, setIsLoading] = useState(false);
-
   const [resetData, setResetData] = useState({
     email: "",
   });
   const [error, setError] = useState("");
   const [phase, setPhase] = useState(1);
   const [otp, setOtp] = useState("");
-  const [time, setTime] = useState(60);
+
   const [newPasswordData, setNewPasswordData] = useState({
     password: "",
     confirm_password: "",
@@ -39,10 +36,6 @@ export default function AdminLogin() {
 
   function handlePasswordShow() {
     setTogglePasswordShow(!togglePasswordShow);
-  }
-
-  function resetTime() {
-    setTime(60);
   }
 
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +63,6 @@ export default function AdminLogin() {
 
       if (response.status == 200) {
         const data = response.data;
-
         Cookies.set("token", data.token);
         dispatch(login(data.user));
         toast.success("Login successful");
@@ -113,10 +105,8 @@ export default function AdminLogin() {
     setIsLoading(true);
     try {
       const response = await authService.reqPasswordReset(resetData);
-
       if (response.status == 200) {
         toast.success("Check your email for otp code");
-        resetTime();
         setPhase(3);
       }
     } catch (error: any) {
@@ -161,29 +151,13 @@ export default function AdminLogin() {
       if (error.response?.status === 400) {
         toast.error("Invalid verification code");
       } else {
-        toast.error("Error confirming password reset");
+        toast.error("Error resetting password, please try again later");
       }
     } finally {
       setIsLoading(false);
     }
   };
-  const countDown = () => {
-    let timer: NodeJS.Timeout;
-    const start = Date.now();
-    const duration = 300; // 5 minutes in seconds
 
-    const updateTimer = () => {
-      const elapsed = Math.floor((Date.now() - start) / 1000);
-      const remaining = duration - elapsed;
-      if (remaining <= 0) {
-        clearInterval(timer);
-        setPhase(5);
-      }
-    };
-
-    timer = setInterval(updateTimer, 1000);
-    return () => clearInterval(timer);
-  };
   useEffect(() => {
     // Reset error message when phase changes
     setError("");
@@ -328,9 +302,9 @@ export default function AdminLogin() {
             Didn't get a code?{" "}
             <button
               onClick={handleResetPassword}
-              className="font-medium cursor-pointer hover:underline"
+              className="font-medium flex items-center justify-center cursor-pointer hover:underline"
             >
-              Send again
+              {isLoading ? <Spinner /> : "Send again"}
             </button>
           </p>
           <button

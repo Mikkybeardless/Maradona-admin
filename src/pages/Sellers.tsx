@@ -2,8 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaPlus } from "react-icons/fa6";
 import MuiTableComponent from "../components/table/TableComponent";
-import { GridColDef, GridRowParams } from "@mui/x-data-grid";
-import { formatPrice } from "../helper/helperFunctions";
+import { GridRowParams } from "@mui/x-data-grid";
 import { useState } from "react";
 // import { useClickAway } from "react-use";
 import { TableSearchInput } from "../components/common/TableSearchInput";
@@ -17,37 +16,18 @@ import formatDayJs from "../helper/formatDateJs";
 import UserService from "../api/services/userMgt.service";
 import { usePaginatedData } from "../hooks/usePaginatedData";
 import { sellerColumns } from "../components/table/columns";
-
-type UserTableType = {
-  id: any;
-  name: string;
-  phone: string;
-  location: string;
-  orders: number;
-  totalSpent: number;
-  status: string;
-};
-
-// const rows = (): UserTableType[] => {
-//   const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-//   const returnArray: UserTableType[] = [];
-//   loopArray.forEach((num) => {
-//     returnArray.push({
-//       id: num,
-//       name: "Rosemary Sunday",
-//       phone: "07071234323",
-//       location: "Lugbe Abuja",
-//       orders: 22,
-//       totalSpent: 100000,
-//       status: "Active",
-//     });
-//   });
-//   return returnArray;
-// };
+import { formatIsoString } from "../helper/formatIIsoString";
 
 type IFilter = {
   status: string;
   date: Dayjs | null;
+};
+type SelectedSellerData = {
+  "Seller Id": number;
+  "Seller Name": string;
+  Email: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export default function Sellers() {
@@ -55,7 +35,7 @@ export default function Sellers() {
   const { pathname } = location;
   const navigate = useNavigate();
   const [exportModal, setExportModal] = useState(false);
-  const [selectedData, setSelectedData] = useState<UserTableType[]>([]);
+  const [selectedData, setSelectedData] = useState<SelectedSellerData[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery);
   const [filters, setFilters] = useState<IFilter>({
@@ -84,25 +64,15 @@ export default function Sellers() {
     navigate(`/admin/sellers/seller/${params.row.id}`);
   };
 
-  // const columns: GridColDef[] = [
-  //   { field: "name", headerName: "Customer name", flex: 1 },
-  //   { field: "id", headerName: "ID", flex: 0.2, sortable: false },
-  //   { field: "phone", headerName: "Phone", flex: 1, sortable: false },
-  //   { field: "email", headerName: "Email", flex: 1, sortable: false },
-  //   { field: "location", headerName: "Location", flex: 1, sortable: false },
-  //   { field: "orders", headerName: "Order(s)" },
-  //   {
-  //     field: "totalSpent",
-  //     headerName: "Total Spent",
-  //     flex: 0.8,
-  //     renderCell: ({ row }) => (
-  //       <span className="">₦{formatPrice(row.totalSpent)}</span>
-  //     ),
-  //   },
-  //   { field: "status", headerName: "Status", sortable: false },
-  // ];
-  const handleTableSelectionChange = (newSelection: UserTableType[]) => {
-    setSelectedData(newSelection);
+  const handleTableSelectionChange = (newSelection: ApiUser[]) => {
+    const formatedData = newSelection.map((item) => ({
+      ["Seller Id"]: item.id,
+      ["Seller Name"]: item.name,
+      ["Email"]: item.email,
+      created_at: formatIsoString(item.created_at).formattedDate,
+      updated_at: formatIsoString(item.updated_at).formattedDate,
+    }));
+    setSelectedData(formatedData);
   };
 
   return (
@@ -110,8 +80,13 @@ export default function Sellers() {
       <ExportModal
         isOpen={exportModal}
         onClose={() => setExportModal(false)}
-        allData={sellersData.rows}
-        // currentPageData={currentPageData}
+        allData={(sellersData.rows as ApiUser[]).map((item) => ({
+          ["Seller Id"]: item.id,
+          ["Seller Name"]: item.name,
+          ["Email"]: item.email,
+          created_at: formatIsoString(item.created_at).formattedDate,
+          updated_at: formatIsoString(item.updated_at).formattedDate,
+        }))}
         selectedData={selectedData}
         filename="sellers-data"
       />
@@ -131,17 +106,17 @@ export default function Sellers() {
           <div className="flex items-center gap-x-5">
             <button
               onClick={() => setExportModal(true)}
-              className="text-sm hover:underline text-defaultOrange"
+              className="flex gap-x-1 md:gap-x-3 items-center rounded-lg px-3 md:px-5 py-1.5 md:py-3  text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
             >
               Export
             </button>
-            <Link
+            {/* <Link
               to={`/admin/sellers/add-seller`}
               className="flex gap-x-1 md:gap-x-3 items-center rounded-lg px-3 md:px-5 py-1.5 md:py-3  text-white text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
             >
               <FaPlus size={20} />
               Add seller
-            </Link>
+            </Link> */}
           </div>
         </div>
 
