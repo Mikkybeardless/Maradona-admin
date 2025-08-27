@@ -65,3 +65,13 @@ export const buildCleanParams = (
 
   return params;
 };
+
+export const formatAmountToNaira = (
+  amount: number,
+  currency: string = "NGN"
+): string => {
+  return amount.toLocaleString("en-NG", {
+    style: "currency",
+    currency: currency,
+  });
+};

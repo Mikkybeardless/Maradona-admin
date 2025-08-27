@@ -17,7 +17,6 @@ import { Spinner } from "../components/common/spinner";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import formatDateToYYYYMMDD from "../helper/formatDate";
 import PriceInput from "../components/common/priceInput";
-import { AxiosError } from "axios";
 
 export default function AddAuction() {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +52,7 @@ export default function AddAuction() {
     tags: [],
     incremental_bid_amount: "",
     minimum_bid_increment: "",
-    auto_extend: "",
+    auto_extend: "0",
   };
   const [auctionDetails, setAuctionDetails] = useState<Auction>(
     initialAuctionDetails
@@ -91,9 +90,11 @@ export default function AddAuction() {
       return;
     }
     const fullStartTime = `${formatDateToYYYYMMDD(date.start)} ${
-      time.start
+      time.start || "00"
     }:00`;
-    const fullEndTime = `${formatDateToYYYYMMDD(date.end)} ${time.end}:00`;
+    const fullEndTime = `${formatDateToYYYYMMDD(date.end)} ${
+      time.end || "00"
+    }:00`;
     const apiData = {
       ...auctionDetails,
       start_time: fullStartTime,
@@ -118,11 +119,7 @@ export default function AddAuction() {
       }
 
       // Special handling for array-required fields
-      if (key === "documents") {
-        appendArrayField(formData, key, value as File[], true);
-        continue;
-      }
-      if (key === "media") {
+      if (key === "documents" || key === "media") {
         appendArrayField(formData, key, value as File[], true);
         continue;
       }
@@ -139,9 +136,9 @@ export default function AddAuction() {
       }
     }
 
-    // for (const [key, value] of formData.entries()) {
-    //   console.log(key, value);
-    // }
+    for (const [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
 
     try {
       setIsLoading(true);
@@ -157,8 +154,8 @@ export default function AddAuction() {
           case 422: {
             const errors = err.response.data.errors;
             const secondKey = Object.keys(errors)[0];
-
-            return `<${secondKey[0]}>`;
+            const message = errors[secondKey][0];
+            return ` ${message}`;
           }
           case 500:
             return `Failed to create product.\nCheck your internet connection`;
@@ -228,7 +225,6 @@ export default function AddAuction() {
       value: String(tag.id),
       label: tag.name,
     }));
-    console.log("Tag options:", options);
     setTagOptions(options);
   }, [tags]);
 
@@ -239,7 +235,6 @@ export default function AddAuction() {
       value: String(category.id),
       label: category.name,
     }));
-    console.log("Category options:", options);
     setCategoryOptions(options);
   }, [categories]);
 
@@ -287,6 +282,7 @@ export default function AddAuction() {
                 <select
                   id="productType"
                   onChange={handleInputChange}
+                  value={auctionDetails.type}
                   name="type"
                   className="p-3 outline-none w-full rounded-lg border border-primaryBorder"
                 >
@@ -314,6 +310,11 @@ export default function AddAuction() {
                   Auction description:
                 </h5>
                 <ReactQuill
+                  value={
+                    auctionDetails.description
+                      ? `<p>${auctionDetails.description}</p>`
+                      : "<p></p>"
+                  }
                   onChange={(...args) => {
                     const editor = args[3];
                     const text = editor.getText().trim();
@@ -585,12 +586,12 @@ export default function AddAuction() {
                   <input
                     className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
                     id="condition1"
-                    checked={auctionDetails.auto_extend === "2"}
+                    checked={auctionDetails.auto_extend === "0"}
                     type="checkbox"
                     onChange={() =>
                       setAuctionDetails((prev) => ({
                         ...prev,
-                        auto_extend: "2",
+                        auto_extend: "0",
                       }))
                     }
                   />

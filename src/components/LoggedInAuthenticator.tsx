@@ -13,10 +13,8 @@ export default function LoggedInAuthenticator() {
   const navigate = useNavigate();
   useEffect(() => {
     const token = Cookies.get("token");
-    console.log("Checking authentication status...");
-    console.log("Is authenticated:", isAuthenticated);
-    console.log("Current pathname:", pathname);
-    console.log("Token exists:", !!token);
+    console.log("isAuthenticated:", isAuthenticated);
+    // console.log("token:", !!token);
 
     if (!token) {
       navigate("/admin/login");

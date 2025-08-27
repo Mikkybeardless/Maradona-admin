@@ -2,14 +2,16 @@ import { GridColDef } from "@mui/x-data-grid";
 import { formatPrice } from "../../helper/helperFunctions";
 import { TbAward } from "react-icons/tb";
 import { Link } from "react-router-dom";
-import { ProductActionCellComponent } from "../../pages/Products";
 import { formatIsoString } from "../../helper/formatIIsoString";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Popper } from "@mui/material";
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
-import { GoDotFill } from "react-icons/go";
+import { GoDotFill, GoTrash } from "react-icons/go";
 import purchaseEnquiriesService from "../../api/services/purchaseEnquiries.service";
+import { toast } from "react-toastify";
+import { BiEditAlt } from "react-icons/bi";
+import { FaRegEye } from "react-icons/fa6";
 
 // buyer columns
 export const BuyerColumns: GridColDef[] = [
@@ -253,6 +255,73 @@ export const ProductColumns: GridColDef[] = [
     },
   },
 ];
+
+const ProductActionCellComponent = ({ row }: { row: any }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const dotsPopupRef = useRef(null);
+  const open = Boolean(anchorEl);
+  const id = open ? `popper-${row.id}` : undefined;
+
+  useClickAway(dotsPopupRef, () => {
+    setAnchorEl(null);
+  });
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  return (
+    <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
+      <button
+        aria-describedby={id}
+        type="button"
+        onClick={handleClick}
+        className="cursor-pointer bg-transparent border-none p-2 m-0 rounded-full hover:bg-gray-100"
+        style={{ lineHeight: 0 }}
+      >
+        <BsThreeDotsVertical size={16} />
+      </button>
+      <Popper
+        ref={dotsPopupRef}
+        className="p-3 text-sm z-10 flex gap-x-4 items-center rounded-lg border border-primaryBorder bg-white"
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        placement="bottom-end"
+        style={{ zIndex: 1300 }}
+        modifiers={[
+          {
+            name: "offset",
+            options: {
+              offset: [0, 8],
+            },
+          },
+          {
+            name: "preventOverflow",
+            options: {
+              boundary: "viewport",
+              padding: 8,
+            },
+          },
+        ]}
+      >
+        <Link to={`/admin/products/product/${row.id}`}>
+          <FaRegEye size={18} />
+        </Link>
+        <Link to={`/admin/products/edit-product/${row.id}`}>
+          <BiEditAlt size={18} />
+        </Link>
+
+        {/* <button onClick={() => handleDelete(row.id)}>
+          <GoTrash size={18} />
+        </button> */}
+      </Popper>
+    </div>
+  );
+};
+
 function renderStatusColor(status: string) {
   switch (status) {
     case "published":
@@ -270,13 +339,81 @@ function renderStatusColor(status: string) {
 export const AuctionColumns: GridColDef[] = [
   {
     field: "seller_id",
-    headerName: "Bidders",
+    headerName: "Seller",
     renderCell: ({ value }) => {
       return (
         <span className={`${value === "No Bid" && "text-[#DC1313]"}`}>
           {value}
         </span>
       );
+    },
+    flex: 0.7,
+  },
+  {
+    field: "name",
+    headerName: "Product",
+    renderCell: ({ row }) => {
+      return (
+        <div className="flex gap-x-5 items-center">
+          <img
+            className="w-[40px] h-[40px]"
+            src={row.media[0] || "/images/placeholder.png"}
+            alt="product"
+          />
+          <p className="text-sm font-medium text-darkBlue">{row.name}</p>
+        </div>
+      );
+    },
+    flex: 1,
+  },
+  { field: "price", headerName: "Price", flex: 0.7 },
+  {
+    field: "status",
+    headerName: "Status",
+    flex: 0.7,
+    renderCell: ({ value }) => {
+      return (
+        <span
+          className={`px-3 py-1 rounded-full font-medium text-sm
+          ${
+            value === "published"
+              ? "bg-[#FE8E49] text-white"
+              : value === "sold"
+              ? "bg-[#E8F8E8] text-[#0C560B]"
+              : value === "draft"
+              ? "bg-[#FEF3B8] "
+              : "bg-[#DC1313] text-white"
+          }`}
+        >
+          {value}
+        </span>
+      );
+    },
+  },
+
+  {
+    field: "created_at",
+    headerName: "Time",
+    renderCell: ({ value }) => {
+      const { formattedDate, formattedTime } = formatIsoString(value);
+      return (
+        <div className="flex">
+          <div>{formattedDate}</div>
+          <div>{formattedTime}</div>
+        </div>
+      );
+    },
+    flex: 0.9,
+  },
+];
+
+// active auctions/bids
+export const BidsColumns: GridColDef[] = [
+  {
+    field: "buyer_name",
+    headerName: "Bidders",
+    renderCell: ({ row }) => {
+      return <span>{row.buyer.name}</span>;
     },
     flex: 0.7,
   },
@@ -401,7 +538,7 @@ export const purchaseEnqColumns: GridColDef[] = [
     headerName: "Message",
     flex: 1,
     renderCell: ({ value }) => (
-      <span className="font-medium truncate">{value}</span>
+      <span className="font-medium  truncate">{value}</span>
     ),
   },
   {
@@ -450,6 +587,7 @@ export const purchaseEnqColumns: GridColDef[] = [
 
 export const PurchaseActionCellComponent = ({ rowId }: { rowId: number }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [closing, setClosing] = useState(false);
   const dotsPopupRef = useRef(null);
   const open = Boolean(anchorEl);
   const id = open ? `popper-${rowId}` : undefined;
@@ -462,6 +600,23 @@ export const PurchaseActionCellComponent = ({ rowId }: { rowId: number }) => {
     event.preventDefault();
     event.stopPropagation();
     setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const handleClosedEnquiry = async () => {
+    try {
+      setClosing(true);
+      const response = await purchaseEnquiriesService.closeEnquiry(rowId);
+      if (response.status === 200) {
+        // Handle successful closure
+        toast.success("Enquiry closed successfully");
+      }
+    } catch (error) {
+      toast.error("Error closing enquiry, pls try again later");
+      console.error("Error closing enquiry:", error);
+    } finally {
+      setAnchorEl(null);
+      setClosing(false);
+    }
   };
 
   return (
@@ -499,14 +654,17 @@ export const PurchaseActionCellComponent = ({ rowId }: { rowId: number }) => {
           },
         ]}
       >
-        <button className="text-xs hover:underline hover:text-green-600">
-          Assign Agent
-        </button>
-        <button className="text-xs hover:underline hover:text-blue-600">
-          Mark as Sold
-        </button>
-        <button className="text-xs hover:underline hover:text-red-600">
-          Close Enquiry
+        <Link
+          to={`/admin/purchase-enquiries/enquiry/${rowId}`}
+          className="text-xs hover:underline hover:text-green-600"
+        >
+          View Details
+        </Link>
+        <button
+          onClick={handleClosedEnquiry}
+          className="text-xs hover:underline hover:text-red-600"
+        >
+          {closing ? "Closing..." : "Close Enquiry"}
         </button>
       </Popper>
     </div>
@@ -516,7 +674,7 @@ const getStatusClassPurchaseEnquiry = (status: string) => {
   switch (status) {
     case "closed":
       return "text-red-500 bg-red-100";
-    case "scheduled":
+    case "open":
       return "text-yellow-500 bg-yellow-100";
     case "sold":
       return "text-green-500 bg-green-100";

@@ -258,6 +258,12 @@ export default function AddProducts() {
     } catch (err: any) {
       toast.error(() => {
         switch (err.status) {
+          case 422: {
+            const errors = err.response.data.errors;
+            const secondKey = Object.keys(errors)[0];
+            const message = errors[secondKey][0];
+            return ` ${message}`;
+          }
           case 500:
             return `Failed to create product.\nCheck your internet connection`;
           default:

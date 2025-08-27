@@ -7,13 +7,17 @@ interface MarkSold {
 const purchaseEnquiriesService = {
   getPurchaseEnquiries: (params?: string) =>
     apiClient.get(`/admin/purchase-enquiries${params ? `?${params}` : ""}`),
-  assignAgent: (id: string | number, agentId: string | number) =>
-    apiClient.post(`/admin/purchase-enquiries/${id}/assign-agent`, { agentId }),
-  closeEnquiry: (id: string | number) =>
+  getEnquiry: (id: number) =>
+    apiClient.get(`/admin/purchase-enquiries/${id}/show`),
+  assignAgent: (id: number, agent_id: number) =>
+    apiClient.post(`/admin/purchase-enquiries/${id}/assign-agent`, {
+      agent_id,
+    }),
+  closeEnquiry: (id: number) =>
     apiClient.post(`/admin/purchase-enquiries/${id}/close`),
   markAsSold: (id: number, data: MarkSold) =>
-    apiClient.put(`/admin/purchase-enquiries/${id}/mark-sold`, data),
-  deletePurchaseEnquiry: (id: string | number) =>
+    apiClient.post(`/admin/purchase-enquiries/${id}/mark-sold`, data),
+  deletePurchaseEnquiry: (id: number) =>
     apiClient.delete(`/admin/purchase-enquiries/${id}`),
 };
 

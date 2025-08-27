@@ -1,4 +1,4 @@
-import {  GridRowParams } from "@mui/x-data-grid";
+import { GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import MuiTableComponent from "../components/table/TableComponent";
@@ -16,36 +16,6 @@ import InspectionService from "../api/services/inspection.service";
 import { usePaginatedData } from "../hooks/usePaginatedData";
 import { AgentColumns, InspectionColumns, RequestColumns } from "../components/table/columns";
 
-const rows = (): any[] => {
-  const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-  const returnArray: any[] = [];
-  loopArray.forEach((num) => {
-    returnArray.push({
-      id: "DSFA" + num,
-      name: "Rosemary Sunday",
-      email: "rosemarys@gmail.com",
-      phone: "07071234323",
-      status: num % 2 === 0 ? "Active" : "Inactive",
-      verifiedListings: 10,
-    });
-  });
-  return returnArray;
-};
-
-const rows2 = (): any[] => {
-  const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-  const returnArray: any[] = [];
-  loopArray.forEach((num) => {
-    returnArray.push({
-      id: num,
-      product: "Toyota Camry LE",
-      category: "Car",
-      price: `₦${generateRandomNumber(5000000, 1000000)}`,
-      stock: 2,
-    });
-  });
-  return returnArray;
-};
 
 export default function FieldAgents() {
   const location = useLocation();
@@ -81,21 +51,21 @@ export default function FieldAgents() {
     requests: [] as Product[],
   });
 
-  function openNewAgentModal() {
-    setNewAgentModal(true);
-  }
+  // function openNewAgentModal() {
+  //   setNewAgentModal(true);
+  // }
 
-  function openInspectionModal(id: number) {
-    console.log("ID", id);
-    const selectedAgent = rows().find((row) => row.id === id);
-    if (selectedAgent) {
-      setCurrentAgent(selectedAgent);
-    }
-    setInspectionModal(true);
-  }
+  // function openInspectionModal(id: number) {
+  //   console.log("ID", id);
+  //   const selectedAgent = rows().find((row) => row.id === id);
+  //   if (selectedAgent) {
+  //     setCurrentAgent(selectedAgent);
+  //   }
+  //   setInspectionModal(true);
+  // }
   const handleRowClick = (params: GridRowParams) => {
     console.log("Row clicked:", params.row);
-    navigate(`/agents/agent/:${params.row.id}`);
+    navigate(`/admin/agents/agent/${params.row.id}`);
   };
 
   const [agentData, setAgentData] = usePaginatedData(UserService.getAllAgents, {
@@ -154,12 +124,12 @@ export default function FieldAgents() {
         newAgentModal={newAgentModal}
         setNewAgentModal={setNewAgentModal}
       />
-
+{/* 
       <InspectionModal
         inspectionModal={inspectionModal}
         setInspectionModal={setInspectionModal}
         currentAgent={currentAgent}
-      />
+      /> */}
 
       <div className="w-full py-5 px-5 md:pl-[250px] md:pr-[100px] bg-white fixed z-10 left-10 top-0 border-b border-b-primaryBorder">
         <DashboardSearchBar />
@@ -218,18 +188,8 @@ export default function FieldAgents() {
             New Agent
           </button>
         </section> */}
-        <div className="flex justify-between items-center mt-2">
-        <h1 className="text-3xl font-bold ">Field Agents</h1>
-           <button
-            onClick={openNewAgentModal}
-            className="rounded-lg flex gap-x-2 items-center px-2 py-3 text-white text-xs md:text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
-          >
-            <FaPlus size={18} />
-            New Agent
-          </button>
-        </div>
-        
-             <>
+        <h1 className="text-3xl font-bold my-6">Field Agents</h1>
+  <>
             <div className="flex flex-wrap gap-2 justify-between items-end mt-3 w-full">
               <StatusSelect
                 options={[
@@ -261,7 +221,7 @@ export default function FieldAgents() {
                   showCheckbox={false}
                   columns={AgentColumns}
                   onRowClick={handleRowClick}
-                  rows={agentData.rows || rows()}
+                  rows={agentData.rows}
                   loading={agentData.loading}
                   rowHeight={60}
                   currentPage={agentData.pagination.page}
@@ -280,8 +240,7 @@ export default function FieldAgents() {
               </div>
             </section>
           </>
-{/* 
-        {agentType === "agent" ? (
+        {/* {agentType === "agent" ? (
           <>
             <div className="flex flex-wrap gap-2 justify-between items-end mt-3 w-full">
               <StatusSelect
@@ -314,7 +273,7 @@ export default function FieldAgents() {
                   showCheckbox={false}
                   columns={AgentColumns}
                   onRowClick={handleRowClick}
-                  rows={agentData.rows || rows()}
+                  rows={agentData.rows}
                   loading={agentData.loading}
                   rowHeight={60}
                   currentPage={agentData.pagination.page}
@@ -360,7 +319,7 @@ export default function FieldAgents() {
               <div className="min-w-[900px]">
                 <MuiTableComponent
                   columns={RequestColumns}
-                  rows={formattedData.requests || rows2()}
+                  rows={formattedData.requests}
                   rowHeight={60}
                   currentPage={requestData.pagination.page}
                   onPageChange={(model) =>

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import MuiTableComponent from "../components/table/TableComponent";
 import { GridRowParams } from "@mui/x-data-grid";
@@ -9,12 +9,11 @@ import { FilterGroup } from "../components/common/FilterGroup";
 import { useDebounce } from "../hooks/useDebounce";
 import { Dayjs } from "dayjs";
 import { ExportModal } from "../components/modals/export-modal";
-import { FaPlus } from "react-icons/fa6";
 import formatDayJs from "../helper/formatDateJs";
 import UserService from "../api/services/userMgt.service";
 import { usePaginatedData } from "../hooks/usePaginatedData";
 import { BuyerColumns } from "../components/table/columns";
-import formatDateToYYYYMMDD from "../helper/formatDate";
+// import formatDateToYYYYMMDD from "../helper/formatDate";
 import { formatIsoString } from "../helper/formatIIsoString";
 
 type IFilter = {
@@ -32,7 +31,6 @@ type SelectedBuyerData = {
 export default function Buyers() {
   const navigate = useNavigate();
   const [exportModal, setExportModal] = useState(false);
-
   const [selectedData, setSelectedData] = useState<SelectedBuyerData[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery);
@@ -58,7 +56,7 @@ export default function Buyers() {
   );
 
   const handleRowClick = (params: GridRowParams) => {
-    navigate(`/admin/buyers/buyer/:${params.row.id}`);
+    navigate(`/admin/buyers/buyer/${params.row.id}`);
   };
   const handleTableSelectionChange = (newSelection: ApiUser[]) => {
     const formatedData = newSelection.map((item) => ({

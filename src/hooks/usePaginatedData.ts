@@ -54,12 +54,12 @@ export function usePaginatedData<T>(
 
     try {
       const res = await fetchFn(params.toString());
-      console.log(
-        `${
-          options?.dataName ? options?.dataName : "paginated"
-        } fetch response:`,
-        res.data
-      );
+      // console.log(
+      //   `${
+      //     options?.dataName ? options?.dataName : "paginated"
+      //   } fetch response:`,
+      //   res.data
+      // );
       setState((prev) => ({
         ...prev,
         rows: res.data.data,
@@ -72,17 +72,6 @@ export function usePaginatedData<T>(
       }));
     } catch (err: any) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
-      // toast.error(() => {
-      //   switch (err.status) {
-      //     case 500:
-      //       return `Failed to fetch ${
-      //         options?.dataName ? options?.dataName : "data"
-      //       }. \n check your internet connection`;
-      //     default:
-      //       return "An error occurred. Please try again.";
-      //   }
-      // });
       console.error(
         `Paginated fetch failed: ${
           options?.dataName ? options?.dataName : "data"

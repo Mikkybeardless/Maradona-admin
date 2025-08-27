@@ -1,78 +1,81 @@
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight } from "react-icons/fa6";
 import { CiEdit } from "react-icons/ci";
-import { BsTrash3 } from "react-icons/bs";
-import Car from "../assets/Product-page-car.png";
 import { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import ProductCarousel from "../components/ProductCarousel";
 import productService from "../api/services/product.service";
+import { DetailLoadingState } from "../components/common/detailLoadingState";
+import { formatAmountToNaira } from "../helper/helperFunctions";
+import { DeleteButton } from "../components/modals/delete-modal";
+import AssignAgentModal from "../components/modals/assignAgent";
+import purchaseEnquiriesService from "../api/services/purchaseEnquiries.service";
 
-interface ProductDetails {
-  id: number;
-  name: string;
-  category_id: string;
-  price: number;
-  current_stock: number;
-  status: string;
-  featured: boolean;
-  photos: string[];
-  thumbnail_img: string;
-  description: string;
-  discount: number;
-  discount_type: string;
-  quantity: number;
-  rating: number;
-  brand_id: number | null;
-  slug: string;
-  added_by: string;
-  shop: {
-    id: number;
-    name: string;
-    logo: string;
-  };
-}
 export default function ProductDetails() {
   const location = useLocation();
-  const { pathname, state } = location;
+  const { state } = location;
   const [assignAgentModal, setAssignAgentModal] = useState(false);
   const assignAgentModalRef = useRef(null);
   const { id } = useParams();
-  const [product, setProduct] = useState<ProductDetails>({
+  const navigate = useNavigate();
+  const initialProductDetails = {
     id: 0,
+    created_at: "",
+    updated_at: "",
+    type: "LAND",
     name: "",
-    category_id: "",
-    price: 0,
-    current_stock: 0,
-    status: "",
-    featured: false,
-    photos: [],
-    thumbnail_img: "",
+    category_id: "2",
     description: "",
-    discount: 0,
-    discount_type: "",
-    quantity: 0,
-    rating: 0,
-    brand_id: 0,
-    slug: "",
-    added_by: "",
-    shop: {
-      id: 0,
-      name: "",
-      logo: "",
-    },
-  });
+    price: 0,
+    sale_price: 0,
+    house_type: "",
+    address: "",
+    city: "",
+    // weight: 0,
+    continue_selling: false,
+    state: "",
+    house_furnished: "furnished",
+    weight_unit: "kg",
+    media: [],
+    documents: [],
+    status: "draft",
+    tags: [],
+    sku: "",
+    inventory: 0,
+    body_type: "SUV",
+    engine_type: "",
+    accessibility: "main-road",
+    fencing: "fenced",
+    topography: "dry-land",
+    land_type: "residential",
+    // duration: "days",
+    auction_duration: 0,
+    transmission: "",
+    condition: "new",
+    house_condition: "newly-built",
+    house_size: 0,
+    house_beds: 0,
+    auction_type: "auctioned",
+    land_size: 0,
+    gear_type: "manual",
+    mileage: "",
+  };
+  const [isLoading, setIsLoading] = useState(true);
+  const [product, setProduct] = useState(initialProductDetails);
+  // const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProductDetails = async () => {
       if (id) {
         try {
           const response = await productService.getProduct(parseInt(id));
-          console.log("Product details:", response.data.product);
-          setProduct(response.data.product);
+          console.log("Product details:", response.data);
+          setProduct(response.data);
         } catch (error) {
           console.error("Error fetching product details:", error);
+        } finally {
+          setIsLoading(false);
         }
       } else {
         console.error("Product ID is undefined.");
@@ -80,63 +83,55 @@ export default function ProductDetails() {
     };
 
     fetchProductDetails();
-  }, []);
+  }, [id]);
 
   useClickAway(assignAgentModalRef, () => {
     setAssignAgentModal(false);
   });
 
-  function openAssignAgentModal() {
-    setAssignAgentModal(true);
-  }
+  const handleDelete = async (id: string) => {
+    await productService.deleteProduct(Number(id));
+    // if (response.status === 200) {
+    //   // Handle successful deletion
+    //   navigate("/admin/products");
+    // }
+  };
 
-  function closeAssignAgentModal() {
-    setAssignAgentModal(false);
-  }
+  const handleAssignAgent = async (agentId: number) => {
+    try {
+      const response = await purchaseEnquiriesService.assignAgent(
+        Number(id),
+        agentId
+      );
+      if (response.status === 200) {
+        return {
+          success: true,
+          message: "Agent successfully assigned",
+        };
+      } else {
+        return {
+          success: false,
+          message: "Failed to assign agent, please try again",
+        };
+      }
+    } catch (error) {
+      console.error("Error assigning agent:", error);
+      return {
+        success: false,
+        message: "An error occurred while assigning the agent",
+      };
+    }
+  };
 
-  return (
+  return isLoading ? (
+    <DetailLoadingState message="Loading product details" />
+  ) : (
     <div className="w-full h-full overflow-hidden overflow-y-auto custom-scrollbar pb-10 bg-[#F5F5F5]">
-      {assignAgentModal ? (
-        <div className="w-screen h-screen flex justify-center items-center fixed top-0 left-0 z-30 bg-black/50 backdrop-blur-sm">
-          <div
-            ref={assignAgentModalRef}
-            className="w-[35%] h-[70%] rounded-[24px] flex flex-col p-8 bg-white"
-          >
-            <h2 className="text-2xl font-bold">Available Agents</h2>
-            <div className="w-full flex flex-col flex-1 gap-y-4 mt-4 overflow-y-auto custom-scrollbar-low-opacity">
-              {[1, 2, 3, 4, 5, 6].map((num) => (
-                <div key={num} className="flex items-center gap-x-3">
-                  <input
-                    className="size-[18px]"
-                    type="radio"
-                    name="agent"
-                    id={"agent" + num}
-                  />
-                  <img
-                    src={Car}
-                    alt="Profile"
-                    className="size-[40px] object-fill rounded-full bg-gray-300"
-                  />
-                  <label htmlFor={"agent" + num} className="">
-                    Rosemary Sunday
-                  </label>
-                </div>
-              ))}
-            </div>
-            <div className="mt-5 flex items-center justify-end gap-x-3 text-sm">
-              <button
-                onClick={closeAssignAgentModal}
-                className="rounded-lg hover:underline"
-              >
-                Cancel
-              </button>
-              <button className="px-5 py-3 rounded-lg text-white bg-defaultOrange">
-                Assign
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <AssignAgentModal
+        onSubmit={handleAssignAgent}
+        assignAgentModal={assignAgentModal}
+        closeAssignAgentModal={() => setAssignAgentModal(false)}
+      />
       <div className="w-full py-5 px-5 md:px-10 border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
@@ -146,7 +141,7 @@ export default function ProductDetails() {
           <div className="flex gap-x-4 items-center">
             <Link
               state={{ fieldAgent: "request" }}
-              to={`/agents`}
+              to={`/admin/agents`}
               className="text-sm opacity-60"
             >
               Field Agents
@@ -160,7 +155,7 @@ export default function ProductDetails() {
               Dashboard
             </Link>
             <FaChevronRight size={18} />
-            <Link to={`/products`} className="text-sm opacity-60">
+            <Link to={`/admin/products`} className="text-sm opacity-60">
               Products
             </Link>
             <FaChevronRight size={18} />
@@ -172,7 +167,7 @@ export default function ProductDetails() {
 
           {state?.fieldAgent ? (
             <button
-              onClick={openAssignAgentModal}
+              onClick={() => setAssignAgentModal(true)}
               className="px-4 py-2.5 rounded-lg text-sm text-white bg-defaultOrange hover:bg-defaultOrangeHover"
             >
               Assign Field Agent
@@ -180,17 +175,17 @@ export default function ProductDetails() {
           ) : (
             <div className="flex gap-x-8 items-center">
               <Link
-                to={"/products/add-product"}
+                to={`/admin/products/edit-product/${id}`}
                 className="cursor-pointer flex items-center bg-defaultOrange text-white rounded-lg py-1 px-2 md:p-2"
               >
                 <CiEdit size={26} title="Edit" /> Edit
               </Link>
 
-              <BsTrash3
-                color="#e65800"
-                size={24}
-                className="cursor-pointer"
-                title="Delete"
+              <DeleteButton
+                itemId={id ?? ""}
+                onDelete={(id) => handleDelete(id)}
+                requestRoute="products"
+                redirectPath={`/admin/products`}
               />
             </div>
           )}
@@ -198,55 +193,92 @@ export default function ProductDetails() {
 
         <div className="flex flex-col md:flex-row gap-x-5 mt-10">
           <div className="w-full md:w-1/2">
-            <ProductCarousel images={product.photos} />
+            <ProductCarousel images={product.media} />
           </div>
           {/* Images */}
 
           <div className="w-full md:w-1/2 flex flex-col gap-y-6">
             <div className="w-full bg-white space-y-2 flex flex-col rounded-xl p-4">
               <span className="text-sm opacity-70 ">Product Name:</span>
-              <span className=" text-2xl font-bold">
-                Toyota Camry LE (2024)
-              </span>
+              <span className=" md:text-2xl font-bold">{product.name}</span>
               <div className="w-full flex    items-center gap-x-1">
                 <span className="opacity-70 text-[#008000] rounded-3xl bg-[#D3FFD3] px-2 py-1 text-sm">
                   Active
                 </span>
                 <div className="flex gap-1 bg-black text-white rounded-full px-2 py-1 text-xs font-semibold">
                   <span className="text-sm font-semibold">Category:</span>
-                  <span className=" text-sm">CAR</span>
+                  <span className=" text-sm">{product.type}</span>
                 </div>
               </div>
             </div>
 
             <div className="w-full bg-white rounded-xl p-4 flex flex-col gap-y-1.5">
               <span className="text-sm font-semibold">Description</span>
-              <span className="opacity-70 text-sm">
-                A well-maintained Toyota Camry 2018 model with a sleek design
-                and advanced features. Perfect for both city and highway
-                driving.
-              </span>
+              <span className="opacity-70 text-sm">{product.description}</span>
             </div>
 
             {/* key feature  */}
             <div className="w-full bg-white p-4 pl-7 rounded-xl flex gap-x-2 items-start">
               <div className="w-2/4">
-                <span className="text-sm font-semibold">Key Features</span>
-                <ul className="text-sm pl-3 flex flex-col gap-y-2 mt-2.5 list-disc">
-                  <li className="opacity-70">Engine: 2.5L 4-cylinder</li>
-                  <li className="opacity-70">Transmission: Automatic</li>
-                  <li className="opacity-70">Mileage: 30,000 miles</li>
-                  <li className="opacity-70">Color: Metallic Grey</li>
-                  <li className="opacity-70">Fuel Type: Petrol</li>
-                  <li className="opacity-70">Condition: Used</li>
-                </ul>
+                <h3 className="text-sm font-semibold">Key Features</h3>
+                {product.type === "CAR" ? (
+                  <ul className="text-sm pl-3 flex flex-col gap-y-2 mt-2.5 list-disc">
+                    <li className="opacity-70">
+                      Engine: {product.engine_type}
+                    </li>
+                    <li className="opacity-70">
+                      Transmission: {product.transmission}
+                    </li>
+                    <li className="opacity-70">Mileage: {product.mileage}</li>
+                    <li className="opacity-70">
+                      Condition: {product.condition}
+                    </li>
+                  </ul>
+                ) : product.type === "HOUSE" ? (
+                  <ul className="text-sm pl-3 flex flex-col gap-y-2 mt-2.5 list-disc">
+                    <li className="opacity-70">
+                      Accessibility: {product.accessibility}
+                    </li>
+                    <li className="opacity-70">
+                      Bedrooms: {product.house_beds}
+                    </li>
+                    <li className="opacity-70">
+                      House Type: {product.house_type}
+                    </li>
+                    <li className="opacity-70">
+                      Furniture: {product.house_furnished}
+                    </li>
+                    <li className="opacity-70">
+                      Condition: {product.house_condition}
+                    </li>
+                    <li className="opacity-70">Size: {product.house_size}</li>
+                  </ul>
+                ) : product.type === "LAND" ? (
+                  <ul className="text-sm pl-3 flex flex-col gap-y-2 mt-2.5 list-disc">
+                    <li className="opacity-70">
+                      Accessibility: {product.accessibility}
+                    </li>
+                    <li className="opacity-70">
+                      Land Type: {product.land_type}
+                    </li>
+                    <li className="opacity-70"> Fencing: {product.fencing}</li>
+                    <li className="opacity-70">
+                      Topography: {product.topography}
+                    </li>
+                    <li className="opacity-70">
+                      Land Size: {product.land_size}
+                    </li>
+                  </ul>
+                ) : null}
               </div>
               <div className="w-2/4">
                 <span className="text-sm font-semibold">
                   Pricing and Availabilty
                 </span>
                 <ul className="text-sm flex flex-col gap-y-2 mt-2.5 list-none">
-                  <li className="opacity-70">Price: $5,500,000</li>
+                  <li className="opacity-70">
+                    Price: {formatAmountToNaira(Number(product.price))}
+                  </li>
                   <li className="opacity-70">Negotiable: No</li>
                   <li className="opacity-70">Location: Lekki, Lagos</li>
                 </ul>

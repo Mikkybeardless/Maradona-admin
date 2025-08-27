@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
-import { IoCloudUploadOutline } from "react-icons/io5";
+// import { IoCloudUploadOutline } from "react-icons/io5";
+import { toast } from "react-toastify";
 import { useClickAway } from "react-use";
+import UserService from "../../api/services/userMgt.service";
 
 interface AddAgentModalProps {
   newAgentModal: boolean;
@@ -19,6 +21,8 @@ export default function AddAgentModal({
     phoneNumber: "",
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const newAgentModalRef = useRef<HTMLDivElement>(null);
   useClickAway(newAgentModalRef, () => {
     setNewAgentModal(false);
@@ -32,6 +36,33 @@ export default function AddAgentModal({
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const handleCreateAgent = async () => {
+    const { password, confirmPassword } = formData;
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    try {
+      setIsLoading(true);
+      // Handle agent creation logic here
+      console.log("Creating agent:", formData);
+      const response = await UserService.createAgent({
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+      });
+      if (response.status === 201) {
+        toast.success("Agent created successfully");
+        setNewAgentModal(false);
+      }
+    } catch (error) {
+      toast.error("Agent creation failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -99,7 +130,7 @@ export default function AddAgentModal({
                 placeholder="Type"
               />
             </div>
-            <div className="flex flex-col gap-y-2 text-sm">
+            {/* <div className="flex flex-col gap-y-2 text-sm">
               <label htmlFor="phoneNumber" className="">
                 Phone Number:
               </label>
@@ -131,7 +162,7 @@ export default function AddAgentModal({
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="mt-5 flex items-center justify-end gap-x-3 text-sm">
             <button
@@ -140,8 +171,11 @@ export default function AddAgentModal({
             >
               Cancel
             </button>
-            <button className="px-5 py-3 rounded-lg text-white bg-defaultOrange">
-              Add Agent
+            <button
+              onClick={handleCreateAgent}
+              className="px-5 py-3 rounded-lg text-white bg-defaultOrange"
+            >
+              {isLoading ? "Creating..." : "Create Agent"}
             </button>
           </div>
         </div>

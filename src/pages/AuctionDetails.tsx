@@ -1,9 +1,7 @@
 import { FaChevronRight } from "react-icons/fa6";
 import { Link, useParams } from "react-router-dom";
-// import Car2 from "../assets/Dashboard-listing-car.png";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import ProductCarousel from "../components/ProductCarousel";
-// import { generateRandomNumber } from "../helper/helperFunctions";
 import MuiTableComponent from "../components/table/TableComponent";
 import image1 from "../assets/detail1.png";
 import image2 from "../assets/detail2.png";
@@ -14,11 +12,13 @@ import { useEffect, useState } from "react";
 import { AuctionColumns } from "../components/table/columns";
 import { usePaginatedData } from "../hooks/usePaginatedData";
 import { formatPrice } from "../helper/helperFunctions";
+import { DetailLoadingState } from "../components/common/detailLoadingState";
 
 const images = [image1, image2, image3, image4];
 
 export default function AuctionDetails() {
   const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
   const [auction, setAuction] = useState({
     name: "",
     type: "",
@@ -44,16 +44,25 @@ export default function AuctionDetails() {
     approved_at: "",
     time_left: "",
   });
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    isExpired: false,
+    isOpen: false,
+  });
 
   useEffect(() => {
     const fetchAuctionDetails = async () => {
       if (id) {
         try {
           const response = await auctionService.getAuction(parseInt(id));
-          console.log("Auction details:", response);
           setAuction(response.data);
         } catch (error) {
           console.error("Error fetching auction details:", error);
+        } finally {
+          setIsLoading(false);
         }
       } else {
         console.error("Auction ID is undefined.");
@@ -62,6 +71,54 @@ export default function AuctionDetails() {
 
     fetchAuctionDetails();
   }, [id]);
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const end = new Date(auction.end_time).getTime();
+      const start = new Date(auction.start_time).getTime();
+      const isRunning = now > start && now < end;
+      const difference = end - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor(
+          (difference % (1000 * 60 * 60)) / (1000 * 60)
+        );
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        setTimeLeft({
+          days,
+          hours,
+          minutes,
+          seconds,
+          isExpired: false,
+          isOpen: isRunning,
+        });
+      } else {
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          isExpired: true,
+          isOpen: false,
+        });
+      }
+    };
+    calculateTimeLeft();
+    // Update every second
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(timer);
+  }, [auction]);
+  const formatTime = (time: number): string => {
+    return time.toString().padStart(2, "0");
+  };
 
   const [auctionData, setAuctionData] = usePaginatedData(
     auctionService.getAllAuctions,
@@ -72,7 +129,9 @@ export default function AuctionDetails() {
     }
   );
 
-  return (
+  return isLoading ? (
+    <DetailLoadingState message="Loading auction details..." />
+  ) : (
     <div className="w-full h-full overflow-hidden overflow-y-auto custom-scrollbar py-20 bg-[#F5F5F5]">
       <div className="w-full py-5 px-5 md:px-10 fixed z-10 left-2 top-0 border-b border-b-primaryBorder">
         <DashboardSearchBar />
@@ -91,7 +150,7 @@ export default function AuctionDetails() {
 
         <div className="flex flex-col md:flex-row gap-x-8 md:justify-between mt-10">
           <div className="w-full md:w-2/4 flex flex-col gap-y-6">
-            <ProductCarousel images={images} />
+            <ProductCarousel images={auction.media || images} />
             <div className="w-full bg-white rounded-xl p-6 flex flex-col gap-y-1.5">
               <span className="text-sm font-semibold">Description</span>
               <span className="opacity-70 text-sm">
@@ -128,7 +187,7 @@ export default function AuctionDetails() {
               </div>
               <div className="flex flex-col gap-y-1.5">
                 <span className="text-secondaryTextColor">Current Price</span>
-                <span className="text-[50px] font-bold text-[#21C45D]">
+                <span className="text-[35px] md:text-[50px] font-bold text-[#21C45D]">
                   N{formatPrice(Number(auction.price))}
                 </span>
               </div>
@@ -139,22 +198,51 @@ export default function AuctionDetails() {
               <span className="text-secondaryTextColor">
                 Count Down Duration:
               </span>
-              <div className="flex items-center text-[#FF0000] gap-x-2">
-                <div className="flex flex-col items-center gap-y-1">
-                  <span className="text-[40px] font-bold">48</span>
-                  <span className="text-secondaryTextColor">Hours</span>
+              {timeLeft.isExpired ? (
+                <div className="flex bg-[#F0F0F0] w-full text-red-500 items-center justify-center px-4 py-2">
+                  <span className="text-lg font-bold"> Auction Closed</span>
                 </div>
-                <span>:</span>
-                <div className="flex flex-col items-center  gap-y-1">
-                  <span className="text-[40px] font-bold">21</span>
-                  <span className="text-secondaryTextColor">Min</span>
+              ) : timeLeft.isOpen ? (
+                <div className="flex items-center text-[#FF0000] gap-x-2">
+                  <div className="flex flex-col items-center gap-y-1">
+                    <span className="text-[40px] font-bold">
+                      {formatTime(timeLeft.days)}
+                    </span>
+                    <span className="text-secondaryTextColor">Days</span>
+                  </div>
+                  <span className="text-secondaryTextColor text-xl font-extrabold">
+                    :
+                  </span>
+                  <div className="flex flex-col items-center gap-y-1">
+                    <span className="text-[40px] font-bold">
+                      {formatTime(timeLeft.hours)}
+                    </span>
+                    <span className="text-secondaryTextColor">Hours</span>
+                  </div>
+                  <span className="text-secondaryTextColor text-xl font-extrabold">
+                    :
+                  </span>
+                  <div className="flex flex-col items-center  gap-y-1">
+                    <span className="text-[40px] font-bold">
+                      {formatTime(timeLeft.minutes)}
+                    </span>
+                    <span className="text-secondaryTextColor">Min</span>
+                  </div>
+                  <span className="text-secondaryTextColor text-xl font-extrabold">
+                    :
+                  </span>
+                  <div className="flex flex-col items-center  gap-y-1">
+                    <span className="text-[40px] font-bold">
+                      {formatTime(timeLeft.seconds)}
+                    </span>
+                    <span className="text-secondaryTextColor">Secs</span>
+                  </div>
                 </div>
-                <span>:</span>
-                <div className="flex flex-col items-center  gap-y-1">
-                  <span className="text-[40px] font-bold">09</span>
-                  <span className="text-secondaryTextColor">Secs</span>
+              ) : (
+                <div className="flex bg-[#F0F0F0] w-full text-red-500 items-center justify-center px-4 py-2">
+                  <span className="text-lg font-bold"> Not yet started</span>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* key feature  */}

@@ -1,26 +1,48 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import { HiDotsHorizontal } from "react-icons/hi";
+import { FaChevronRight } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
-import Car from "../assets/Product-page-car.png";
-import Paystack from "../assets/paystack-logo.svg";
-import { GrEdit } from "react-icons/gr";
-import { FaTimes } from "react-icons/fa";
-import ShipmentModal from "../components/ShipmentModal";
+import DefaultImage from "../assets/no-image.png";
+import AssignAgentModal from "../components/modals/assignAgent";
+import { HiDotsHorizontal } from "react-icons/hi";
+import purchaseEnquiriesService from "../api/services/purchaseEnquiries.service";
 import { formatIsoString } from "../helper/formatIIsoString";
+import { formatAmountToNaira, formatPrice } from "../helper/helperFunctions";
+import { MarkAsSoldModal } from "../components/modals/MarKAsSold-modal";
+import ActionModal from "../components/modals/actionModal";
 
 export default function AdminOrder() {
   const location = useLocation();
   const { state } = location;
+  const { id } = useParams();
   // retrieve the state object
-  const { enquiry } = state || {};
+  const initialEnquiry: ApiEnquiry = {
+    product_id: "",
+    buyer_id: "",
+    message: "",
+    status: "",
+    agent_id: null,
+    qty_sold: null,
+    sold_price: null,
+    sold_at: null,
+    product: null,
+    buyer: null,
+    agent: null,
+    inspection_request: null,
+    id: 0,
+    created_at: "",
+    updated_at: "",
+  };
+  const [enquiry, setEnquiry] = useState<ApiEnquiry>(initialEnquiry);
+  const [isLoading, setIsLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [markModal, setMarkModal] = useState(false);
-  const [cancelModal, setCancelModal] = useState(false);
-  const [invoiceModal, setInvoiceModal] = useState(false);
-  const [shipmentModal, setShipmentModal] = useState(false);
+  const [markAsSoldModal, setMarkAsSoldModal] = useState(false);
+  const [actionModal, setActionModal] = useState(false);
+  // const [markModal, setMarkModal] = useState(false);
+  // const [cancelModal, setCancelModal] = useState(false);
+  // const [invoiceModal, setInvoiceModal] = useState(false);
+  // const [shipmentModal, setShipmentModal] = useState(false);
   const dropDownRef = useRef<HTMLDivElement>(null);
   const markModalRef = useRef<HTMLDivElement>(null);
   const cancelModalRef = useRef<HTMLDivElement>(null);
@@ -40,52 +62,111 @@ export default function AdminOrder() {
     },
   };
 
+  const [assignAgentModal, setAssignAgentModal] = useState(false);
+
   useClickAway(dropDownRef, () => {
     setShowDropdown(false);
   });
-  useClickAway(markModalRef, () => {
-    setMarkModal(false);
-  });
-  useClickAway(cancelModalRef, () => {
-    setCancelModal(false);
-  });
-  useClickAway(invoiceModalRef, () => {
-    setInvoiceModal(false);
-  });
-  useClickAway(shipmentModalRef, () => {
-    setShipmentModal(false);
-  });
+  // useClickAway(markModalRef, () => {
+  //   setMarkModal(false);
+  // });
+  // useClickAway(cancelModalRef, () => {
+  //   setCancelModal(false);
+  // });
+  // useClickAway(invoiceModalRef, () => {
+  //   setInvoiceModal(false);
+  // });
+  // useClickAway(shipmentModalRef, () => {
+  //   setShipmentModal(false);
+  // });
 
-  function toggleDropdown() {
-    setShowDropdown(true);
-  }
+  // function openMarkModal() {
+  //   setMarkModal(true);
+  // }
 
-  function openMarkModal() {
-    setMarkModal(true);
-  }
-
-  function openShipmentModal() {
-    setShipmentModal(true);
-  }
-
-  function openCancelModal() {
-    setCancelModal(true);
-  }
-
-  function openInvoiceModal() {
-    setInvoiceModal(true);
-  }
+  // function openShipmentModal() {
+  //   setShipmentModal(true);
+  // }
 
   useEffect(() => {
-    if (enquiry) {
-      // Do something with the enquiry data
-      console.log("enquiry", enquiry);
+    const fetchEnquiryDetails = async () => {
+      if (id) {
+        try {
+          const response = await purchaseEnquiriesService.getEnquiry(
+            parseInt(id)
+          );
+          // console.log("enquiry details:", response.data);
+          setEnquiry(response.data);
+        } catch (error) {
+          console.error("Error fetching enquiry details:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        console.error("Buyer ID is undefined.");
+      }
+    };
+
+    fetchEnquiryDetails();
+  }, [id]);
+
+  const handleMarkAsSold = async (data: {
+    qty_sold: string;
+    sold_price: string;
+  }) => {
+    try {
+      const response = await purchaseEnquiriesService.markAsSold(enquiry.id, {
+        qty_sold: Number(data.qty_sold),
+        sold_price: Number(data.sold_price),
+      });
+      if (response.status === 200) {
+        return {
+          success: true,
+          message: "Product successfully marked as sold",
+        };
+      } else {
+        return {
+          success: false,
+          message: "Failed to mark as sold, please try again",
+        };
+      }
+    } catch (error) {
+      console.error("Error marking as sold:", error);
+      return {
+        success: false,
+        message: "An error occurred while marking as sold",
+      };
     }
-  }, [enquiry]);
+  };
+  const handleAssignAgent = async (agentId: number) => {
+    try {
+      const response = await purchaseEnquiriesService.assignAgent(
+        Number(id),
+        agentId
+      );
+      if (response.status === 200) {
+        return {
+          success: true,
+          message: "Agent successfully assigned",
+        };
+      } else {
+        return {
+          success: false,
+          message: "Failed to assign agent, please try again",
+        };
+      }
+    } catch (error) {
+      console.error("Error assigning agent:", error);
+      return {
+        success: false,
+        message: "An error occurred while assigning the agent",
+      };
+    }
+  };
 
   return (
     <>
-      {markModal ? (
+      {/* {markModal ? (
         <div className="fixed z-30 flex justify-center items-center top-0 left-0 w-screen h-screen bg-black/50">
           <div
             ref={markModalRef}
@@ -237,14 +318,26 @@ export default function AdminOrder() {
           shipmentModalRef={shipmentModalRef}
           setShipmentModal={setShipmentModal}
         />
-      ) : null}
+      ) : null} */}
+      {/* modals */}
+      <AssignAgentModal
+        onSubmit={handleAssignAgent}
+        assignAgentModal={assignAgentModal}
+        closeAssignAgentModal={() => setAssignAgentModal(false)}
+      />
+      <MarkAsSoldModal
+        onSubmit={handleMarkAsSold}
+        MarkAsSoldModal={markAsSoldModal}
+        setMarkAsSoldModal={() => setMarkAsSoldModal(false)}
+      />
+
       <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-10 bg-[#F5F5F5]">
         <div className="w-full py-3.5 px-4 md:px-10 border-b border-b-primaryBorder">
           <DashboardSearchBar />
         </div>
 
         <div className="px-4 md:px-10 w-full mt-4 flex flex-col flex-1">
-          <div className="flex gap-x-4 items-center">
+          <div className="md:flex gap-x-4 hidden items-center">
             <Link to="/" className="text-sm opacity-60">
               Dashboard
             </Link>
@@ -264,84 +357,70 @@ export default function AdminOrder() {
               {/* <h2 className="text-2xl font-semibold">{enquiry.id}</h2> */}
               <p className="text-xs">
                 Enquiry Date -{" "}
-                {/* {formatIsoString(enquiry.created_at).formattedDate} */}
+                {formatIsoString(enquiry?.created_at).formattedDate}
               </p>
             </div>
 
-            <div className="flex gap-x-5 items-center">
-              <button className="md:p-3 p-2 rounded-lg text-xs md:text-sm border border-primaryBorder bg-white">
-                Edit order
+            <div className="relative">
+              <button
+                onClick={() => setActionModal(true)}
+                className="p-3 rounded-full  bg-white border border-primaryBorder"
+              >
+                <HiDotsHorizontal />
               </button>
-              <div className="flex gap-x-1 items-center">
-                <button
-                  title="Previous"
-                  className="p-3 rounded-md bg-white border border-primaryBorder"
-                >
-                  <FaChevronLeft />
-                </button>
-                <button
-                  title="Next"
-                  className="p-3 rounded-md bg-white border border-primaryBorder"
-                >
-                  <FaChevronRight />
-                </button>
-              </div>
-              <div className="relative">
-                <button
-                  onClick={toggleDropdown}
-                  className="p-3 rounded-full bg-white border border-primaryBorder"
-                >
-                  <HiDotsHorizontal />
-                </button>
-                {showDropdown ? (
-                  <div
-                    ref={dropDownRef}
-                    className="w-auto flex flex-col absolute top-[120%] text-sm right-0 rounded-lg bg-white"
-                  >
-                    <button
-                      onClick={openInvoiceModal}
-                      className="p-3 px-5 whitespace-nowrap hover:underline rounded-t-lg"
-                    >
-                      Send invoice
-                    </button>
-                    <button className="p-3 px-5 whitespace-nowrap hover:underline">
-                      Archive
-                    </button>
-                    <button
-                      onClick={openCancelModal}
-                      className="p-3 px-5 whitespace-nowrap hover:underline rounded-b-lg text-[#FF000087]/[53%]"
-                    >
-                      Cancel order
-                    </button>
-                  </div>
-                ) : null}
-              </div>
+              <ActionModal
+                showDropdown={actionModal}
+                closeDropdown={() => setActionModal(false)}
+                openAssignAgentModal={() => setAssignAgentModal(true)}
+                openMarkAsSoldModal={() => setMarkAsSoldModal(true)}
+                itemId={id ? parseInt(id) : 0}
+              />
             </div>
+
             {/* dropdown div */}
           </section>
 
           <section className="w-full flex flex-col md:flex-row gap-6 mt-6">
             <div className=" w-full md:w-[70%] flex flex-col gap-y-5">
               <div className="w-full flex flex-col rounded-lg border border-primaryBorder bg-white">
-                <h4 className="py-5 px-4 flex gap-x-2 items-center font-medium">
-                  {/* Enquiry ID: #{enquiry.id} */}
-                  <span className="rounded-[100px] text-xs font-normal px-2 py-1 bg-defaultOrange text-white">
-                    {/* {enquiry.status} */}
-                  </span>
-                </h4>
+                <div className="flex flex-col px-4 ">
+                  <h4 className="py-5  flex gap-x-2 items-center font-medium">
+                    Enquiry ID: {enquiry.id}
+                  </h4>
+                  <p className="flex gap-3 items-center">
+                    <span>Status:</span>
+                    <span className="rounded-[100px] capitalize text-xs font-normal px-2 py-1 bg-defaultOrange text-white">
+                      {enquiry.status}
+                    </span>
+                  </p>
+                  <p className="py-5  flex gap-x-2 items-center font-medium">
+                    Product Name:{" "}
+                    <span className="font-medium">{enquiry.product?.name}</span>
+                  </p>
+                </div>
 
                 <div className="w-full flex flex-col border-y border-y-primaryBorder">
                   <div className="py-5 px-4 flex justify-between items-center gap-x-3">
                     <div className="flex gap-x-3 items-center">
                       <img
-                        src={Car}
+                        src={
+                          (enquiry.product?.media[0] as unknown as string) ||
+                          DefaultImage
+                        }
                         alt="Product"
                         className="h-[50px] w-[66px] rounded-lg object-contain bg-gray-100"
                       />
-                      <span className="font-medium line-clamp-2">House</span>
+                      <span className="font-medium line-clamp-2">
+                        {enquiry.product?.type}
+                      </span>
                     </div>
-                    <span className="text-xs opacity-70">₦250,000 x 1</span>
-                    <span className="text-sm font-medium">₦250,000</span>
+                    <span className="text-[10px] md:text-xs opacity-70">
+                      N{formatPrice(enquiry.product?.price || 0)} x{" "}
+                      {enquiry.qty_sold || 0}
+                    </span>
+                    <span className="text-xs md:text-sm font-medium">
+                      N{formatPrice(enquiry.product?.price || 0)}
+                    </span>
                   </div>
                 </div>
 
@@ -369,14 +448,12 @@ export default function AdminOrder() {
 
               <div className="w-full flex flex-col rounded-lg border border-primaryBorder bg-white">
                 <h4 className="py-5 px-4 flex gap-x-2 items-center font-medium">
-                  Payment
-                  <span className="rounded-[100px] text-xs font-normal px-2 py-1 text-defaultOrange bg-[#FFF1E9]">
-                    Paid
-                  </span>
+                  Message
                 </h4>
 
-                <div className="w-full flex flex-col border-y border-y-primaryBorder">
-                  <div className="py-5 px-4 flex justify-between items-center gap-x-3">
+                <div className="w-full flex flex-col border-y py-4 border-y-primaryBorder">
+                  <p className="px-4 text-sm">{enquiry.message}</p>
+                  {/* <div className="py-5 px-4 flex justify-between items-center gap-x-3">
                     <span className="font-medium text-sm">Subtotal</span>
                     <span className="text-sm opacity-70">1 item(s)</span>
                     <span className="text-sm font-medium">₦250,000</span>
@@ -392,37 +469,37 @@ export default function AdminOrder() {
                       Peace mass transit
                     </span>
                     <span className="text-sm font-medium">₦1,000</span>
-                  </div>
+                  </div> */}
                 </div>
 
-                <div className="w-full px-4 py-3 flex justify-between items-center">
+                {/* <div className="w-full px-4 py-3 flex justify-between items-center">
                   <span className="text-lg font-medium text-defaultOrange">
                     Total:
                   </span>
                   <span className="text-lg font-semibold text-defaultOrange">
                     ₦250,000
                   </span>
-                </div>
+                </div> */}
               </div>
             </div>
 
             <div className=" w-full md:w-[30%] flex flex-col gap-y-5">
               <div className="w-full flex flex-col rounded-lg bg-white border border-primaryBorder">
                 <div className="flex justify-between items-center py-3 px-4 border-b border-b-primaryBorder">
-                  <span className="font-medium">Details</span>
-                  <GrEdit color="#e65800" />
+                  <span className="font-medium">Customer Details</span>
+                  {/* <GrEdit color="#e65800" /> */}
                 </div>
 
                 <div className="flex flex-col p-4 gap-y-6">
                   <div className="flex flex-col gap-y-1 text-sm">
                     <p className="opacity-80">Customer:</p>
-                    <p className="font-medium">Rosemary Sunday</p>
+                    <p className="font-medium">{enquiry.buyer?.name}</p>
                   </div>
                   <div className="flex flex-col gap-y-1 text-sm">
                     <p className="opacity-80">Email:</p>
-                    <p className="font-medium">rsunday@gmail.com</p>
+                    <p className="font-medium">{enquiry.buyer?.email}</p>
                   </div>
-                  <div className="flex flex-col gap-y-1 text-sm">
+                  {/* <div className="flex flex-col gap-y-1 text-sm">
                     <p className="opacity-80">Phone number:</p>
                     <p className="font-medium">07063797396</p>
                   </div>
@@ -439,14 +516,14 @@ export default function AdminOrder() {
                       alt="payment logo"
                       className="h-[20px] w-fit"
                     />
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
-              <div className="w-full flex flex-col rounded-lg bg-white border border-primaryBorder">
+              {/* <div className="w-full flex flex-col rounded-lg bg-white border border-primaryBorder">
                 <div className="flex justify-between items-center py-3 px-4 border-b border-b-primaryBorder">
                   <span className="font-medium">Delivery details</span>
-                  <GrEdit color="#e65800" />
+                 
                 </div>
 
                 <div className="flex flex-col p-4 gap-y-6">
@@ -461,7 +538,7 @@ export default function AdminOrder() {
                     <p className="font-medium">Peace mass transit</p>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </section>
 

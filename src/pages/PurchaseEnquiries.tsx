@@ -2,11 +2,13 @@ import { FaChevronRight, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { PiCoinVerticalDuotone } from "react-icons/pi";
 import MuiTableComponent from "../components/table/TableComponent";
-import { GridColDef } from "@mui/x-data-grid";
 import { Link, useNavigate } from "react-router-dom";
-import { generateRandomNumber } from "../helper/helperFunctions";
+import {
+  formatAmountToNaira,
+  generateRandomNumber,
+} from "../helper/helperFunctions";
 import LineAreaChart from "../components/LineAreaChart";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import { FaFileDownload } from "react-icons/fa";
 import { Popper } from "@mui/material";
@@ -22,6 +24,7 @@ import { usePaginatedData } from "../hooks/usePaginatedData";
 import formatDayJs from "../helper/formatDateJs";
 import purchaseEnquiriesService from "../api/services/purchaseEnquiries.service";
 import { purchaseEnqColumns } from "../components/table/columns";
+import statsService from "../api/services/stats.service";
 type UserTableType = {
   id: any;
   name: string;
@@ -78,7 +81,7 @@ export default function Orders() {
   const [exportModal, setExportModal] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [selectedData, setSelectedData] = useState<UserTableType[]>([]);
-
+  const [revenueData, setRevenueData] = useState<TotalRevenue | null>(null);
   const [filters, setFilters] = useState<IFilter>({
     type: "",
     status: "",
@@ -114,6 +117,18 @@ export default function Orders() {
   function closeExportModal() {
     setExportModal(false);
   }
+  useEffect(() => {
+    const fetchRevenue = async () => {
+      try {
+        const response = await statsService.getTotalRevenue();
+        setRevenueData(response.data);
+      } catch (error) {
+        console.error("Error fetching revenue data:", error);
+      }
+    };
+
+    fetchRevenue();
+  }, []);
 
   return (
     <div className="w-full h-full bg-white overflow-y-auto flex flex-col custom-scrollbar py-20">
@@ -178,9 +193,11 @@ export default function Orders() {
             </div>
             <div className="flex items-baseline gap-x-2">
               <span className="text-xl md:text-3xl text-defaultOrange font-semibold">
-                $450,000
+                {formatAmountToNaira(revenueData?.total_revenue || 0)}
               </span>
-              <span className="text-xs text-[#686677]">+5,300 this week</span>
+              <span className="text-xs text-[#686677]">
+                {revenueData?.period.description}
+              </span>
             </div>
           </div>
 
@@ -270,64 +287,3 @@ export default function Orders() {
     </div>
   );
 }
-
-export const OrderActionCellComponent = ({ row }: { row: any }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const dotsPopupRef = useRef(null);
-  const open = Boolean(anchorEl);
-  const id = open ? `popper-${row.id}` : undefined;
-
-  useClickAway(dotsPopupRef, () => {
-    setAnchorEl(null);
-  });
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
-
-  return (
-    <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
-      <button
-        aria-describedby={id}
-        type="button"
-        onClick={(e) => handleClick(e)}
-        className="cursor-pointer bg-transparent border-none p-0 m-0"
-        style={{ lineHeight: 0 }}
-      >
-        <BsThreeDots size={16} />
-      </button>
-      <Popper
-        ref={dotsPopupRef}
-        className="p-3 text-sm z-10 flex gap-x-4 items-center rounded-lg border border-primaryBorder bg-white"
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-      >
-        <Link
-          className="text-xs text-[#C38D00] hover:underline"
-          to={`/orders/order/${row.id}`}
-          state={row.status === "Processed" ? { isProcessed: true } : null}
-        >
-          View
-        </Link>
-        {row.status === "Pending" && (
-          <>
-            <button className="text-xs p-1 px-1.5 rounded-lg bg-[#E5FFE5] text-[#008000] hover:underline">
-              Process
-            </button>
-            <button className="text-xs p-1 px-1.5 rounded-lg bg-[#FFB8B8] text-[#FF0000] hover:underline">
-              Cancel
-            </button>
-          </>
-        )}
-        {row.status === "Returned" && (
-          <button className="text-xs p-1 px-1.5 rounded-lg bg-[#FFB8B8] text-[#FF0000] hover:underline">
-            Cancel
-          </button>
-        )}
-      </Popper>
-    </div>
-  );
-};

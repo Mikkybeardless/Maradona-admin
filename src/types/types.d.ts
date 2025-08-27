@@ -60,7 +60,7 @@ declare interface Auction {
   tags: string[];
   incremental_bid_amount: string;
   minimum_bid_increment: string;
-  auto_extend: string;
+  auto_extend: "0" | "1";
 }
 
 declare interface ApiAuction extends Auction, ApiRes {
@@ -97,6 +97,7 @@ declare interface Car extends Product {
   gear_type: ProductGearType | null;
 }
 declare type ProductDetails = House | Land | Car;
+declare type ApiProductDetails = ProductDetails & ApiRes;
 declare interface ApiProduct extends Product {
   id: number;
   created_at: string;
@@ -229,6 +230,16 @@ declare interface Seller extends User {
 }
 declare interface ApiSeller extends Seller, ApiRes {}
 
+declare interface Buyer extends User {
+  buyer_profile: {
+    id: number;
+    user_id: string;
+    created_at: string;
+    updated_at: string;
+  };
+}
+
+declare interface ApiBuyer extends Buyer, ApiRes {}
 declare interface Inspection {
   product_type: string;
   product_id: string;
@@ -245,3 +256,130 @@ declare interface Inspection {
   seller: Seller;
 }
 declare interface ApiInspection extends Inspection, ApiRes {}
+
+// stats
+
+declare interface UserStatsData {
+  user_type: string;
+  count: string;
+}
+declare interface UserStats {
+  data: UserStatsData[];
+  total_users: number;
+  period: Period;
+}
+declare interface Period {
+  start: string;
+  end: string;
+  description: string;
+}
+declare interface TotalRevenue {
+  direct_sales_revenue: number;
+  auction_sales_revenue: string;
+  total_revenue: number;
+  period: Period;
+}
+declare interface TopSellingProducts {
+  data: {
+    product: ProductDetails | null;
+    product_type: string;
+    direct_sales_qty: number;
+    direct_sales_revenue: number;
+    auction_sales_qty: number;
+    auction_sales_revenue: number;
+    total_qty: number;
+    total_revenue: number;
+  }[];
+  period: Period;
+}
+declare interface TopSellingLocations {
+  data: {
+    location: string;
+    product_type: string;
+    direct_sales_qty: number;
+    direct_sales_revenue: number;
+    auction_sales_qty: number;
+    auction_sales_revenue: number;
+    total_qty: number;
+    total_revenue: number;
+  }[];
+  period: Period;
+}
+
+declare interface MonthlyReport {
+  data: {
+    month: string;
+    month_key: string;
+    direct_sales_revenue: number;
+    auction_sales_revenue: string;
+    total_revenue: 8000000;
+  }[];
+  period: Period;
+}
+declare interface TotalSales {
+  current_period: {
+    direct_sales_units: number;
+    direct_sales_amount: number;
+    auction_sales_units: number;
+    auction_sales_amount: number;
+    total_units: number;
+    total_amount: number;
+  };
+  previous_period: {
+    direct_sales_units: number;
+    direct_sales_amount: number;
+    auction_sales_units: number;
+    auction_sales_amount: number;
+    total_units: number;
+    total_amount: number;
+  };
+  changes: {
+    unit_change: number;
+    amount_change: number;
+    unit_percentage_change: number;
+    amount_percentage_change: number;
+  };
+  period: Period;
+  comparison_period: {
+    start: string;
+    end: string;
+  };
+}
+declare interface TotalOrder {
+  direct_sales_orders: number;
+  auction_sales_orders: number;
+  total_orders: number;
+  period: {
+    start: string | null;
+    end: string | null;
+    description: string;
+  };
+}
+declare interface TopSellingByType extends TopSellingProducts {}
+
+declare interface Stats {
+  totalRevenue: TotalRevenue;
+  totalUsers: UserStats;
+  topSellingProducts: TopSellingProduct;
+  totalSales: TotalSales;
+  monthlyReport: MonthlyReport;
+  totalOrders?: TotalOrder;
+  topSellingProductsByType?: TopSellingByType;
+}
+
+declare interface Enquiry {
+  product_id: string;
+  buyer_id: string;
+  message: string;
+  status: string;
+  agent_id: string | null;
+  qty_sold: number | string | null;
+  sold_price: number | string | null;
+  sold_at: string | null;
+  product: ProductDetails | null;
+  buyer: ApiBuyer | null;
+  agent: ApiAgent | null;
+  inspection_request: ApiInspection | null;
+}
+
+declare interface ApiEnquiry extends Enquiry, ApiRes {}

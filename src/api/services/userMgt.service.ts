@@ -1,5 +1,11 @@
 import apiClient from "../apiClient";
 
+interface CreateUserDTO {
+  name: string;
+  email: string;
+  password: string;
+}
+
 const UserService = {
   // admins
   getAllAdmins: (query?: string) =>
@@ -11,36 +17,36 @@ const UserService = {
     apiClient.delete(`/admin/users/admin/${userId}`),
 
   // buyers
-  createBuyer: (userData: any) =>
+  createBuyer: (userData: CreateUserDTO) =>
     apiClient.post("/admin/users/buyer", userData),
   getAllBuyers: (query?: string) =>
     apiClient.get(`/admin/users/buyer?${query}`),
-  getBuyer: (userId: string) => apiClient.get(`/admin/users/buyer/${userId}`),
-  updateBuyer: (userId: string, userData: any) =>
+  getBuyer: (userId: number) => apiClient.get(`/admin/users/buyer/${userId}`),
+  updateBuyer: (userId: number, userData: any) =>
     apiClient.post(`/admin/users/buyer/${userId}/edit`, userData),
-  deleteBuyer: (userId: string) =>
+  deleteBuyer: (userId: number) =>
     apiClient.delete(`/admin/users/buyer/${userId}`),
 
   //   sellers
-  createSeller: (userData: any) =>
+  createSeller: (userData: CreateUserDTO) =>
     apiClient.post("/admin/users/seller", userData),
   getAllSellers: (query?: string) =>
     apiClient.get(`/admin/users/seller?${query}`),
-  getSeller: (userId: string) => apiClient.get(`/admin/users/seller/${userId}`),
-  updateSeller: (userId: string, userData: any) =>
+  getSeller: (userId: number) => apiClient.get(`/admin/users/seller/${userId}`),
+  updateSeller: (userId: number, userData: any) =>
     apiClient.post(`/admin/users/seller/${userId}/edit`, userData),
-  deleteSeller: (userId: string) =>
+  deleteSeller: (userId: number) =>
     apiClient.delete(`/admin/users/seller/${userId}`),
 
   //   agents
-  createAgent: (userData: any) =>
+  createAgent: (userData: CreateUserDTO) =>
     apiClient.post("/admin/users/agent", userData),
   getAllAgents: (query?: string) =>
     apiClient.get(`/admin/users/agent?${query}`),
-  getAgent: (userId: string) => apiClient.get(`/admin/users/agent/${userId}`),
-  updateAgent: (userId: string, userData: any) =>
+  getAgent: (userId: number) => apiClient.get(`/admin/users/agent/${userId}`),
+  updateAgent: (userId: number, userData: any) =>
     apiClient.post(`/admin/users/agent/${userId}/edit`, userData),
-  deleteAgent: (userId: string) =>
+  deleteAgent: (userId: number) =>
     apiClient.delete(`/admin/users/agent/${userId}`),
 };
 

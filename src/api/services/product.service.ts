@@ -6,7 +6,7 @@ type ProductUpdate<T extends keyof ProductPayloadMap> = Partial<GenProduct<T>>;
 
 const productService = {
   getAllProducts: (query?: string) => apiClient.get(`/admin/products?${query}`),
-  getProduct: (id: number) => apiClient.get(`/products/${id}`),
+  getProduct: (id: number) => apiClient.get(`/admin/products/${id}`),
   addProduct: (data: FormData) =>
     apiClient.post("/admin/products", data, {
       headers: { "Content-Type": "multipart/form-data" },

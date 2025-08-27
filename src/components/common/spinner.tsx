@@ -7,7 +7,7 @@ export const Spinner = ({
 }) => {
   return (
     <div
-      className={`${size} border-4  flex items-center justify-center border-t-transparent ${borderColor} rounded-full animate-spin`}
+      className={`${size} border-4   flex items-center justify-center border-t-transparent ${borderColor} rounded-full animate-spin`}
     ></div>
   );
 };

@@ -5,8 +5,8 @@ import { VscVerifiedFilled } from "react-icons/vsc";
 import { PiPencilSimpleBold } from "react-icons/pi";
 import MuiTableComponent from "../components/table/TableComponent";
 import { GridColDef } from "@mui/x-data-grid";
-import { Link } from "react-router-dom";
-import { useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { TbUserScan } from "react-icons/tb";
@@ -14,6 +14,9 @@ import { MdCancel } from "react-icons/md";
 import { CiTimer } from "react-icons/ci";
 import PDF from "../assets/PDF.svg";
 import { useWindowResizer } from "../hooks/useWindowResize";
+import UserService from "../api/services/userMgt.service";
+import { toast } from "react-toastify";
+import { DetailLoadingState } from "../components/common/detailLoadingState";
 
 const rows = (): any[] => {
   const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
@@ -44,6 +47,42 @@ const rows = (): any[] => {
 export default function Agent() {
   const [editAgentModal, setEditAgentModal] = useState(false);
   const editAgentModalRef = useRef(null);
+  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
+  const [agent, setAgent] = useState<ApiAgent>({
+    id: 4,
+    name: "",
+    email: "",
+    email_verified_at: null,
+    type: "buyer",
+    created_at: "",
+    updated_at: "",
+    agent_profile: {
+      id: 1,
+      user_id: "4",
+      created_at: "",
+      updated_at: "",
+    },
+  });
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      if (id) {
+        try {
+          const response = await UserService.getAgent(parseInt(id));
+          setAgent(response.data);
+        } catch (error) {
+          console.error("Error fetching agent details:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        console.error("Agent ID is undefined.");
+      }
+    };
+
+    fetchDetails();
+  }, [id]);
 
   useClickAway(editAgentModalRef, () => {
     setEditAgentModal(false);
@@ -84,10 +123,11 @@ export default function Agent() {
     { field: "category", headerName: "Category", flex: 0.5, sortable: false },
     { field: "status", headerName: "Status", flex: 0.5, sortable: false },
   ];
-
-  return (
+  return isLoading ? (
+    <DetailLoadingState message="Loading agent details" />
+  ) : (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-7 bg-[#F5F5F5]">
-      {editAgentModal ? (
+      {editAgentModal && (
         <div className="w-screen h-screen flex justify-center items-center fixed top-0 left-0 z-30 bg-black/50 backdrop-blur-sm">
           <div
             ref={editAgentModalRef}
@@ -169,14 +209,14 @@ export default function Agent() {
             </div>
           </div>
         </div>
-      ) : null}
+      )}
       <div className="w-full py-5 px-5 md:px-10 border-b bg-white border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
 
       <div className="px-5 md:px-10 w-full mt-4 flex flex-col flex-1">
         <Link
-          to="/agents"
+          to="/admin/agents"
           className="flex gap-x-3 items-center text-sm hover:underline w-fit"
         >
           <FaArrowLeftLong />
@@ -192,7 +232,7 @@ export default function Agent() {
             />
             <div className="flex flex-col gap-y-2">
               <h1 className="md:text-2xl font-bold flex items-center gap-x-2">
-                Rosemary Sunday
+                {agent.name}
                 <VscVerifiedFilled size={18} color="#4f46e5" />
               </h1>
               <p className="text-sm flex items-center gap-x-2">
@@ -266,20 +306,20 @@ export default function Agent() {
             <div className="px-6 pb-4 flex flex-col text-sm">
               <div className="flex justify-between items-center gap-x-2 py-3 border-b border-b-primaryBorder">
                 <span className="font-medium">Agent ID:</span>
-                <span className="">#123</span>
+                <span className="">{agent.id}</span>
               </div>
               <div className="flex justify-between items-center gap-x-2 py-3 border-b border-b-primaryBorder">
                 <span className="font-medium">Name:</span>
-                <span className="">Rosemary Sunday</span>
+                <span className="">{agent.name}</span>
               </div>
               <div className="flex justify-between items-center gap-x-2 py-3 border-b border-b-primaryBorder">
                 <span className="font-medium">Email:</span>
-                <span className="">rosemarys@gmail.com</span>
+                <span className="">{agent.email}</span>
               </div>
-              <div className="flex justify-between items-center gap-x-2 py-3">
+              {/* <div className="flex justify-between items-center gap-x-2 py-3">
                 <span className="font-medium">Phone:</span>
                 <span className="">+234 464 782 2782</span>
-              </div>
+              </div> */}
               <div className="flex flex-col gap-y-3 p-3 rounded-lg text-sm border border-primaryBorder bg-black/[2%]">
                 <p className="font-semibold">Notes</p>
                 <p className="">
@@ -355,7 +395,6 @@ export default function Agent() {
               showCheckbox={true}
               columns={columns}
               rows={rows()}
-              paginationActive={true}
               rowHeight={80}
               pageSize={10}
             />

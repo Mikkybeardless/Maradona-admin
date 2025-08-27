@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight, FaRegEye } from "react-icons/fa6";
 import MuiTableComponent from "../components/table/TableComponent";
-import { GridColDef, GridRowParams } from "@mui/x-data-grid";
+import { GridRowParams } from "@mui/x-data-grid";
 import { useRef, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { useClickAway } from "react-use";
@@ -59,7 +59,7 @@ export default function Products() {
   );
 
   const handleRowClick = (params: GridRowParams) => {
-    console.log("Row clicked:", params.row);
+    // console.log("Row clicked:", params.row);
     navigate(`/admin/products/product/${params.row.id}`);
   };
 
@@ -170,77 +170,3 @@ export default function Products() {
     </div>
   );
 }
-
-export const ProductActionCellComponent = ({ row }: { row: any }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const dotsPopupRef = useRef(null);
-  const open = Boolean(anchorEl);
-  const id = open ? `popper-${row.id}` : undefined;
-
-  useClickAway(dotsPopupRef, () => {
-    setAnchorEl(null);
-  });
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
-
-  const handleDelete = (id: number) => {
-    console.log("deleting product with id:", id);
-  };
-
-  const handleEdit = (id: number) => {
-    console.log("editing product id:", id);
-  };
-
-  return (
-    <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
-      <button
-        aria-describedby={id}
-        type="button"
-        onClick={handleClick}
-        className="cursor-pointer bg-transparent border-none p-2 m-0 rounded-full hover:bg-gray-100"
-        style={{ lineHeight: 0 }}
-      >
-        <BsThreeDotsVertical size={16} />
-      </button>
-      <Popper
-        ref={dotsPopupRef}
-        className="p-3 text-sm z-10 flex gap-x-4 items-center rounded-lg border border-primaryBorder bg-white"
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        placement="bottom-end"
-        style={{ zIndex: 1300 }}
-        modifiers={[
-          {
-            name: "offset",
-            options: {
-              offset: [0, 8],
-            },
-          },
-          {
-            name: "preventOverflow",
-            options: {
-              boundary: "viewport",
-              padding: 8,
-            },
-          },
-        ]}
-      >
-        <Link to={`/products/product/${row.id}`}>
-          <FaRegEye size={18} />
-        </Link>
-        <button onClick={() => handleEdit(row.id)}>
-          <BiEditAlt size={18} />
-        </button>
-
-        <button onClick={() => handleDelete(row.id)}>
-          <GoTrash size={18} />
-        </button>
-      </Popper>
-    </div>
-  );
-};

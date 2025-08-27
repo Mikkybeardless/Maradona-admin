@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import DefaultImage from "../assets/no-image.png";
 
 export default function ProductCarousel({ images }: { images: string[] }) {
-  // Sample product images (using placeholders)
-  // const images = [image1, image2, image3, image4];
-
+  const isEmpty = images.length < 1;
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const goToPrevious = () => {
+    if (isEmpty) return;
     const isFirstImage = currentIndex === 0;
     const newIndex = isFirstImage ? images.length - 1 : currentIndex - 1;
     setCurrentIndex(newIndex);
   };
 
   const goToNext = () => {
+    if (isEmpty) return;
     const isLastImage = currentIndex === images.length - 1;
     const newIndex = isLastImage ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
@@ -22,6 +23,19 @@ export default function ProductCarousel({ images }: { images: string[] }) {
   const goToSlide = (index: number) => {
     setCurrentIndex(index);
   };
+
+  if (isEmpty) {
+    return (
+      <div className="flex flex-col md:flex-row items-center justify-center h-64">
+        <img
+          src={DefaultImage}
+          alt={`Default image`}
+          className="w-full h-full rounded-lg object-contain"
+        />
+        <p className="text-gray-500">No images available for this product</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-lg mx-auto p-2">

@@ -8,14 +8,13 @@ import ProductDetails from "./pages/ProductDetails";
 import Buyers from "./pages/Buyers";
 import Sellers from "./pages/Sellers";
 import AddCustomer from "./pages/AddCustomer";
-import Orders from "./pages/Orders";
+import Orders from "./pages/PurchaseEnquiries";
 import Reports from "./pages/Reports";
 import Promotions from "./pages/Promotions";
 import Documents from "./pages/Documents";
 import Shipments from "./pages/Shipments";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
-import AdminCustomer from "./pages/AdminCustomer";
 import AdminOrder from "./pages/AdminOrder";
 import TransactionHistory from "./pages/TransactionHistory";
 import CustomerNotifications from "./pages/CustomerNotifications";
@@ -36,6 +35,9 @@ import SaleReport from "./pages/SalesReport";
 import RevenueReport from "./pages/RevenueReport";
 import ExpensesReport from "./pages/ExpensesReport";
 import FinancialTracking from "./pages/FinancialTracking";
+import EditProduct from "./pages/UpdateProduct";
+import Buyer from "./pages/Buyer";
+import Seller from "./pages/Seller";
 
 function App() {
   return (
@@ -50,13 +52,14 @@ function App() {
           <Route path="products">
             <Route index element={<Products />} />
             <Route path="add-product" element={<AddProducts />} />
+            <Route path="edit-product/:id" element={<EditProduct />} />
             <Route path="product/:id" element={<ProductDetails />} />
           </Route>
 
           <Route path="buyers">
             <Route index element={<Buyers />} />
             <Route path="buyer/:id">
-              <Route index element={<AdminCustomer customer="buyer" />} />
+              <Route index element={<Buyer />} />
               <Route
                 path="transaction-history"
                 element={<TransactionHistory customer="buyer" />}
@@ -79,7 +82,7 @@ function App() {
           <Route path="sellers">
             <Route index element={<Sellers />} />
             <Route path="seller/:id">
-              <Route index element={<AdminCustomer customer="seller" />} />
+              <Route index element={<Seller />} />
               <Route
                 path="transaction-history"
                 element={<TransactionHistory customer="seller" />}
