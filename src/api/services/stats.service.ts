@@ -6,7 +6,9 @@ const statsService = {
       `/admin/stats/monthly-revenue${query ? `?${query}` : "?all_time=1"}`
     ),
   getTotalOrders: (query?: string) =>
-    apiClient.get(`/admin/stats/total-orders${query ? `?${query}` : ""}`),
+    apiClient.get(
+      `/admin/stats/total-orders${query ? `?${query}` : "all_time=1"}`
+    ),
   getTotalRevenue: (query?: string) =>
     apiClient.get(
       `/admin/stats/total-revenue${query ? `?${query}` : "?all_time=1"}`
