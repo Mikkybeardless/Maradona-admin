@@ -1,4 +1,3 @@
-import { is } from "date-fns/locale";
 import { appendArrayField, appendObjectArrayField } from "./appendArrayField";
 
 export function appendUpdateDataField(

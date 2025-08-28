@@ -66,18 +66,7 @@ export default function AdminSidebar() {
       label: "Purchase Enquiries",
     },
     { to: "reports", icon: <SlChart size={16} />, label: "Reports" },
-    // {
-    //   to: "promotions",
-    //   icon: <PiSealPercent size={16} />,
-    //   label: "Promotions & Discounts",
-    // },
-    // { to: "shipments", icon: <BsBoxSeam size={16} />, label: "Shipments" },
     { to: "agents", icon: <TbTie size={16} />, label: "Field Agents" },
-    // {
-    //   to: "customer-care",
-    //   icon: <MdOutlineHeadsetMic size={16} />,
-    //   label: "Customer Care",
-    // },
   ];
   // Function to check if a link is active for root (/admin) dashboard
   const isActiveLink = (path: string) => {
@@ -93,7 +82,7 @@ export default function AdminSidebar() {
         toast.success("Logout successful");
         setTimeout(() => {
           dispatch(logout());
-          Cookies.remove("token");
+          Cookies.remove("admin_token");
         }, 500);
       }
     } catch (error) {

@@ -12,7 +12,7 @@ const apiClient = axios.create({
 // Request interceptor for adding auth token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = Cookies.get("token");
+    const token = Cookies.get("admin_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

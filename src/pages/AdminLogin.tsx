@@ -63,7 +63,7 @@ export default function AdminLogin() {
 
       if (response.status == 200) {
         const data = response.data;
-        Cookies.set("token", data.token);
+        Cookies.set("admin_token", data.token);
         dispatch(login(data.user));
         toast.success("Login successful");
         // Redirect

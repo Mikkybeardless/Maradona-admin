@@ -5,8 +5,4 @@ function formatDateToYYYYMMDD(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
-// // Example:
-// const dateObj = new Date("Fri Aug 15 2025 00:00:00 GMT+0100");
-// const formattedDate = formatDateToYYYYMMDD(dateObj);
-// console.log(formattedDate); // "2025-08-15"
 export default formatDateToYYYYMMDD;

@@ -166,12 +166,7 @@ export default function Dashboard() {
         bidData.pagination.page,
         bidData.pagination.pageSize
       ).toString();
-      // const query = new URLSearchParams({
-      //   page: bidData.pagination.page.toString(),
-      //   per_page: bidData.pagination.pageSize.toString(),
-      // }).toString();
       const response = await auctionService.getAllAuctions(params);
-      // console.log("Bids:", response.data.data);
       setBidData({
         rows: response.data.data,
         pagination: {
@@ -275,25 +270,6 @@ export default function Dashboard() {
 
     fetchAllStats();
   }, [customDate.end_date, customDate.start_date]);
-
-  // const tableTheme = useTheme([
-  //   getTheme(),
-  //   {
-  //     HeaderRow: `
-  //     font-size: 16px;
-  //     background-color: #F0F0F0;
-  //     text-align: center !important;
-  //   `,
-  //     Row: `
-  //     font-size: 14px;
-  //     text-align: center;
-  //     border-bottom: none;
-  //   `,
-  //     BaseCell: `
-  //     border-bottom: none;
-  //   `,
-  //   },
-  // ]);
 
   const rows = (): BidTableType[] => {
     return Array.from({ length: 15 }, (_, i) => {

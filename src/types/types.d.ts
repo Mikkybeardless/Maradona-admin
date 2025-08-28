@@ -14,13 +14,12 @@ declare type ProductGearType = "manual" | "automatic";
 declare type WeightUnit = "kg" | "g";
 declare type Media = File[];
 declare type HouseCondition = "newly-built" | "old" | "needs-renovation";
-declare type Category_id = "1" | "2" | "3";
 
 declare interface Product {
   name: string;
   type: ProductType;
   description: string;
-  category_id: Category_id;
+  category_id: string;
   price: number;
   address: string;
   city: string;
@@ -189,6 +188,29 @@ declare interface Category {
   description: string;
 }
 declare interface ApiCategory extends Category, ApiRes {}
+
+declare interface CheckboxState {
+  id: string;
+  isChecked: boolean;
+}
+
+declare interface CarCheckboxes {
+  gear_type: CheckboxState;
+  body_type: CheckboxState;
+}
+
+declare interface LandCheckboxes {
+  accessibility: CheckboxState;
+  fencing: CheckboxState;
+  topography: CheckboxState;
+  land_type: CheckboxState;
+}
+
+interface HouseCheckboxes {
+  accessibility: CheckboxState;
+  house_condition: CheckboxState;
+}
+
 // user
 interface User {
   name: string;

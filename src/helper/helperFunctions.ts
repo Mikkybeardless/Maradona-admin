@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-
+import Cookies from "js-cookie";
 export function generateRandomNumber(max: number, min: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -74,4 +74,40 @@ export const formatAmountToNaira = (
     style: "currency",
     currency: currency,
   });
+};
+
+// Helper function to convert URL to File object for preview
+export const urlToFile = async (
+  url: string,
+  filename: string
+): Promise<File> => {
+  // const sanitizedUrl = url.replace(/^.*?\.com/, "");
+  // const response = await apiClient.get(sanitizedUrl, { responseType: "blob" });
+  // const blob = response.data as Blob;
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${Cookies.get("admin_token") || ""}`,
+    },
+  });
+  const blob = await response.blob();
+  return new File([blob], filename, { type: blob.type });
+};
+
+// Helper function to convert URLs to Files for a specific field
+export const convertUrlsToFiles = async (
+  urls: string[],
+  filePrefix: string
+): Promise<File[]> => {
+  if (!urls.length) return [];
+
+  try {
+    const filePromises = urls.map((url, index) =>
+      urlToFile(url, `${filePrefix}-${index}`)
+    );
+    return await Promise.all(filePromises);
+  } catch (error) {
+    console.error(`Error converting ${filePrefix} URLs to files:`, error);
+    return [];
+  }
 };

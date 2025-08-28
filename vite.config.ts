@@ -13,6 +13,12 @@ export default defineConfig({
         // ✨ KEEP `/api` in path
         rewrite: (path) => path, // <- No replacement
       },
+
+      "/uploads": {
+        target: "https://ds.reconnaissancetechnologies.com",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });

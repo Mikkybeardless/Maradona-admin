@@ -9,6 +9,7 @@ interface FileUploadProps {
   className?: string;
   Child?: React.ReactNode;
   files?: File[]; // controlled prop
+  images?: string[]; // controlled prop
   setFiles?: React.Dispatch<React.SetStateAction<File[]>>; // setter from parent
   onFilesChange?: (files: File[]) => void;
 }
