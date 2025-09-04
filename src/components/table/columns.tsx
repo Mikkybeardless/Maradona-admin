@@ -410,31 +410,31 @@ export const AuctionColumns: GridColDef[] = [
 // active auctions/bids
 export const BidsColumns: GridColDef[] = [
   {
-    field: "buyer_name",
-    headerName: "Bidders",
-    renderCell: ({ row }) => {
-      return <span>{row.buyer.name}</span>;
+    field: "buyer_id",
+    headerName: "Bidders ID",
+    renderCell: ({ value }) => {
+      return <span>{value}</span>;
     },
     flex: 0.7,
   },
-  {
-    field: "name",
-    headerName: "Product",
-    renderCell: ({ row }) => {
-      return (
-        <div className="flex gap-x-5 items-center">
-          <img
-            className="w-[40px] h-[40px]"
-            src={row.media[0] || "/images/placeholder.png"}
-            alt="product"
-          />
-          <p className="text-sm font-medium text-darkBlue">{row.name}</p>
-        </div>
-      );
-    },
-    flex: 1,
-  },
-  { field: "price", headerName: "Price", flex: 0.7 },
+  // {
+  //   field: "name",
+  //   headerName: "Product",
+  //   renderCell: ({ row }) => {
+  //     return (
+  //       <div className="flex gap-x-5 items-center">
+  //         <img
+  //           className="w-[40px] h-[40px]"
+  //           src={row.media[0] || "/images/placeholder.png"}
+  //           alt="product"
+  //         />
+  //         <p className="text-sm font-medium text-darkBlue">{row.name}</p>
+  //       </div>
+  //     );
+  //   },
+  //   flex: 1,
+  // },
+  { field: "amount", headerName: "Price", flex: 0.7 },
   {
     field: "status",
     headerName: "Status",
@@ -448,7 +448,7 @@ export const BidsColumns: GridColDef[] = [
               ? "bg-[#FE8E49] text-white"
               : value === "sold"
               ? "bg-[#E8F8E8] text-[#0C560B]"
-              : value === "draft"
+              : value === "pending"
               ? "bg-[#FEF3B8] "
               : "bg-[#DC1313] text-white"
           }`}

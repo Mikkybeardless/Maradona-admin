@@ -2,6 +2,7 @@ import DashboardSearchBar from "../components/DashboardSearchBar";
 import { Link, useNavigate } from "react-router-dom";
 import { FaChevronRight, FaPlus } from "react-icons/fa6";
 import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { FileUpload } from "../components/FileUpload";
 import { useEffect, useState } from "react";
 import { useDebounce } from "../hooks/useDebounce";
@@ -208,7 +209,7 @@ export default function AddAuction() {
         };
       });
     } else if (type === "categories") {
-      const id = option.value as Category_id;
+      const id = option.value;
       setAuctionDetails((prev) => {
         return {
           ...prev,
@@ -310,11 +311,11 @@ export default function AddAuction() {
                   Auction description:
                 </h5>
                 <ReactQuill
-                  value={
-                    auctionDetails.description
-                      ? `<p>${auctionDetails.description}</p>`
-                      : "<p></p>"
-                  }
+                  // value={
+                  //   auctionDetails.description
+                  //     ? `<p>${auctionDetails.description}</p>`
+                  //     : "<p></p>"
+                  // }
                   onChange={(...args) => {
                     const editor = args[3];
                     const text = editor.getText().trim();

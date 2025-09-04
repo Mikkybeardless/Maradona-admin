@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import UserService from "../api/services/userMgt.service";
-import AdminCustomer from "../components/Customer";
+import Customer from "../components/Customer";
 import { toast } from "react-toastify";
 import { DetailLoadingState } from "../components/common/detailLoadingState";
 
@@ -48,6 +48,6 @@ export default function Buyer() {
   return isLoading ? (
     <DetailLoadingState message="Loading buyer details..." />
   ) : (
-    <AdminCustomer user={buyer} customer="buyer" />
+    <Customer user={buyer} customer="buyer" />
   );
 }

@@ -55,7 +55,8 @@ type GenProduct = Product & Auction & (House | Car | Land);
 type ProductUpdate = Partial<GenProduct>;
 
 const auctionService = {
-  getAllAuctions: (query?: string) => apiClient.get(`/admin/auctions?${query}`),
+  getAllAuctions: (query?: string) =>
+    apiClient.get(`/admin/auctions${query ? `?${query}` : ""}`),
 
   getAuction: (id: number) => apiClient.get(`/admin/auctions/${id}`),
   addAuction: (data: FormData) =>
@@ -69,6 +70,8 @@ const auctionService = {
     apiClient.get(`/admin/auctions/search?query=${query}`),
 
   // bids
+  getAllBids: (query?: string) =>
+    apiClient.get(`/admin/auctions/all-bids${query ? `?${query}` : ""}`),
   getAllAuctionBids: (id: number) =>
     apiClient.get(`/admin/auctions/${id}/bids`),
   addBid: (data: { amount: number; auction_id: number }) =>

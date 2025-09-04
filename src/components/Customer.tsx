@@ -139,7 +139,7 @@ export default function AdminCustomer({ customer, user }: IAdminCustomer) {
           </div> */}
         </section>
 
-        <section
+        {/* <section
           id="customer-metrics"
           className="w-full rounded-lg mt-7 py-2 grid grid-cols-2 items-center md:items-start md:grid-cols-4 border border-primaryBorder bg-white"
         >
@@ -154,7 +154,7 @@ export default function AdminCustomer({ customer, user }: IAdminCustomer) {
               <p className="text-xl font-medium">{metric.value}</p>
             </div>
           ))}
-        </section>
+        </section> */}
 
         <section
           id="customer-information"

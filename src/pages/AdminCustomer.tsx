@@ -7,9 +7,9 @@ import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import { FaChevronRight } from "react-icons/fa6";
 
-export default function AdminCustomer({ customer }: { customer: string }) {
-  const location = useLocation();
-  const { pathname } = location;
+export default function Customer({ customer }: { customer: string }) {
+  // const location = useLocation();
+  // const { pathname } = location;
   const [menuDropdown, setMenuDropdown] = useState(false);
   const menuDropdownRef = useRef<HTMLDivElement>(null);
 

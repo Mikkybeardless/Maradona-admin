@@ -1,7 +1,4 @@
 import DashboardSearchBar from "../components/DashboardSearchBar";
-// import { CompactTable } from "@table-library/react-table-library/compact";
-// import { useTheme } from "@table-library/react-table-library/theme";
-// import { getTheme } from "@table-library/react-table-library/baseline";
 import LineChartComponent from "../components/LineChart";
 import {
   Cell,
@@ -39,6 +36,7 @@ import { useDebounce } from "../hooks/useDebounce";
 import formatDayJs from "../helper/formatDateJs";
 import { Dayjs } from "dayjs";
 import DefaultImg from "../assets/no-image.png";
+import { BidsColumns } from "../components/table/columns";
 
 type BidTableType = {
   id: number;
@@ -127,7 +125,7 @@ export default function Dashboard() {
     },
   };
   const [bidData, setBidData] = useState({
-    rows: [] as Product[],
+    rows: [] as ApiBid[],
     pagination: {
       page: 1,
       pageSize: 10,
@@ -166,7 +164,8 @@ export default function Dashboard() {
         bidData.pagination.page,
         bidData.pagination.pageSize
       ).toString();
-      const response = await auctionService.getAllAuctions(params);
+      const response = await auctionService.getAllBids(params);
+      console.log("Bids response:", response.data.data);
       setBidData({
         rows: response.data.data,
         pagination: {
@@ -181,7 +180,13 @@ export default function Dashboard() {
     } finally {
       setBidData((prev) => ({ ...prev, loading: false }));
     }
-  }, [bidData.pagination.page, bidData.pagination.pageSize]);
+  }, [
+    bidData.pagination.page,
+    bidData.pagination.pageSize,
+    filters.category,
+    filters.status,
+    debouncedSearchQuery,
+  ]);
 
   useEffect(() => {
     fetchBids();
@@ -253,12 +258,16 @@ export default function Dashboard() {
           );
           errors.push("Failed to load monthly report");
         }
-        console.log("Fetched stats:", newStats);
+        // console.log("Fetched stats:", newStats);
         setStats(newStats);
 
         // Set error if some failed, but still show partial data
         if (errors.length > 0) {
-          setError(new Error(`Some data failed to load: ${errors.join(", ")}`));
+          setError(
+            new Error(
+              `Some data failed to load, Please check your internet connection`
+            )
+          );
         }
       } catch (error) {
         console.error("Unexpected error:", error);
@@ -525,13 +534,6 @@ export default function Dashboard() {
                     {stats.topSellingProducts.period.description}
                   </span>
                 </div>
-                {/* <div className="flex justify-between">
-                  <p className="flex gap-1 items-center text-[30px] font-bold text-darkBlue">
-                    {stats.topSellingProducts.data.total_qty}{" "}
-                    <span className="text-base font-normal">sold</span>
-                  </p>
-                  <p> {stats.topSellingProducts.period.description}</p>
-                </div> */}
 
                 {stats.topSellingProducts.data
                   .slice(0, 3)
@@ -574,36 +576,6 @@ export default function Dashboard() {
                       </p>
                     </div>
                   ))}
-
-                {/* <div className="flex flex-col gap-3">
-                    <img
-                      src={Hilux}
-                      className="w-full md:w-[123px] h-fit md:h-[77px]"
-                      alt="land"
-                    />
-                    <p>Toyota Tacoma </p>
-                    <p className="text-green-500 font-semibold">110kg</p>
-                  </div>
-
-                  <div className="flex flex-col gap-3">
-                    <img
-                      src={House}
-                      className="w-full md:w-[123px] h-fit md:h-[77px]"
-                      alt="land"
-                    />
-                    <p>Toyota Tacoma </p>
-                    <p className="text-lightBlue font-semibold">110kg</p>
-                  </div>
-
-                  <div className="flex flex-col gap-3">
-                    <img
-                      src={Lexus}
-                      className="w-full md:w-[123px] h-fit md:h-[77px]"
-                      alt="land"
-                    />
-                    <p>Toyota Tacoma </p>
-                    <p className="text-darkBlue font-semibold">110kg</p>
-                  </div> */}
               </div>
 
               <div className=" flex flex-col gap-4 md:gap-[53px] items-center justify-center md:justify-between">
@@ -659,21 +631,20 @@ export default function Dashboard() {
                     <>
                       <StatusSelect
                         options={[
-                          { label: "Published", value: "published" },
                           { label: "Sold", value: "sold" },
-                          { label: "Draft", value: "draft" },
+                          { label: "Pending", value: "pending" },
                         ]}
                         onChange={(value) => {
                           setFilters((prev) => ({ ...prev, status: value }));
                         }}
                         value={filters.status}
                       />
-                      <DateSelect
+                      {/* <DateSelect
                         onChange={(date) => {
                           setFilters((prev) => ({ ...prev, date }));
                         }}
                         value={filters.date}
-                      />
+                      /> */}
                     </>
                   }
                   searchNode={
@@ -688,10 +659,10 @@ export default function Dashboard() {
               {/* table */}
               <div className="mt-0 h-[500px] flex flex-1 w-full overflow-hidden">
                 <MuiTableComponent
-                  columns={columns}
+                  columns={BidsColumns}
                   currentPage={bidData.pagination.page}
                   showCheckbox={false}
-                  rows={rows()}
+                  rows={bidData.rows}
                   rowHeight={60}
                   pageSize={10}
                   onPageChange={(model) => {

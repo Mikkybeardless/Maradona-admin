@@ -9,15 +9,12 @@ import { toast } from "react-toastify";
 export function DeleteButton({
   itemId,
   onDelete,
-  requestRoute,
   redirectPath,
-  deleteLabel = "Delete",
   modalMessage = "Are you sure you want to delete this item? This action cannot be undone.",
 }: {
   itemId: string;
-  onDelete?: (id: string) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
   redirectPath?: string;
-  requestRoute: string;
   deleteLabel?: string;
   modalMessage?: string;
 }) {
@@ -26,25 +23,13 @@ export function DeleteButton({
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Default delete handler if not provided
-  const defaultDeleteHandler = async (id: string) => {
-    const response = await fetch(`/api/${requestRoute}/${id}`, {
-      method: "DELETE",
-    });
-
-    if (!response.ok) {
-      console.log("Failed to delete the request");
-      toast.error("Failed to delete the booking");
-    }
-  };
-
   const handleDelete = async () => {
     setIsDeleting(true);
     setError(null);
 
     try {
       // Use provided delete handler or default
-      await (onDelete || defaultDeleteHandler)(itemId);
+      await onDelete(itemId);
 
       // Redirect after successful deletion
       if (redirectPath) {

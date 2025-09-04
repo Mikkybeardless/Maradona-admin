@@ -8,7 +8,7 @@ import { Spinner } from "../components/common/spinner";
 import { getProductShape } from "../helper/ReShapeData";
 import { appendUpdateDataField } from "../helper/AppendFormData";
 import { DetailLoadingState } from "../components/common/detailLoadingState";
-import { AddProductForm } from "../components/AddProductForm";
+import { AddProductForm } from "../components/add-product";
 import { convertUrlsToFiles } from "../helper/helperFunctions";
 
 export default function EditProduct() {

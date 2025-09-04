@@ -405,3 +405,69 @@ declare interface Enquiry {
 }
 
 declare interface ApiEnquiry extends Enquiry, ApiRes {}
+
+declare interface Bid {
+  auction_product_id: string;
+  buyer_id: string;
+  amount: string;
+  status: string;
+  agent_id: string;
+  qty_sold: string;
+  sold_price: string;
+  sold_at: string;
+  accepted_at: string | null;
+  rejected_at: string | null;
+}
+
+declare interface ApiBid extends Bid, ApiRes {}
+
+declare interface AgentStats {
+  inspection_requests: {
+    total: number;
+    assigned: number;
+    scheduled: number;
+    passed: number;
+    failed: number;
+  };
+  purchase_enquiries: {
+    total: number;
+    open: number;
+    assigned: number;
+    sold: number;
+    closed: number;
+  };
+  purchase_inspection_requests: {
+    total: number;
+    pending: number;
+    scheduled: number;
+    completed: number;
+  };
+  auction_bids: {
+    total: number;
+    pending: number;
+    accepted: number;
+    rejected: number;
+    closed: number;
+    reopened: number;
+    scheduled: number;
+    inspected: number;
+    completed: number;
+    sold: number;
+  };
+}
+
+declare interface AgentDetails extends ApiAgent {
+  statistics: AgentStats;
+  agent_profile: {
+    id: number;
+    user_id: string;
+    created_at: string;
+    updated_at: string;
+    location: string;
+    phone: string;
+    staff_id: string;
+    availability: string;
+    bank_name: string;
+    bank_account_number: string;
+  };
+}

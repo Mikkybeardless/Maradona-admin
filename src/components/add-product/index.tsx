@@ -1,11 +1,11 @@
-import { CarSpecificationsSection } from "./product/carSpecificationSection";
-import { ConditionSection } from "./product/conditionSection";
-import { MediaSection } from "./product/mediaSection";
-import { PricingSection } from "./product/pricingSection";
-import { ProductDetailsSection } from "./product/productDetailsSection";
-import { ProductDocumentsSection } from "./product/productDocSection";
-import { ProductTypeSection } from "./product/productTypeSection";
-import { SidebarSection } from "./product/sideBarSection";
+import { CarSpecificationsSection } from "./carSpecificationSection";
+import { ConditionSection } from "./conditionSection";
+import { MediaSection } from "./mediaSection";
+import { PricingSection } from "./pricingSection";
+import { ProductDetailsSection } from "./productDetailsSection";
+import { ProductDocumentsSection } from "./productDocSection";
+import { ProductTypeSection } from "./productTypeSection";
+import { SidebarSection } from "./sideBarSection";
 
 interface ProductFormProps {
   productDetails: ProductDetails;

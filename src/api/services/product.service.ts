@@ -11,7 +11,7 @@ const productService = {
     apiClient.post("/admin/products", data, {
       headers: { "Content-Type": "multipart/form-data" },
     }),
-  approveOrRejectProduct: (id: number, action: "approve" | "reject") =>
+  approveOrRejectProduct: (id: number, action: "approve" | "cancel") =>
     apiClient.post(`/admin/products/${id}/toggle-approval?action=${action}`),
   updateProduct: <T extends keyof ProductPayloadMap>(
     id: number,

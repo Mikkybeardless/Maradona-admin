@@ -7,10 +7,12 @@ import { useClickAway } from "react-use";
 import ProductCarousel from "../components/ProductCarousel";
 import productService from "../api/services/product.service";
 import { DetailLoadingState } from "../components/common/detailLoadingState";
-import { formatAmountToNaira } from "../helper/helperFunctions";
+// import { formatAmountToNaira } from "../helper/helperFunctions";
 import { DeleteButton } from "../components/modals/delete-modal";
 import AssignAgentModal from "../components/modals/assignAgent";
 import purchaseEnquiriesService from "../api/services/purchaseEnquiries.service";
+import { toast } from "react-toastify";
+import { KeyFeatures } from "../components/keyFeatures";
 
 export default function ProductDetails() {
   const location = useLocation();
@@ -18,12 +20,12 @@ export default function ProductDetails() {
   const [assignAgentModal, setAssignAgentModal] = useState(false);
   const assignAgentModalRef = useRef(null);
   const { id } = useParams();
-  const navigate = useNavigate();
+
   const initialProductDetails = {
     id: 0,
     created_at: "",
     updated_at: "",
-    type: "LAND",
+    type: "LAND" as ProductType,
     name: "",
     category_id: "2",
     description: "",
@@ -35,42 +37,43 @@ export default function ProductDetails() {
     // weight: 0,
     continue_selling: false,
     state: "",
-    house_furnished: "furnished",
-    weight_unit: "kg",
+    house_furnished: "furnished" as ProductFurnishedStatus,
+    weight_unit: "kg" as WeightUnit,
     media: [],
     documents: [],
-    status: "draft",
+    status: "draft" as ProductStatus,
     tags: [],
     sku: "",
     inventory: 0,
-    body_type: "SUV",
+    body_type: "SUV" as ProductBodyType,
     engine_type: "",
-    accessibility: "main-road",
-    fencing: "fenced",
-    topography: "dry-land",
-    land_type: "residential",
+    accessibility: "main-road" as ProductAccessibility,
+    fencing: "fenced" as ProductFencing,
+    topography: "dry-land" as ProductTopography,
+    land_type: "residential" as ProductLandType,
     // duration: "days",
     auction_duration: 0,
     transmission: "",
-    condition: "new",
-    house_condition: "newly-built",
+    condition: "new" as ProductCondition,
+    house_condition: "newly-built" as HouseCondition,
     house_size: 0,
     house_beds: 0,
-    auction_type: "auctioned",
+    auction_type: "auctioned" as ProductAuctionType,
     land_size: 0,
-    gear_type: "manual",
+    gear_type: "manual" as ProductGearType,
     mileage: "",
+    belongs_to_admin: false,
+    approved_at: null,
   };
   const [isLoading, setIsLoading] = useState(true);
   const [product, setProduct] = useState(initialProductDetails);
-  // const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProductDetails = async () => {
       if (id) {
         try {
           const response = await productService.getProduct(parseInt(id));
-          console.log("Product details:", response.data);
+          // console.log("Product details:", response.data);
           setProduct(response.data);
         } catch (error) {
           console.error("Error fetching product details:", error);
@@ -91,10 +94,6 @@ export default function ProductDetails() {
 
   const handleDelete = async (id: string) => {
     await productService.deleteProduct(Number(id));
-    // if (response.status === 200) {
-    //   // Handle successful deletion
-    //   navigate("/admin/products");
-    // }
   };
 
   const handleAssignAgent = async (agentId: number) => {
@@ -120,6 +119,28 @@ export default function ProductDetails() {
         success: false,
         message: "An error occurred while assigning the agent",
       };
+    }
+  };
+
+  const handleStatusUpdate = async (
+    id: number,
+    status: "approve" | "cancel"
+  ) => {
+    try {
+      const response = await productService.approveOrRejectProduct(id, status);
+
+      if (response.status === 200) {
+        toast.success(
+          `product ${
+            status === "approve" ? "approved" : "rejected"
+          } successfully`
+        );
+      }
+    } catch (error) {
+      console.error("Error updating product status:", error);
+      toast.error(
+        `Failed to ${status === "approve" ? "approve" : "reject"} product`
+      );
     }
   };
 
@@ -173,7 +194,23 @@ export default function ProductDetails() {
               Assign Field Agent
             </button>
           ) : (
-            <div className="flex gap-x-8 items-center">
+            <div className="flex gap-x-4 items-center">
+              {!product.belongs_to_admin && product.approved_at === null && (
+                <>
+                  <button
+                    onClick={() => handleStatusUpdate(Number(id), "approve")}
+                    className="text-sm text-green-500 hover:underline"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleStatusUpdate(Number(id), "cancel")}
+                    className="text-sm text-red-500 hover:underline"
+                  >
+                    Reject
+                  </button>
+                </>
+              )}
               <Link
                 to={`/admin/products/edit-product/${id}`}
                 className="cursor-pointer flex items-center bg-defaultOrange text-white rounded-lg py-1 px-2 md:p-2"
@@ -184,7 +221,6 @@ export default function ProductDetails() {
               <DeleteButton
                 itemId={id ?? ""}
                 onDelete={(id) => handleDelete(id)}
-                requestRoute="products"
                 redirectPath={`/admin/products`}
               />
             </div>
@@ -218,72 +254,7 @@ export default function ProductDetails() {
             </div>
 
             {/* key feature  */}
-            <div className="w-full bg-white p-4 pl-7 rounded-xl flex gap-x-2 items-start">
-              <div className="w-2/4">
-                <h3 className="text-sm font-semibold">Key Features</h3>
-                {product.type === "CAR" ? (
-                  <ul className="text-sm pl-3 flex flex-col gap-y-2 mt-2.5 list-disc">
-                    <li className="opacity-70">
-                      Engine: {product.engine_type}
-                    </li>
-                    <li className="opacity-70">
-                      Transmission: {product.transmission}
-                    </li>
-                    <li className="opacity-70">Mileage: {product.mileage}</li>
-                    <li className="opacity-70">
-                      Condition: {product.condition}
-                    </li>
-                  </ul>
-                ) : product.type === "HOUSE" ? (
-                  <ul className="text-sm pl-3 flex flex-col gap-y-2 mt-2.5 list-disc">
-                    <li className="opacity-70">
-                      Accessibility: {product.accessibility}
-                    </li>
-                    <li className="opacity-70">
-                      Bedrooms: {product.house_beds}
-                    </li>
-                    <li className="opacity-70">
-                      House Type: {product.house_type}
-                    </li>
-                    <li className="opacity-70">
-                      Furniture: {product.house_furnished}
-                    </li>
-                    <li className="opacity-70">
-                      Condition: {product.house_condition}
-                    </li>
-                    <li className="opacity-70">Size: {product.house_size}</li>
-                  </ul>
-                ) : product.type === "LAND" ? (
-                  <ul className="text-sm pl-3 flex flex-col gap-y-2 mt-2.5 list-disc">
-                    <li className="opacity-70">
-                      Accessibility: {product.accessibility}
-                    </li>
-                    <li className="opacity-70">
-                      Land Type: {product.land_type}
-                    </li>
-                    <li className="opacity-70"> Fencing: {product.fencing}</li>
-                    <li className="opacity-70">
-                      Topography: {product.topography}
-                    </li>
-                    <li className="opacity-70">
-                      Land Size: {product.land_size}
-                    </li>
-                  </ul>
-                ) : null}
-              </div>
-              <div className="w-2/4">
-                <span className="text-sm font-semibold">
-                  Pricing and Availabilty
-                </span>
-                <ul className="text-sm flex flex-col gap-y-2 mt-2.5 list-none">
-                  <li className="opacity-70">
-                    Price: {formatAmountToNaira(Number(product.price))}
-                  </li>
-                  <li className="opacity-70">Negotiable: No</li>
-                  <li className="opacity-70">Location: Lekki, Lagos</li>
-                </ul>
-              </div>
-            </div>
+            <KeyFeatures product={product} />
           </div>
           {/* details */}
         </div>

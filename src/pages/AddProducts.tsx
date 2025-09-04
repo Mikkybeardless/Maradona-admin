@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { Spinner } from "../components/common/spinner";
 import { getProductShape } from "../helper/ReShapeData";
 import { appendArrayField } from "../helper/appendArrayField";
-import { AddProductForm } from "../components/AddProductForm";
+import { AddProductForm } from "../components/add-product";
 
 export default function AddProducts() {
   const navigate = useNavigate();

@@ -262,7 +262,11 @@ export default function Reports() {
 
       // Set error if some failed, but still show partial data
       if (errors.length > 0) {
-        setError(new Error(`Some data failed to load: ${errors.join(", ")}`));
+        setError(
+          new Error(
+            `Some data failed to load. Please check your internet connection`
+          )
+        );
       }
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -302,7 +306,7 @@ export default function Reports() {
             </div>
           </div>
         ) : error ? (
-          <div className="text-red-500">
+          <div className="text-red-500 flex justify-center my-20">
             {(error as Error)?.message ?? "An error occurred"}
           </div>
         ) : (
@@ -351,14 +355,14 @@ export default function Reports() {
                   <div className="w-full md:min-w-[210px] h-[184px] bg-[#1137D033] pl-5 pt-4 rounded-[16px]">
                     <div className="flex justify-end">
                       <p className="font-semibold text-xs text-[#1137D0] mr-2">
-                        {stats.totalOrders.period.description}
+                        {stats.totalOrders?.period.description}
                       </p>
                     </div>
                     <div className="w-[40px] h-[40px] bg-[#1137D0] flex items-center justify-center rounded-full">
                       <AiFillFileText size={24} color="#ffffff" />
                     </div>
                     <p className="font-semibold text-2xl text-[#151D48] my-4">
-                      {stats.totalOrders.total_orders}
+                      {stats.totalOrders?.total_orders}
                     </p>
                     <p className="font-medium text-base text-[#425166]">
                       Total Orders
@@ -366,11 +370,11 @@ export default function Reports() {
                     <div className="flex gap-3 mt-1 items-center">
                       <p className="flex items-center gap-3 text-xs">
                         <span>Direct sale</span>
-                        <span>{stats.totalOrders.direct_sales_orders}</span>
+                        <span>{stats.totalOrders?.direct_sales_orders}</span>
                       </p>
                       <p className="text-xs flex items-center gap-3">
                         <span>Auction sale</span>
-                        <span>{stats.totalOrders.auction_sales_orders}</span>
+                        <span>{stats.totalOrders?.auction_sales_orders}</span>
                       </p>
                     </div>
                   </div>
@@ -452,31 +456,33 @@ export default function Reports() {
               <div className="bg-white py-5 px-5 mt-6 rounded-3xl flex-1">
                 <p className="font-bold  mb-5">Top Performing Categories</p>
 
-                {stats.topSellingProductsByType.data
+                {stats.topSellingProductsByType?.data
                   .slice(0, 3)
-                  .map((item: TopSellingByType, index: number) => (
-                    <div key={index} className="mb-3">
-                      <div className="flex items-center mb-2">
-                        <VscCircleFilled size={10} color="#FD6100" />
-                        <div className="ml-2">
-                          <p className="font-normal text-sm sm:text-base text-[#5C4D58]">
-                            {item.product_type}:{" "}
-                            <span className="font-bold text-[#E65800]">
+                  .map(
+                    (item: TopSellingByType["data"][number], index: number) => (
+                      <div key={index} className="mb-3">
+                        <div className="flex items-center mb-2">
+                          <VscCircleFilled size={10} color="#FD6100" />
+                          <div className="ml-2">
+                            <p className="font-normal text-sm sm:text-base text-[#5C4D58]">
+                              {item.product_type}:{" "}
+                              {/* <span className="font-bold text-[#E65800]">
                               {item.growth_percentage | 100}%
-                            </span>
-                          </p>
-                          <p className="font-normal text-xs text-[#5C4D58]">
-                            {item.total_qty} units sold
-                          </p>
+                            </span> */}
+                            </p>
+                            <p className="font-normal text-xs text-[#5C4D58]">
+                              {item.total_qty} units sold
+                            </p>
+                          </div>
                         </div>
+                        <ProgressUI
+                          rangeColor={colors[index]}
+                          rangePercent={`100%`}
+                          wholeColor={`#e5e7eb`}
+                        />
                       </div>
-                      <ProgressUI
-                        rangeColor={colors[index]}
-                        rangePercent={`100%`}
-                        wholeColor={`#e5e7eb`}
-                      />
-                    </div>
-                  ))}
+                    )
+                  )}
                 {/* <div className="mb-3">
                   <div className="flex items-center mb-2">
                     <VscCircleFilled size={10} color="#FD6100" />

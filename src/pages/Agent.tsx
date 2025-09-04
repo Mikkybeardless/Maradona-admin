@@ -49,27 +49,14 @@ export default function Agent() {
   const editAgentModalRef = useRef(null);
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
-  const [agent, setAgent] = useState<ApiAgent>({
-    id: 4,
-    name: "",
-    email: "",
-    email_verified_at: null,
-    type: "buyer",
-    created_at: "",
-    updated_at: "",
-    agent_profile: {
-      id: 1,
-      user_id: "4",
-      created_at: "",
-      updated_at: "",
-    },
-  });
+  const [agent, setAgent] = useState<AgentDetails | null>(null);
 
   useEffect(() => {
     const fetchDetails = async () => {
       if (id) {
         try {
           const response = await UserService.getAgent(parseInt(id));
+          console.log("Agent details:", response.data);
           setAgent(response.data);
         } catch (error) {
           console.error("Error fetching agent details:", error);
@@ -232,7 +219,7 @@ export default function Agent() {
             />
             <div className="flex flex-col gap-y-2">
               <h1 className="md:text-2xl font-bold flex items-center gap-x-2">
-                {agent.name}
+                {agent?.name}
                 <VscVerifiedFilled size={18} color="#4f46e5" />
               </h1>
               <p className="text-sm flex items-center gap-x-2">
@@ -270,7 +257,9 @@ export default function Agent() {
                 <TbUserScan size={24} />
               </div>
 
-              <span className="text-2xl font-bold">120</span>
+              <span className="text-2xl font-bold">
+                {agent?.statistics.inspection_requests.total}
+              </span>
             </div>
             <p className="font-medium  text-[#425166]">Total Inspection</p>
           </div>
@@ -281,7 +270,9 @@ export default function Agent() {
                 <CiTimer size={24} />
               </div>
 
-              <span className="text-2xl font-bold">3</span>
+              <span className="text-2xl font-bold">
+                {agent?.statistics.inspection_requests.assigned}
+              </span>
             </div>
             <p className="font-medium  text-[#425166]">Pending Inspection</p>
           </div>
@@ -292,7 +283,9 @@ export default function Agent() {
                 <MdCancel size={24} />
               </div>
 
-              <span className="text-2xl font-bold">4</span>
+              <span className="text-2xl font-bold">
+                {agent?.statistics.inspection_requests.failed}
+              </span>
             </div>
             <p className="font-medium  text-[#425166]">Declined Inspection</p>
           </div>
@@ -306,20 +299,20 @@ export default function Agent() {
             <div className="px-6 pb-4 flex flex-col text-sm">
               <div className="flex justify-between items-center gap-x-2 py-3 border-b border-b-primaryBorder">
                 <span className="font-medium">Agent ID:</span>
-                <span className="">{agent.id}</span>
+                <span className="">{agent?.id}</span>
               </div>
               <div className="flex justify-between items-center gap-x-2 py-3 border-b border-b-primaryBorder">
                 <span className="font-medium">Name:</span>
-                <span className="">{agent.name}</span>
+                <span className="">{agent?.name}</span>
               </div>
               <div className="flex justify-between items-center gap-x-2 py-3 border-b border-b-primaryBorder">
                 <span className="font-medium">Email:</span>
-                <span className="">{agent.email}</span>
+                <span className="">{agent?.email}</span>
               </div>
-              {/* <div className="flex justify-between items-center gap-x-2 py-3">
+              <div className="flex justify-between items-center gap-x-2 py-3">
                 <span className="font-medium">Phone:</span>
-                <span className="">+234 464 782 2782</span>
-              </div> */}
+                <span className="">{agent?.agent_profile.phone}</span>
+              </div>
               <div className="flex flex-col gap-y-3 p-3 rounded-lg text-sm border border-primaryBorder bg-black/[2%]">
                 <p className="font-semibold">Notes</p>
                 <p className="">
@@ -332,7 +325,8 @@ export default function Agent() {
               </div>
             </div>
           </div>
-          <div className=" w-full md:w-[40%] flex flex-col rounded-2xl bg-white border border-primaryBorder">
+
+          {/* <div className=" w-full md:w-[40%] flex flex-col rounded-2xl bg-white border border-primaryBorder">
             <h4 className="py-3 px-4 rounded-t-lg font-semibold bg-[#F4F1F3] brder-b border-b-primaryBorder">
               Documents uploads
             </h4>
@@ -341,7 +335,7 @@ export default function Agent() {
                 <p className="text-[#5C4D58]">Means of identification</p>
                 <div className="flex gap-x-2 items-center">
                   <div className="flex gap-x-2 items-center w-full">
-                    {/* <PDFPreview /> */}
+             
                     <img src={PDF} alt="PDF" className="w-5 h-7 object-cover" />
                     <div className="flex flex-col">
                       <p className="">Natinoal ID card Front.pdf</p>
@@ -385,10 +379,10 @@ export default function Agent() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
-        <div className="w-full mt-10">
+        {/* <div className="w-full mt-10">
           <h5 className="font-bold">Inpection History</h5>
           <div className="w-full h-[70vh] flex mt-4">
             <MuiTableComponent
@@ -399,7 +393,7 @@ export default function Agent() {
               pageSize={10}
             />
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

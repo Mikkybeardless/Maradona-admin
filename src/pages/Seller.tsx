@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import UserService from "../api/services/userMgt.service";
-import AdminCustomer from "../components/Customer";
-import { Spinner } from "../components/common/spinner";
+import Customer from "../components/Customer";
+// import { Spinner } from "../components/common/spinner";
 import { toast } from "react-toastify";
 import { DetailLoadingState } from "../components/common/detailLoadingState";
 
@@ -54,6 +54,6 @@ export default function Seller() {
   return isLoading ? (
     <DetailLoadingState message="Loading seller details" />
   ) : (
-    <AdminCustomer user={seller} customer="buyer" />
+    <Customer user={seller} customer="buyer" />
   );
 }

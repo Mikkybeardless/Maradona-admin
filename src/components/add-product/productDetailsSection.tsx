@@ -1,6 +1,7 @@
 // components/ProductDetailsSection.tsx
 import React from "react";
 import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import StateCitySelector2 from "../common/stateCitySelector";
 
 interface ProductDetailsSectionProps {
