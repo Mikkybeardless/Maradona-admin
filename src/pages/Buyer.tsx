@@ -4,33 +4,23 @@ import UserService from "../api/services/userMgt.service";
 import Customer from "../components/Customer";
 import { toast } from "react-toastify";
 import { DetailLoadingState } from "../components/common/detailLoadingState";
+import customerService from "../api/services/customer.service";
 
 export default function Buyer() {
   const [isLoading, setIsLoading] = useState(true);
-  const [buyer, setBuyer] = useState<ApiBuyer>({
-    id: 4,
-    name: "",
-    email: "",
-    email_verified_at: null,
-    type: "buyer",
-    created_at: "",
-    updated_at: "",
-    buyer_profile: {
-      id: 1,
-      user_id: "4",
-      created_at: "",
-      updated_at: "",
-    },
-  });
+  const [buyer, setBuyer] = useState<ApiBuyer | null>(null);
+  const [buyerStats, setBuyerStats] = useState<Customer | undefined>(undefined);
 
   const { id } = useParams();
   useEffect(() => {
     const fetchBuyerDetails = async () => {
       if (id) {
         try {
-          const response = await UserService.getBuyer(parseInt(id));
-          console.log("Buyer details:", response.data);
-          setBuyer(response.data);
+          // const response = await UserService.getBuyer(parseInt(id));
+          const res = await customerService.getOneCustomer(id);
+          console.log("Buyer details:", res.data);
+          setBuyer(res.data.customer);
+          setBuyerStats(res.data);
         } catch (error) {
           toast.error("An unknown error occured, please refresh the page");
           console.error("Error fetching buyer details:", error);
@@ -47,7 +37,7 @@ export default function Buyer() {
 
   return isLoading ? (
     <DetailLoadingState message="Loading buyer details..." />
-  ) : (
-    <Customer user={buyer} customer="buyer" />
-  );
+  ) : buyer ? (
+    <Customer user={buyer} buyerStats={buyerStats} customer="buyer" />
+  ) : null;
 }

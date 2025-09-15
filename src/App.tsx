@@ -38,6 +38,7 @@ import FinancialTracking from "./pages/FinancialTracking";
 import EditProduct from "./pages/UpdateProduct";
 import Buyer from "./pages/Buyer";
 import Seller from "./pages/Seller";
+import NotificationsPage from "./pages/Notification";
 
 function App() {
   return (
@@ -143,6 +144,9 @@ function App() {
             <Route path="ticket">
               <Route path=":ticketId" element={<CustomerChat />} />
             </Route>
+          </Route>
+          <Route path="notifications">
+            <Route index element={<NotificationsPage />} />
           </Route>
         </Route>
 

@@ -78,8 +78,8 @@ export default function Buyers() {
           ["Buyer Id"]: item.id,
           ["Buyer Name"]: item.name,
           ["Email"]: item.email,
-          created_at: formatIsoString(item.created_at).formattedDate,
-          updated_at: formatIsoString(item.updated_at).formattedDate,
+          ["created At"]: formatIsoString(item.created_at).formattedDate,
+          ["updated At"]: formatIsoString(item.updated_at).formattedDate,
         }))}
         selectedData={selectedData}
         filename="buyers-data"

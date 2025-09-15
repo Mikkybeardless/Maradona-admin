@@ -64,7 +64,7 @@ export const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
       <div className="w-full">
         <h5 className="text-sm mb-2 font-medium">Product description:</h5>
         <ReactQuill
-          value={
+          defaultValue={
             productDetails.description
               ? `<p>${productDetails.description}</p>`
               : "<p></p>"

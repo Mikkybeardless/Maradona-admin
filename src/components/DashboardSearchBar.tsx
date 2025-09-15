@@ -59,10 +59,12 @@ export default function DashboardSearchBar() {
         />
       </div>
       <div className="flex items-center gap-x-5 ml-auto">
-        <FaRegBell
-          className="cursor-pointer hover:text-defaultOrange"
-          size={22}
-        />
+        <NavLink to={"/admin/notifications"} className={"md:flex hidden"}>
+          <FaRegBell
+            className="cursor-pointer hover:text-defaultOrange"
+            size={22}
+          />
+        </NavLink>
         <NavLink to={"/admin"} className={"md:flex hidden"}>
           <img
             className="w-[36px] h-[36px] rounded-full object-fill"

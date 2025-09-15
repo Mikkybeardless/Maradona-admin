@@ -15,7 +15,6 @@ interface CarSidebarSectionProps {
 export const CarSidebarSection: React.FC<CarSidebarSectionProps> = ({
   productDetails,
   setProductDetails,
-  handleInputChange,
 }) => {
   const bodyTypes = [
     { id: "SUV", label: "SUV" },
@@ -29,21 +28,21 @@ export const CarSidebarSection: React.FC<CarSidebarSectionProps> = ({
     <div className="w-full flex flex-col gap-y-6">
       {/* Weight Section */}
       <div className="w-full p-5 flex flex-col gap-y-6 border-b border-b-primaryBorder">
-        <div className="flex flex-col gap-y-2">
+        {/* <div className="flex flex-col gap-y-2">
           <h5 className="text-sm">Weight</h5>
           <div className="pl-3 py-0.5 flex gap-x-2 rounded-lg border border-primaryBorder text-sm">
-            {/* <input
+            <input
               type="number"
               name="weight"
               value={productDetails.weight || ""}
               onChange={handleInputChange}
               className="outline-none w-full py-2"
               placeholder="Enter weight"
-            /> */}
+            />
             <select
               name="weightUnit"
-              //   value={productDetails.weightUnit || "kg"}
-              //   onChange={handleInputChange}
+                value={productDetails.weightUnit || "kg"}
+                onChange={handleInputChange}
               className="px-2 py-2.5 rounded-lg h-[100%] outline-none bg-[#F2F2F2]"
             >
               <option value="g">g</option>
@@ -53,7 +52,7 @@ export const CarSidebarSection: React.FC<CarSidebarSectionProps> = ({
           <p className="text-xs opacity-70">
             Used to calculate shipping rates at checkout
           </p>
-        </div>
+        </div> */}
 
         {/* Body Type Section */}
         <div className="flex flex-col gap-y-2">

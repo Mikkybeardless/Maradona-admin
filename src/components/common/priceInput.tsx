@@ -5,6 +5,7 @@ interface PriceInputProps {
   id: string;
   label?: string;
   name?: string;
+  value?: string;
   placeholder?: string;
   inputClassName?: string;
 }
@@ -15,9 +16,10 @@ export default function PriceInput({
   name,
   onChange = () => {},
   placeholder = "Enter price",
+  value,
   inputClassName = "w-full p-3 flex gap-x-2 items-center rounded-lg outline-none border border-primaryBorder focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-transparent",
 }: PriceInputProps) {
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState(value || "");
 
   const formatPrice = useCallback((value: string) => {
     const numericValue = value.replace(/\D/g, "");

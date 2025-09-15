@@ -9,7 +9,7 @@ import { getProductShape } from "../helper/ReShapeData";
 import { appendUpdateDataField } from "../helper/AppendFormData";
 import { DetailLoadingState } from "../components/common/detailLoadingState";
 import { AddProductForm } from "../components/add-product";
-import { convertUrlsToFiles } from "../helper/helperFunctions";
+// import { convertUrlsToFiles } from "../helper/helperFunctions";
 
 export default function EditProduct() {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ export default function EditProduct() {
     // weight: 0,
     continue_selling: false,
     state: "",
-    house_furnished: "furnished" as ProductFurnishedStatus,
+    house_furnished: "Furnished" as ProductFurnishedStatus,
     weight_unit: "kg" as WeightUnit,
     media: [],
     documents: [],
@@ -38,20 +38,20 @@ export default function EditProduct() {
     inventory: 0,
     body_type: "SUV" as ProductBodyType,
     engine_type: "",
-    accessibility: "main-road" as ProductAccessibility,
-    fencing: "fenced" as ProductFencing,
-    topography: "dry-land" as ProductTopography,
+    accessibility: "Main road" as ProductAccessibility,
+    fencing: "Fenced" as ProductFencing,
+    topography: "Dry land" as ProductTopography,
     land_type: "residential" as ProductLandType,
     // duration: "days",
     auction_duration: 0,
     transmission: "",
-    condition: "new" as ProductCondition,
-    house_condition: "newly-built" as HouseCondition,
+    condition: "New" as ProductCondition,
+    house_condition: "Newly built" as HouseCondition,
     house_size: 0,
     house_beds: 0,
-    auction_type: "auctioned" as ProductAuctionType,
+    auction_type: "Auctioned" as ProductAuctionType,
     land_size: 0,
-    gear_type: "manual",
+    gear_type: "Manual",
     mileage: "",
   };
   const [productDetails, setProductDetails] = useState<ProductDetails>(
@@ -84,14 +84,14 @@ export default function EditProduct() {
 
   const handleSubmit = async () => {
     const payLoad = getProductShape(productDetails as ProductDetails);
-    console.log("Product Details:", payLoad);
+    // console.log("Product Details:", payLoad);
 
     // Convert to FormData
     const formData = new FormData();
 
     for (const [key, value] of Object.entries(payLoad)) {
       const success = appendUpdateDataField(formData, key, value);
-      if (!success) break; // stops on validation error
+      if (!success) return; // stops on validation error
     }
 
     for (const [key, value] of formData.entries()) {
@@ -152,6 +152,9 @@ export default function EditProduct() {
           ...prev,
           ...productData,
           documents: [],
+          address: productData.location_address || "",
+          city: productData.location_city || "",
+          state: productData.location_state || "",
           media: [],
         }));
 

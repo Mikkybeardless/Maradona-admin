@@ -25,7 +25,7 @@ export default function AddProducts() {
     // weight: 0,
     continue_selling: false,
     state: "",
-    house_furnished: "furnished",
+    house_furnished: "Fully furnished",
     weight_unit: "kg",
     media: [],
     documents: [],
@@ -35,20 +35,20 @@ export default function AddProducts() {
     inventory: 0,
     body_type: "SUV",
     engine_type: "",
-    accessibility: "main-road",
-    fencing: "fenced",
-    topography: "dry-land",
-    land_type: "residential",
+    accessibility: "Main road",
+    fencing: "Fenced",
+    topography: "Dry land",
+    land_type: "Residential",
     // duration: "days",
     auction_duration: 0,
     transmission: "",
-    condition: "new",
-    house_condition: "newly-built",
+    condition: "New",
+    house_condition: "Newly built",
     house_size: 0,
     house_beds: 0,
-    auction_type: "auctioned",
+    auction_type: "Auctioned",
     land_size: 0,
-    gear_type: "manual",
+    gear_type: "Manual",
     mileage: "",
   };
   const [productDetails, setProductDetails] = useState<ProductDetails>(
@@ -193,7 +193,7 @@ export default function AddProducts() {
           </div>
         </div>
 
-        <main className="w-full flex  flex-col md:flex-row gap-y-5 gap-x-8 mt-8">
+        <main className="w-full">
           <AddProductForm
             productDetails={productDetails}
             setProductDetails={setProductDetails}

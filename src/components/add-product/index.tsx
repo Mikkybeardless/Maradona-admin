@@ -21,7 +21,7 @@ interface ProductFormProps {
 
 export const AddProductForm: React.FC<ProductFormProps> = (props) => {
   return (
-    <div className="flex flex-col md:flex-row gap-5">
+    <div className="w-full flex  flex-col md:flex-row items-start gap-y-5 gap-x-8 mt-8">
       {/* Left Section */}
       <section className="w-full md:w-[70%] flex flex-col gap-y-5 overflow-hidden">
         <ProductTypeSection {...props} />

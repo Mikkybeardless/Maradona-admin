@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { DateSelect } from "../components/common/dateSelect";
 import { generateRandomNumber } from "../helper/helperFunctions";
 import { DistanceRange } from "../components/shipmentRangeInput";
-import { NumberInput } from "../components/shipmentAmountInput";
+import { NumberInput } from "../components/common/NairaInput";
 import { TableSearchInput } from "../components/common/TableSearchInput";
 import { StatusSelect } from "../components/common/statusSelect";
 import { useDebounce } from "../hooks/useDebounce";

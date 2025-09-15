@@ -26,10 +26,10 @@ export const CarSpecificationsSection: React.FC<
                   onChange={() =>
                     setProductDetails((prev) => ({
                       ...prev,
-                      gear_type: "manual",
+                      gear_type: "Manual",
                     }))
                   }
-                  checked={productDetails.gear_type === "manual"}
+                  checked={productDetails.gear_type === "Manual"}
                   type="checkbox"
                 />
                 <label htmlFor="manual">Manual</label>
@@ -42,10 +42,10 @@ export const CarSpecificationsSection: React.FC<
                   onChange={() =>
                     setProductDetails((prev) => ({
                       ...prev,
-                      gear_type: "automatic",
+                      gear_type: "Automatic",
                     }))
                   }
-                  checked={productDetails.gear_type === "automatic"}
+                  checked={productDetails.gear_type === "Automatic"}
                   type="checkbox"
                 />
                 <label htmlFor="automatic">Automatic</label>

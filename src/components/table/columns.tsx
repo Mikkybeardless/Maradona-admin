@@ -684,3 +684,69 @@ const getStatusClassPurchaseEnquiry = (status: string) => {
       return "";
   }
 };
+
+export const promoColumns: GridColDef[] = [
+  {
+    field: "ProductName",
+    headerName: "Product Name",
+    renderCell: ({ row }) => {
+      return <span className="line-clamp-1">{row.product?.name}</span>;
+    },
+    flex: 1,
+    sortable: false,
+  },
+  {
+    field: "payment_method",
+    headerName: "Payment Method",
+    flex: 0.7,
+    sortable: false,
+  },
+  {
+    field: "total_cost",
+    headerName: "Total Cost",
+    flex: 0.7,
+    sortable: false,
+  },
+  {
+    field: "start_date",
+    headerName: "Start Date",
+    renderCell: ({ value }) => {
+      return <span>{formatIsoString(value).formattedDate}</span>;
+    },
+
+    flex: 0.7,
+  },
+  {
+    field: "end_date",
+    headerName: "End Date",
+    renderCell: ({ value }) => {
+      return <span>{formatIsoString(value).formattedDate}</span>;
+    },
+
+    flex: 0.7,
+  },
+  {
+    field: "duration_days",
+    headerName: "Duration(days)",
+    flex: 0.5,
+    cellClassName: "text-xs",
+    sortable: false,
+  },
+  {
+    field: "status",
+    headerName: "Status",
+    renderCell: ({ value }) => {
+      return (
+        <span
+          className={`${
+            value === "Active" ? "text-[#008000]" : "text-[#DC1313]"
+          }`}
+        >
+          {value}
+        </span>
+      );
+    },
+    flex: 0.6,
+    sortable: false,
+  },
+];

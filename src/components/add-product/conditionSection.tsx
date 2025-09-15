@@ -27,9 +27,9 @@ export const ConditionSection: React.FC<ConditionSectionProps> = ({
                 className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
                 id="new"
                 onChange={() =>
-                  setProductDetails((prev) => ({ ...prev, condition: "new" }))
+                  setProductDetails((prev) => ({ ...prev, condition: "New" }))
                 }
-                checked={productDetails.condition === "new"}
+                checked={productDetails.condition === "New"}
                 type="checkbox"
               />
               <label htmlFor="new">New</label>
@@ -39,13 +39,13 @@ export const ConditionSection: React.FC<ConditionSectionProps> = ({
               <input
                 className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
                 id="old"
-                checked={productDetails.condition === "old"}
+                checked={productDetails.condition === "Used"}
                 onChange={() =>
-                  setProductDetails((prev) => ({ ...prev, condition: "old" }))
+                  setProductDetails((prev) => ({ ...prev, condition: "Used" }))
                 }
                 type="checkbox"
               />
-              <label htmlFor="old">Old</label>
+              <label htmlFor="old">Used</label>
             </div>
           </div>
         </div>
@@ -60,10 +60,10 @@ export const ConditionSection: React.FC<ConditionSectionProps> = ({
               onChange={() =>
                 setProductDetails((prev) => ({
                   ...prev,
-                  auction_type: "auctioned",
+                  auction_type: "Auctioned",
                 }))
               }
-              checked={productDetails.auction_type === "auctioned"}
+              checked={productDetails.auction_type === "Auctioned"}
               type="checkbox"
             />
             <label htmlFor="auctioned">Auctioned</label>
@@ -76,10 +76,10 @@ export const ConditionSection: React.FC<ConditionSectionProps> = ({
               onChange={() =>
                 setProductDetails((prev) => ({
                   ...prev,
-                  auction_type: "non-auctioned",
+                  auction_type: "Non-Auctioned",
                 }))
               }
-              checked={productDetails.auction_type === "non-auctioned"}
+              checked={productDetails.auction_type === "Non-Auctioned"}
               type="checkbox"
             />
             <label htmlFor="condition2">Non-auctioned</label>

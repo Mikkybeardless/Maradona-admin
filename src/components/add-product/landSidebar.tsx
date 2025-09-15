@@ -13,27 +13,10 @@ export const LandSidebarSection: React.FC<LandSidebarSectionProps> = ({
   setProductDetails,
   handleInputChange,
 }) => {
-  const accessibilityOptions = [
-    { id: "main-road", label: "Main road" },
-    { id: "inner-road", label: "Inner road" },
-  ];
-
-  const fencingOptions = [
-    { id: "fenced", label: "Fenced" },
-    { id: "not-fenced", label: "Not fenced" },
-  ];
-
-  const topographyOptions = [
-    { id: "dry-land", label: "Dry land" },
-    { id: "swampy", label: "Swampy" },
-    { id: "water-logged", label: "Water logged" },
-  ];
-
-  const landTypeOptions = [
-    { id: "residential", label: "Residential" },
-    { id: "commercial", label: "Commercial" },
-    { id: "agricultural", label: "Agricultural" },
-  ];
+  const accessibilityOptions = ["Main road", "Inner road"];
+  const fencingOptions = ["Fenced", "Not fenced"];
+  const topographyOptions = ["Dry land", "Swampy", "Water logged"];
+  const landTypeOptions = ["Residential", "Commercial", "Agricultural"];
 
   return (
     <div className="w-full p-5 flex flex-col gap-y-6">
@@ -54,18 +37,18 @@ export const LandSidebarSection: React.FC<LandSidebarSectionProps> = ({
       {/* Accessibility Section */}
       <div className="flex flex-col gap-y-2">
         <h5 className="text-sm">Accessibility</h5>
-        {accessibilityOptions.map((option) => (
+        {accessibilityOptions.map((option, index) => (
           <CustomCheckbox
-            key={option.id}
-            id={option.id}
-            checked={productDetails.accessibility === option.id}
+            key={index}
+            id={option}
+            checked={productDetails.accessibility === option}
             onChange={() =>
               setProductDetails((prev) => ({
                 ...prev,
-                accessibility: option.id as ProductAccessibility,
+                accessibility: option as ProductAccessibility,
               }))
             }
-            label={option.label}
+            label={option}
           />
         ))}
         <p className="text-xs opacity-70">
@@ -76,18 +59,18 @@ export const LandSidebarSection: React.FC<LandSidebarSectionProps> = ({
       {/* Fencing Section */}
       <div className="flex flex-col gap-y-2">
         <h5 className="text-sm">Fencing</h5>
-        {fencingOptions.map((option) => (
+        {fencingOptions.map((option, index) => (
           <CustomCheckbox
-            key={option.id}
-            id={option.id}
-            checked={productDetails.fencing === option.id}
+            key={index}
+            id={option}
+            checked={productDetails.fencing === option}
             onChange={() =>
               setProductDetails((prev) => ({
                 ...prev,
-                fencing: option.id as ProductFencing,
+                fencing: option as ProductFencing,
               }))
             }
-            label={option.label}
+            label={option}
           />
         ))}
         <p className="text-xs opacity-70">Is the land fenced or not?</p>
@@ -96,18 +79,18 @@ export const LandSidebarSection: React.FC<LandSidebarSectionProps> = ({
       {/* Topography Section */}
       <div className="flex flex-col gap-y-2">
         <h5 className="text-sm">Topography</h5>
-        {topographyOptions.map((option) => (
+        {topographyOptions.map((option, index) => (
           <CustomCheckbox
-            key={option.id}
-            id={option.id}
-            checked={productDetails.topography === option.id}
+            key={index}
+            id={option}
+            checked={productDetails.topography === option}
             onChange={() =>
               setProductDetails((prev) => ({
                 ...prev,
-                topography: option.id as ProductTopography,
+                topography: option as ProductTopography,
               }))
             }
-            label={option.label}
+            label={option}
           />
         ))}
         <p className="text-xs opacity-70">What is the land topography?</p>
@@ -116,18 +99,18 @@ export const LandSidebarSection: React.FC<LandSidebarSectionProps> = ({
       {/* Land Type Section */}
       <div className="flex flex-col gap-y-2">
         <h5 className="text-sm">Land Type</h5>
-        {landTypeOptions.map((option) => (
+        {landTypeOptions.map((option, index) => (
           <CustomCheckbox
-            key={option.id}
-            id={option.id}
-            checked={productDetails.land_type === option.id}
+            key={index}
+            id={option}
+            checked={productDetails.land_type === option}
             onChange={() =>
               setProductDetails((prev) => ({
                 ...prev,
-                land_type: option.id as ProductLandType,
+                land_type: option as ProductLandType,
               }))
             }
-            label={option.label}
+            label={option}
           />
         ))}
         <p className="text-xs opacity-70">What is the land type?</p>

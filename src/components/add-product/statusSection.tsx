@@ -19,7 +19,10 @@ export const StatusSection: React.FC<StatusSectionProps> = ({
         onChange={handleInputChange}
         className="p-3 rounded-lg border border-primaryBorder text-sm outline-none"
       >
+        {" "}
         <option value="draft">Draft</option>
+        <option value="pending">Pending</option>
+        <option value="cancelled">Cancelled</option>
         <option value="published">Publish</option>
       </select>
     </div>

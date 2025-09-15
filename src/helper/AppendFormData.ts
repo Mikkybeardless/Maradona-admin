@@ -1,19 +1,21 @@
+import { toast } from "react-toastify";
 import { appendArrayField, appendObjectArrayField } from "./appendArrayField";
 
 export function appendUpdateDataField(
   formData: FormData,
   key: string,
-  value: unknown,
-  isAuction = false
+  value: unknown
 ): boolean {
   // Global empty check → skip if empty
   if (
     value === null ||
     value === undefined ||
     (typeof value === "string" && value.trim() === "") ||
-    (Array.isArray(value) && value.length === 0)
+    (Array.isArray(value) && value.length === 0 && key !== "data")
   ) {
-    return true; // do nothing for empty fields
+    const capitalized = key.charAt(0).toUpperCase() + key.slice(1);
+    toast.error(`The field "${capitalized}" cannot be empty.`);
+    return false; // do nothing for empty fields
   }
 
   // Special handling: documents & media
@@ -38,7 +40,7 @@ export function appendUpdateDataField(
     return true;
   }
 
-  if (isAuction && key === "data") {
+  if (key === "data") {
     appendObjectArrayField(formData, value as string[]);
   }
 

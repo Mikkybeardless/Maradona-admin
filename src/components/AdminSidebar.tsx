@@ -5,8 +5,9 @@ import { RxDashboard } from "react-icons/rx";
 import { MdOutlineLogout } from "react-icons/md";
 import { BsBoxSeam, BsCart3 } from "react-icons/bs";
 import { SlChart } from "react-icons/sl";
-import { PiSealPercent, PiUsersLight } from "react-icons/pi";
-import { MdOutlineHeadsetMic } from "react-icons/md";
+import { PiUsersLight } from "react-icons/pi";
+// import { MdOutlineHeadsetMic } from "react-icons/md";
+import { FcAdvertising } from "react-icons/fc";
 import { TbTie } from "react-icons/tb";
 import { RiAuctionLine } from "react-icons/ri";
 import SideBarRight from "../assets/sidebar-right.svg";
@@ -66,6 +67,11 @@ export default function AdminSidebar() {
       label: "Purchase Enquiries",
     },
     { to: "reports", icon: <SlChart size={16} />, label: "Reports" },
+    {
+      to: "promotions",
+      icon: <FcAdvertising size={16} />,
+      label: "Promotions",
+    },
     { to: "agents", icon: <TbTie size={16} />, label: "Field Agents" },
   ];
   // Function to check if a link is active for root (/admin) dashboard

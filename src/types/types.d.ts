@@ -1,19 +1,19 @@
 // product types
 declare type ProductType = "LAND" | "CAR" | "HOUSE";
-declare type ProductStatus = "draft" | "published";
+declare type ProductStatus = "draft" | "published" | "pending" | "cancelled";
 declare type ProductBodyType = "SUV" | "Sedan" | "Coupe" | "Truck" | "Bus";
-declare type ProductFurnishedStatus = "furnished" | "unfurnished";
-declare type ProductAccessibility = "main-road" | "inner-road";
-declare type ProductFencing = "fenced" | "not-fenced";
-declare type ProductTopography = "dry-land" | "water-logged" | "swampy";
-declare type ProductLandType = "residential" | "commercial" | "agricultural";
-declare type ProductDuration = "days" | "weeks" | "months";
-declare type ProductAuctionType = "auctioned" | "non-auctioned";
-declare type ProductCondition = "new" | "old";
-declare type ProductGearType = "manual" | "automatic";
+declare type ProductFurnishedStatus = "Fully furnished" | "Unfurnished";
+declare type ProductAccessibility = "Main road" | "Inner road";
+declare type ProductFencing = "Fenced" | "Not Fenced";
+declare type ProductTopography = "Dry land" | "Water logged" | "Swampy";
+declare type ProductLandType = "Residential" | "Commercial" | "Agricultural";
+declare type ProductDuration = "Days" | "Weeks" | "Months";
+declare type ProductAuctionType = "Auctioned" | "Non-Auctioned";
+declare type ProductCondition = "New" | "Used";
+declare type ProductGearType = "Manual" | "Automatic";
 declare type WeightUnit = "kg" | "g";
 declare type Media = File[];
-declare type HouseCondition = "newly-built" | "old" | "needs-renovation";
+declare type HouseCondition = "Newly built" | "Old" | "Needs renovation";
 
 declare interface Product {
   name: string;
@@ -60,6 +60,7 @@ declare interface Auction {
   incremental_bid_amount: string;
   minimum_bid_increment: string;
   auto_extend: "0" | "1";
+  data: Record<string, string | number>[] | [];
 }
 
 declare interface ApiAuction extends Auction, ApiRes {
@@ -470,4 +471,95 @@ declare interface AgentDetails extends ApiAgent {
     bank_name: string;
     bank_account_number: string;
   };
+}
+
+//*******
+//  Notification Types
+// */
+declare interface NotificationStats {
+  total: number;
+  unread: number;
+  read: number;
+}
+
+declare interface NotificationData {
+  id: string | number;
+  title?: string;
+  message?: string;
+  data?: any;
+  humanized_data?: any;
+  read_at?: string | null;
+  created_at: string;
+}
+
+declare interface PaginationInfo {
+  current_page: number;
+  per_page: number;
+  total: number;
+  total_pages: number;
+}
+
+declare interface NotificationsState {
+  notifications: NotificationData[];
+  unreadNotifications: NotificationData[];
+  stats: NotificationStats | null;
+  pagination: PaginationInfo;
+  loading: boolean;
+  statsLoading: boolean;
+  error: string | null;
+}
+
+// promotions
+declare interface Promotion {
+  product_id: string;
+  seller_id: string;
+  start_date: string;
+  end_date: string;
+  duration_days: string;
+  cost_per_day: string;
+  total_cost: string;
+  payment_method: string;
+  status: string;
+  payment_reference: string;
+  payment_link: string;
+  payment_completed_at: string | null;
+  activated_at: string | null;
+  closed_at: string | null;
+  closed_by: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// customer
+
+declare interface Breakdown {
+  direct_orders: number;
+  auction_orders: number;
+  direct_spending: string;
+  auction_spending: string;
+}
+
+declare interface RecentOrder {
+  id: string;
+  type: string;
+  product_name: string;
+  product_type: string;
+  amount: string;
+  status: string;
+  date: string;
+  created_at: string;
+}
+declare interface CustomerStats {
+  total_orders: number;
+  amount_spent: number;
+  conversion_rate: number;
+  frequency: number;
+}
+
+declare interface Customer {
+  customer: ApiBuyer;
+  stats: CustomerStats;
+  breakdown: Breakdown;
+  recent_orders: RecentOrder[];
 }
