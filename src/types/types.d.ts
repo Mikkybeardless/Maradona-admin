@@ -4,7 +4,7 @@ declare type ProductStatus = "draft" | "published" | "pending" | "cancelled";
 declare type ProductBodyType = "SUV" | "Sedan" | "Coupe" | "Truck" | "Bus";
 declare type ProductFurnishedStatus = "Fully furnished" | "Unfurnished";
 declare type ProductAccessibility = "Main road" | "Inner road";
-declare type ProductFencing = "Fenced" | "Not Fenced";
+declare type ProductFencing = "Fenced" | "Not fenced";
 declare type ProductTopography = "Dry land" | "Water logged" | "Swampy";
 declare type ProductLandType = "Residential" | "Commercial" | "Agricultural";
 declare type ProductDuration = "Days" | "Weeks" | "Months";
@@ -235,6 +235,7 @@ declare interface Admin extends User {
     user_id: string;
     created_at: string;
     updated_at: string;
+    profile_pic_url: string | null;
   };
 }
 declare interface ApiAdmin extends Admin, ApiRes {}
@@ -469,6 +470,7 @@ declare interface AgentDetails extends ApiAgent {
     staff_id: string;
     availability: string;
     bank_name: string;
+    profile_pic_url: string | null;
     bank_account_number: string;
   };
 }

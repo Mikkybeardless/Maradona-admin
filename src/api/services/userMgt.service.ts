@@ -39,8 +39,10 @@ const UserService = {
     apiClient.delete(`/admin/users/seller/${userId}`),
 
   //   agents
-  createAgent: (userData: CreateUserDTO) =>
-    apiClient.post("/admin/users/agent", userData),
+  createAgent: (userData: FormData) =>
+    apiClient.post("/admin/users/agent", userData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
   getAllAgents: (query?: string) =>
     apiClient.get(`/admin/users/agent?${query}`),
   getAgent: (userId: number) => apiClient.get(`/admin/users/agent/${userId}`),

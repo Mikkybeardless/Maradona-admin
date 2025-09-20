@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useClickAway } from "react-use";
 import UserService from "../../api/services/userMgt.service";
+import { appendField } from "../../helper/appendArrayField";
 
 interface AddAgentModalProps {
   newAgentModal: boolean;
@@ -49,11 +50,15 @@ export default function AddAgentModal({
       setIsLoading(true);
       // Handle agent creation logic here
       console.log("Creating agent:", formData);
-      const response = await UserService.createAgent({
-        name: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-      });
+      const createData = new FormData();
+      for (const [key, value] of Object.entries(formData)) {
+        appendField(
+          createData,
+          key,
+          value as string | number | boolean | File | null | undefined
+        );
+      }
+      const response = await UserService.createAgent(createData);
       if (response.status === 201) {
         toast.success("Agent created successfully");
         setNewAgentModal(false);

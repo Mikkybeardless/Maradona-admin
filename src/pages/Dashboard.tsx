@@ -37,6 +37,7 @@ import formatDayJs from "../helper/formatDateJs";
 import { Dayjs } from "dayjs";
 import DefaultImg from "../assets/no-image.png";
 import { BidsColumns } from "../components/table/columns";
+import bidsService from "../api/services/bids.service";
 
 type BidTableType = {
   id: number;
@@ -164,7 +165,7 @@ export default function Dashboard() {
         bidData.pagination.page,
         bidData.pagination.pageSize
       ).toString();
-      const response = await auctionService.getAllBids(params);
+      const response = await bidsService.getAllBids(params);
       console.log("Bids response:", response.data.data);
       setBidData({
         rows: response.data.data,

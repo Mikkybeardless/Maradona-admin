@@ -3,7 +3,7 @@ import DashboardSearchBar from "../components/DashboardSearchBar";
 import Profile from "../assets/sign-in-image.png";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import { PiPencilSimpleBold } from "react-icons/pi";
-import MuiTableComponent from "../components/table/TableComponent";
+// import MuiTableComponent from "../components/table/TableComponent";
 import { GridColDef } from "@mui/x-data-grid";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
@@ -12,10 +12,10 @@ import { IoCloudUploadOutline } from "react-icons/io5";
 import { TbUserScan } from "react-icons/tb";
 import { MdCancel } from "react-icons/md";
 import { CiTimer } from "react-icons/ci";
-import PDF from "../assets/PDF.svg";
+// import PDF from "../assets/PDF.svg";
 import { useWindowResizer } from "../hooks/useWindowResize";
 import UserService from "../api/services/userMgt.service";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { DetailLoadingState } from "../components/common/detailLoadingState";
 
 const rows = (): any[] => {
@@ -213,7 +213,7 @@ export default function Agent() {
         <div className="w-full flex justify-between items-start mt-5">
           <div className="flex gap-x-4 items-center">
             <img
-              src={Profile}
+              src={agent?.agent_profile.profile_pic_url || Profile}
               alt="Profile"
               className="size-[40px] md:size-[70px] rounded-full object-fill"
             />
@@ -241,13 +241,13 @@ export default function Agent() {
             </div>
           </div>
           {/* profile */}
-          <button
+          {/* <button
             onClick={openEditAgentModal}
             className="flex items-center gap-x-1 md:gap-x-3 rounded-lg px-2 py-1.5 md:px-5 md:py-2.5 text-sm border border-[#B5ABB3] text-[#5C4D58]"
           >
             <PiPencilSimpleBold size={isMobile ? 15 : 18} />
             Edit
-          </button>
+          </button> */}
         </div>
 
         <div className="w-full md:h-[7rem] grid grid-col-1 md:grid-cols-3 gap-y-5 gap-x-10 mt-8">

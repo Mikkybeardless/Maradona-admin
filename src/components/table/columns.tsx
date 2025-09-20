@@ -12,6 +12,7 @@ import purchaseEnquiriesService from "../../api/services/purchaseEnquiries.servi
 import { toast } from "react-toastify";
 import { BiEditAlt } from "react-icons/bi";
 import { FaRegEye } from "react-icons/fa6";
+import bidsService from "../../api/services/bids.service";
 
 // buyer columns
 export const BuyerColumns: GridColDef[] = [
@@ -473,7 +474,119 @@ export const BidsColumns: GridColDef[] = [
     },
     flex: 0.9,
   },
+  {
+    field: "Action",
+    flex: 0.5,
+    renderCell: ({ row }) => {
+      return <BidsActionCellComponent row={row} />;
+    },
+  },
 ];
+
+export const BidsActionCellComponent = ({ row }: { row: any }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [updating, setUpdating] = useState("");
+  const dotsPopupRef = useRef(null);
+  const open = Boolean(anchorEl);
+  const id = open ? `popper-${row.id}` : undefined;
+
+  useClickAway(dotsPopupRef, () => {
+    setAnchorEl(null);
+  });
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const handleUpdateBid = async (status: string) => {
+    try {
+      setUpdating(status);
+      const response = await bidsService.updateBid(row.id, { status });
+      if (response.status === 200) {
+        // Handle successful update
+        toast.success("bid updated successfully");
+      }
+    } catch (error) {
+      toast.error("Error updating bid, pls try again later");
+      console.error("Error updating bid:", error);
+    } finally {
+      setAnchorEl(null);
+      setUpdating("");
+    }
+  };
+
+  return (
+    <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
+      <button
+        aria-describedby={id}
+        type="button"
+        onClick={handleClick}
+        className="cursor-pointer bg-transparent border-none p-2 m-0 rounded-full hover:bg-gray-100"
+        style={{ lineHeight: 0 }}
+      >
+        <BsThreeDotsVertical size={16} />
+      </button>
+      <Popper
+        ref={dotsPopupRef}
+        className="p-3 px-4 text-sm z-10 flex flex-col gap-3 items-center rounded-lg border border-primaryBorder bg-white"
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        placement="bottom-end"
+        style={{ zIndex: 1300 }}
+        modifiers={[
+          {
+            name: "offset",
+            options: {
+              offset: [0, 8],
+            },
+          },
+          {
+            name: "preventOverflow",
+            options: {
+              boundary: "viewport",
+              padding: 8,
+            },
+          },
+        ]}
+      >
+        {/* <Link
+          to={`/admin/purchase-enquiries/enquiry/${rowId}`}
+          className="text-xs hover:underline hover:text-green-600"
+        >
+          View Details
+        </Link> */}
+        <button
+          onClick={() => handleUpdateBid("accepted")}
+          className="text-xs hover:underline hover:text-green-600"
+        >
+          {updating === "accepted" ? "Accepting..." : "Accept Bid"}
+        </button>
+
+        <button
+          onClick={() => handleUpdateBid("reopened")}
+          className="text-xs hover:underline hover:text-blue-600"
+        >
+          {updating === "reopened" ? "Reopening..." : "Reopen Bid"}
+        </button>
+        <button
+          onClick={() => handleUpdateBid("rejected")}
+          className="text-xs hover:underline hover:text-red-600"
+        >
+          {updating === "rejected" ? "Rejecting..." : "Reject Bid"}
+        </button>
+        <button
+          onClick={() => handleUpdateBid("closed")}
+          className="text-xs hover:underline hover:text-red-600"
+        >
+          {updating === "closed" ? "Closing..." : "Close deal"}
+        </button>
+      </Popper>
+    </div>
+  );
+};
 
 export const purchaseEnqColumns: GridColDef[] = [
   {
