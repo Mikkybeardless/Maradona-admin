@@ -7,7 +7,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { Popper } from "@mui/material";
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
-import { GoDotFill, GoTrash } from "react-icons/go";
+import { GoDotFill } from "react-icons/go";
 import purchaseEnquiriesService from "../../api/services/purchaseEnquiries.service";
 import { toast } from "react-toastify";
 import { BiEditAlt } from "react-icons/bi";
@@ -239,7 +239,7 @@ export const ProductColumns: GridColDef[] = [
           <span
             className={`${renderStatusColor(
               row.status
-            )} rounded-[100px] !text-xs px-2.5 py-1`}
+            )} capitalize rounded-[100px] !text-xs px-2.5 py-1`}
           >
             {row.status}
           </span>
@@ -339,16 +339,16 @@ function renderStatusColor(status: string) {
 // auction
 export const AuctionColumns: GridColDef[] = [
   {
-    field: "seller_id",
-    headerName: "Seller",
-    renderCell: ({ value }) => {
-      return (
-        <span className={`${value === "No Bid" && "text-[#DC1313]"}`}>
-          {value}
-        </span>
-      );
-    },
-    flex: 0.7,
+    field: "id",
+    headerName: " ID",
+    // renderCell: ({ value }) => {
+    //   return (
+    //     <span className={`${value === "No Bid" && "text-[#DC1313]"}`}>
+    //       {value}
+    //     </span>
+    //   );
+    // },
+    flex: 0.3,
   },
   {
     field: "name",
@@ -367,7 +367,12 @@ export const AuctionColumns: GridColDef[] = [
     },
     flex: 1,
   },
-  { field: "price", headerName: "Price", flex: 0.7 },
+  {
+    field: "price",
+    headerName: "Price(₦)",
+    renderCell: ({ value }) => <span>{formatPrice(value)}</span>,
+    flex: 0.7,
+  },
   {
     field: "status",
     headerName: "Status",
@@ -375,7 +380,7 @@ export const AuctionColumns: GridColDef[] = [
     renderCell: ({ value }) => {
       return (
         <span
-          className={`px-3 py-1 rounded-full font-medium text-sm
+          className={`px-3 py-1 rounded-full capitalize font-medium text-sm
           ${
             value === "published"
               ? "bg-[#FE8E49] text-white"
@@ -435,7 +440,12 @@ export const BidsColumns: GridColDef[] = [
   //   },
   //   flex: 1,
   // },
-  { field: "amount", headerName: "Price", flex: 0.7 },
+  {
+    field: "amount",
+    headerName: "Price(₦)",
+    renderCell: ({ value }) => <span>{formatPrice(value)}</span>,
+    flex: 0.7,
+  },
   {
     field: "status",
     headerName: "Status",
@@ -443,14 +453,14 @@ export const BidsColumns: GridColDef[] = [
     renderCell: ({ value }) => {
       return (
         <span
-          className={`px-3 py-1 rounded-full font-medium text-sm
+          className={`px-3 py-1 rounded-full capitalize font-medium text-sm
           ${
             value === "published"
               ? "bg-[#FE8E49] text-white"
               : value === "sold"
               ? "bg-[#E8F8E8] text-[#0C560B]"
-              : value === "pending"
-              ? "bg-[#FEF3B8] "
+              : value === "accepted"
+              ? "bg-blue-100 text-blue-600"
               : "bg-[#DC1313] text-white"
           }`}
         >
@@ -462,7 +472,7 @@ export const BidsColumns: GridColDef[] = [
 
   {
     field: "created_at",
-    headerName: "Time",
+    headerName: "Date",
     renderCell: ({ value }) => {
       const { formattedDate, formattedTime } = formatIsoString(value);
       return (
@@ -681,7 +691,7 @@ export const purchaseEnqColumns: GridColDef[] = [
     renderCell: ({ value }) => {
       return (
         <span
-          className={`flex gap-x-1 items-center justify-start w-[120px] px-2 py-1 rounded-full font-medium text-sm
+          className={`flex gap-x-1 items-center justify-start w-[120px] capitalize px-2 py-1 rounded-full font-medium text-sm
               ${getStatusClassPurchaseEnquiry(value)}`}
         >
           <GoDotFill size={20} /> {value}
@@ -814,12 +824,13 @@ export const promoColumns: GridColDef[] = [
     flex: 0.7,
     sortable: false,
   },
-  {
-    field: "total_cost",
-    headerName: "Total Cost",
-    flex: 0.7,
-    sortable: false,
-  },
+  // {
+  //   field: "total_cost(₦)",
+  //   headerName: "Total Cost",
+  //   renderCell: ({ value }) => <span>{formatPrice(value)}</span>,
+  //   flex: 0.7,
+  //   sortable: false,
+  // },
   {
     field: "start_date",
     headerName: "Start Date",
@@ -851,8 +862,8 @@ export const promoColumns: GridColDef[] = [
     renderCell: ({ value }) => {
       return (
         <span
-          className={`${
-            value === "Active" ? "text-[#008000]" : "text-[#DC1313]"
+          className={`capitalize ${
+            value === "active" ? "text-[#008000]" : "text-yellow-600"
           }`}
         >
           {value}

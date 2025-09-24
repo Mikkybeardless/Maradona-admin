@@ -38,6 +38,7 @@ import { Dayjs } from "dayjs";
 import DefaultImg from "../assets/no-image.png";
 import { BidsColumns } from "../components/table/columns";
 import bidsService from "../api/services/bids.service";
+import { ErrorState } from "../components/common/ErrorState";
 
 type BidTableType = {
   id: number;
@@ -193,170 +194,93 @@ export default function Dashboard() {
     fetchBids();
   }, [fetchBids]);
 
-  useEffect(() => {
-    const fetchAllStats = async () => {
-      setLoading(true);
-      const params = buildCleanParams(customDate).toString();
-      try {
-        const results = await Promise.allSettled([
-          statsService.getTotalRevenue(params),
-          statsService.getTotalUsers(params),
-          statsService.getBestSellingProducts(params),
-          statsService.getTotalSales(params),
-          statsService.getMonthlyReport(params),
-        ]);
+  const fetchAllStats = useCallback(async () => {
+    setLoading(true);
+    const params = buildCleanParams(customDate).toString();
+    try {
+      const results = await Promise.allSettled([
+        statsService.getTotalRevenue(params),
+        statsService.getTotalUsers(params),
+        statsService.getBestSellingProducts(params),
+        statsService.getTotalSales(params),
+        statsService.getMonthlyReport(params),
+      ]);
 
-        const [
-          revenueResult,
-          usersResult,
-          productsResult,
-          salesResult,
-          monthlyReportResult,
-        ] = results;
+      const [
+        revenueResult,
+        usersResult,
+        productsResult,
+        salesResult,
+        monthlyReportResult,
+      ] = results;
 
-        // Process successful results and log failed ones
-        const newStats: Stats = { ...initialStats };
-        const errors = [];
+      // Process successful results and log failed ones
+      const newStats: Stats = { ...initialStats };
+      const errors = [];
 
-        if (revenueResult.status === "fulfilled") {
-          newStats.totalRevenue = revenueResult.value.data;
-          localStorage.setItem(
-            "totalRevenue",
-            JSON.stringify(revenueResult.value.data)
-          );
-        } else {
-          console.error("Revenue fetch failed:", revenueResult.reason);
-          errors.push("Failed to load revenue data");
-        }
-
-        if (usersResult.status === "fulfilled") {
-          newStats.totalUsers = usersResult.value.data;
-        } else {
-          console.error("Users fetch failed:", usersResult.reason);
-          errors.push("Failed to load users data");
-        }
-
-        if (productsResult.status === "fulfilled") {
-          newStats.topSellingProducts = productsResult.value.data;
-        } else {
-          console.error("Products fetch failed:", productsResult.reason);
-          errors.push("Failed to load products data");
-        }
-
-        if (salesResult.status === "fulfilled") {
-          newStats.totalSales = salesResult.value.data;
-        } else {
-          console.error("Sales fetch failed:", salesResult.reason);
-          errors.push("Failed to load sales data");
-        }
-
-        if (monthlyReportResult.status === "fulfilled") {
-          newStats.monthlyReport = monthlyReportResult.value.data;
-        } else {
-          console.error(
-            "Monthly report fetch failed:",
-            monthlyReportResult.reason
-          );
-          errors.push("Failed to load monthly report");
-        }
-        // console.log("Fetched stats:", newStats);
-        setStats(newStats);
-
-        // Set error if some failed, but still show partial data
-        if (errors.length > 0) {
-          setError(
-            new Error(
-              `Some data failed to load, Please check your internet connection`
-            )
-          );
-        }
-      } catch (error) {
-        console.error("Unexpected error:", error);
-        setError(new Error("An unexpected error occurred"));
-      } finally {
-        setLoading(false);
+      if (revenueResult.status === "fulfilled") {
+        newStats.totalRevenue = revenueResult.value.data;
+        localStorage.setItem(
+          "totalRevenue",
+          JSON.stringify(revenueResult.value.data)
+        );
+      } else {
+        console.error("Revenue fetch failed:", revenueResult.reason);
+        errors.push("Failed to load revenue data");
       }
-    };
 
-    fetchAllStats();
+      if (usersResult.status === "fulfilled") {
+        newStats.totalUsers = usersResult.value.data;
+      } else {
+        console.error("Users fetch failed:", usersResult.reason);
+        errors.push("Failed to load users data");
+      }
+
+      if (productsResult.status === "fulfilled") {
+        newStats.topSellingProducts = productsResult.value.data;
+      } else {
+        console.error("Products fetch failed:", productsResult.reason);
+        errors.push("Failed to load products data");
+      }
+
+      if (salesResult.status === "fulfilled") {
+        newStats.totalSales = salesResult.value.data;
+      } else {
+        console.error("Sales fetch failed:", salesResult.reason);
+        errors.push("Failed to load sales data");
+      }
+
+      if (monthlyReportResult.status === "fulfilled") {
+        newStats.monthlyReport = monthlyReportResult.value.data;
+      } else {
+        console.error(
+          "Monthly report fetch failed:",
+          monthlyReportResult.reason
+        );
+        errors.push("Failed to load monthly report");
+      }
+      // console.log("Fetched stats:", newStats);
+      setStats(newStats);
+
+      // Set error if some failed, but still show partial data
+      if (errors.length > 0) {
+        setError(
+          new Error(
+            `Some data failed to load, Please check your internet connection`
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      setError(new Error("An unexpected error occurred"));
+    } finally {
+      setLoading(false);
+    }
   }, [customDate.end_date, customDate.start_date]);
 
-  const rows = (): BidTableType[] => {
-    return Array.from({ length: 15 }, (_, i) => {
-      const num = i + 1;
-      const randomNum = generateRandomNumber(4, 1);
-
-      return {
-        id: num, // Required by MUI
-        bidder: randomNum === 2 ? "No Bid" : `#E${num}HH`,
-        product: "Toyota Camery LE (2024)",
-        price: "N5,500,000",
-        status:
-          randomNum === 1
-            ? "Pending"
-            : randomNum === 2
-            ? "Closed"
-            : randomNum === 3
-            ? "Sold"
-            : "Active",
-        date: new Date().toUTCString(),
-      };
-    });
-  };
-
-  const columns: GridColDef[] = [
-    {
-      field: "bidder",
-      headerName: "Bidders",
-      renderCell: ({ value }) => {
-        return (
-          <span className={`${value === "No Bid" && "text-[#DC1313]"}`}>
-            {value}
-          </span>
-        );
-      },
-      flex: 0.7,
-    },
-    {
-      field: "product",
-      headerName: "Product",
-      renderCell: ({ value }) => {
-        return (
-          <div className="flex gap-x-2 items-center">
-            <img className="w-[40px] h-[40px]" src={Car2} alt="product" />
-            <p className="text-sm font-medium text-darkBlue">{value}</p>
-          </div>
-        );
-      },
-      flex: 1,
-    },
-    { field: "price", headerName: "Price", flex: 0.7 },
-    {
-      field: "status",
-      headerName: "Status",
-      flex: 0.7,
-      renderCell: ({ value }) => {
-        return (
-          <span
-            className={`px-3 py-1 rounded-full font-medium text-sm
-          ${
-            value === "Active"
-              ? "bg-[#FE8E49] text-white"
-              : value === "Sold"
-              ? "bg-[#E8F8E8] text-[#0C560B]"
-              : value === "Pending"
-              ? "bg-[#FEF3B8] "
-              : "bg-[#DC1313] text-white"
-          }`}
-          >
-            {value}
-          </span>
-        );
-      },
-    },
-
-    { field: "date", headerName: "Time", flex: 1 },
-  ];
+  useEffect(() => {
+    fetchAllStats();
+  }, [fetchAllStats]);
 
   const data02 = [
     {
@@ -410,6 +334,12 @@ export default function Dashboard() {
     setCustomDate(customDate);
   };
 
+  const handleRetry = () => {
+    setError(null);
+    fetchAllStats();
+    fetchBids();
+  };
+
   return (
     <div className="w-full h-full overflow-y-auto custom-scrollbar py-20">
       {/* modals */}
@@ -435,9 +365,10 @@ export default function Dashboard() {
             </div>
           </div>
         ) : error ? (
-          <div className="text-red-500">
-            {(error as Error)?.message ?? "An error occurred"}
-          </div>
+          <ErrorState
+            message={(error as Error)?.message ?? "An error occurred"}
+            onRetry={handleRetry}
+          />
         ) : (
           <>
             <div className="flex justify-between items-center">

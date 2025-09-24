@@ -2,18 +2,16 @@ import { Paper } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
-  GridPaginationModel,
   GridRowParams,
   GridRowSelectionModel,
 } from "@mui/x-data-grid";
-import { useState } from "react";
 
 type TableComponentProps = {
   columns: GridColDef[];
   rows: any[];
   onSelect?: (selectedRows: any[]) => void;
   pageSize: number;
-  onPageChange: (model: GridPaginationModel) => void;
+  onPageChange: (model: { page: number; pageSize: number }) => void;
   currentPage: number; // Optional, used for server-side pagination
   totalRowCount?: number;
   rowHeight?: number;
@@ -57,7 +55,7 @@ export default function MuiTableComponent({
     const selectedRowsData = rows.filter((row) =>
       newSelection.includes(row.id)
     );
-    console.log("Selected Rows Data:", selectedRowsData);
+    // console.log("Selected Rows Data:", selectedRowsData);
     onSelect?.(selectedRowsData);
   };
 
@@ -71,10 +69,12 @@ export default function MuiTableComponent({
             columns={columns}
             paginationMode="server"
             paginationModel={{
-              page: currentPage > 0 ? currentPage - 1 : 0, // Adjust for zero-based index
+              page: currentPage - 1, // Adjust for zero-based index
               pageSize: pageSize,
             }}
-            onPaginationModelChange={onPageChange}
+            onPaginationModelChange={(model) =>
+              onPageChange({ page: model.page + 1, pageSize: model.pageSize })
+            }
             pageSizeOptions={[5, 10, 20, 50]}
             checkboxSelection={showCheckbox}
             disableColumnFilter={true}
@@ -84,6 +84,7 @@ export default function MuiTableComponent({
             onRowSelectionModelChange={handleSelectionChange}
             rowHeight={rowHeight}
             onRowClick={handleRowClick}
+            pagination
             sx={{
               border: 0,
               minWidth: "900px",

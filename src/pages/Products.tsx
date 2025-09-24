@@ -3,9 +3,8 @@ import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight, FaRegEye } from "react-icons/fa6";
 import MuiTableComponent from "../components/table/TableComponent";
 import { GridRowParams } from "@mui/x-data-grid";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
-import { useClickAway } from "react-use";
 import productService from "../api/services/product.service";
 import { DateSelect } from "../components/common/dateSelect";
 import { TableSearchInput } from "../components/common/TableSearchInput";
@@ -13,12 +12,7 @@ import { FilterGroup } from "../components/common/FilterGroup";
 import { Dayjs } from "dayjs";
 import { useDebounce } from "../hooks/useDebounce";
 import { StatusSelect } from "../components/common/statusSelect";
-// import { toast } from "react-toastify";
 import formatDayJs from "../helper/formatDateJs";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { Popper } from "@mui/material";
-import { BiEditAlt } from "react-icons/bi";
-import { GoTrash } from "react-icons/go";
 import { usePaginatedData } from "../hooks/usePaginatedData";
 import { ProductColumns } from "../components/table/columns";
 
@@ -94,6 +88,12 @@ export default function Products() {
             filters={filters}
             onChange={(updated) => {
               setFilters((prev) => ({ ...prev, ...updated }));
+              // updateFilters({
+              //   status: (updated.status !== undefined ? updated.status : filters.status),
+              //   type: (updated.type !== undefined ? updated.type : filters.type),
+              //   created_at: formatDayJs(updated.date !== undefined ? updated.date : filters.date),
+              //   // Remove 'date' property, only pass allowed keys
+              // })
             }}
             selects={[
               {
@@ -148,7 +148,7 @@ export default function Products() {
               rows={productData.rows}
               onRowClick={handleRowClick}
               loading={productData.loading}
-              currentPage={productData.pagination.page}
+              currentPage={productData.pagination.page} // Adjust for zero-based index
               totalRowCount={productData.totalRowCount}
               onPageChange={(model) => {
                 setProductData((prev) => ({
@@ -159,7 +159,6 @@ export default function Products() {
                   },
                 }));
               }}
-              showCheckbox={true}
               onSelect={handleTableSelectionChange}
               rowHeight={60}
               pageSize={productData.pagination.pageSize}

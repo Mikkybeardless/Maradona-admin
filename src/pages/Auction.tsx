@@ -4,7 +4,6 @@ import MuiTableComponent from "../components/table/TableComponent";
 import { GridRowParams } from "@mui/x-data-grid";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { DateSelect } from "../components/common/dateSelect";
 import { TableSearchInput } from "../components/common/TableSearchInput";
 import { FilterGroup } from "../components/common/FilterGroup";
 import { Dayjs } from "dayjs";
@@ -23,11 +22,6 @@ type IFilter = {
 
 export default function Auction() {
   const navigate = useNavigate();
-  // const [selects, setSelects] = useState({
-  //   category: "",
-  //   date: null,
-  //   status: "",
-  // });
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery);
   const [filters, setFilters] = useState<IFilter>({
@@ -64,7 +58,9 @@ export default function Auction() {
 
       <main className="px-5 md:px-10 w-full mt-4 flex flex-col flex-1">
         <div className="flex justify-between items-center mt-1">
-          <h1 className="text-3xl font-bold flex items-start">Auction</h1>
+          <h1 className="text-3xl font-bold flex items-start">
+            Auction Products
+          </h1>
 
           <Link
             to="/admin/auctions/add-auction"
@@ -106,12 +102,12 @@ export default function Auction() {
                   }}
                   value={filters.status}
                 />
-                <DateSelect
+                {/* <DateSelect
                   onChange={(date) => {
                     setFilters((prev) => ({ ...prev, date }));
                   }}
                   value={filters.date}
-                />
+                /> */}
               </>
             }
             searchNode={

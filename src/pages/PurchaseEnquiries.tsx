@@ -34,41 +34,41 @@ type UserTableType = {
   status: string;
 };
 
-const rows = (): UserTableType[] => {
-  const statuses = ["Pending", "Processed", "Returned", "Cancelled"];
-  const data: UserTableType[] = Array.from({ length: 15 }, (_, i) => ({
-    id: "100" + (i + 1),
-    name: "Rosemary Sunday",
-    type: "House",
-    details: "3-bedroom house in Ikeja",
-    date: new Date().toUTCString(),
-    status: statuses[i % 4], // Randomly assign status
-  }));
-  return data;
-};
+// const rows = (): UserTableType[] => {
+//   const statuses = ["Pending", "Processed", "Returned", "Cancelled"];
+//   const data: UserTableType[] = Array.from({ length: 15 }, (_, i) => ({
+//     id: "100" + (i + 1),
+//     name: "Rosemary Sunday",
+//     type: "House",
+//     details: "3-bedroom house in Ikeja",
+//     date: new Date().toUTCString(),
+//     status: statuses[i % 4], // Randomly assign status
+//   }));
+//   return data;
+// };
 
-const chartData = () => {
-  const monthArray = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+// const chartData = () => {
+//   const monthArray = [
+//     "Jan",
+//     "Feb",
+//     "Mar",
+//     "Apr",
+//     "May",
+//     "Jun",
+//     "Jul",
+//     "Aug",
+//     "Sep",
+//     "Oct",
+//     "Nov",
+//     "Dec",
+//   ];
 
-  const returnArray = monthArray.map((item) => {
-    return { name: item, earnings: generateRandomNumber(900000, 100000) };
-  });
+//   const returnArray = monthArray.map((item) => {
+//     return { name: item, earnings: generateRandomNumber(900000, 100000) };
+//   });
 
-  return returnArray;
-};
+//   return returnArray;
+// };
 
 export type IFilter = {
   type: string;
@@ -79,7 +79,6 @@ export type IFilter = {
 
 export default function Orders() {
   const [exportModal, setExportModal] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
   const [selectedData, setSelectedData] = useState<UserTableType[]>([]);
   const [revenueData, setRevenueData] = useState<TotalRevenue | null>(null);
   const [filters, setFilters] = useState<IFilter>({
@@ -135,7 +134,7 @@ export default function Orders() {
       <ExportModal
         isOpen={exportModal}
         onClose={closeExportModal}
-        allData={rows()}
+        allData={purchaseEnquiries.rows}
         selectedData={selectedData}
         filename="orders-data"
       />
@@ -162,21 +161,6 @@ export default function Orders() {
 
           <div className="flex items-center gap-x-5">
             <button
-              onClick={() => setShowAnalytics((prev) => !prev)}
-              className="text-sm hidden md:block rounded-lg p-2 md:px-4 md:py-2.5 bg-[#FFF4EE] text-defaultOrange"
-            >
-              {!showAnalytics ? (
-                <div className="flex gap-x-2 items-center">
-                  <FaRegEye color="#e65800" /> <span>Show Analytics</span>
-                </div>
-              ) : (
-                <div className="flex gap-x-2 items-center">
-                  <FaRegEyeSlash color="#e65800" />
-                  <span>Hide Analytics</span>
-                </div>
-              )}
-            </button>
-            <button
               onClick={openExportModal}
               className="text-sm flex  gap-3 rounded-lg px-4 py-2.5 bg-defaultOrange hover:bg-defaultOrangeHover text-white"
             >
@@ -200,8 +184,6 @@ export default function Orders() {
               </span>
             </div>
           </div>
-
-          {showAnalytics && <LineAreaChart width="45%" data={chartData()} />}
         </div>
 
         {/* Filters & Search Bar */}
@@ -235,12 +217,12 @@ export default function Orders() {
                   }}
                   value={filters.status}
                 />
-                <DateSelect
+                {/* <DateSelect
                   onChange={(date) => {
                     setFilters((prev) => ({ ...prev, date }));
                   }}
                   value={filters.date}
-                />
+                /> */}
               </>
             }
             searchNode={
