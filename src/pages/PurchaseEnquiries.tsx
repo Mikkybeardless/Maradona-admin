@@ -3,17 +3,9 @@ import DashboardSearchBar from "../components/DashboardSearchBar";
 import { PiCoinVerticalDuotone } from "react-icons/pi";
 import MuiTableComponent from "../components/table/TableComponent";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  formatAmountToNaira,
-  generateRandomNumber,
-} from "../helper/helperFunctions";
-import LineAreaChart from "../components/LineAreaChart";
-import { useEffect, useRef, useState } from "react";
-import { useClickAway } from "react-use";
+import { formatAmountToNaira } from "../helper/helperFunctions";
+import { useEffect, useState } from "react";
 import { FaFileDownload } from "react-icons/fa";
-import { Popper } from "@mui/material";
-import { BsThreeDots } from "react-icons/bs";
-import { DateSelect } from "../components/common/dateSelect";
 import { FilterGroup } from "../components/common/FilterGroup";
 import { Dayjs } from "dayjs";
 import { useDebounce } from "../hooks/useDebounce";
@@ -34,42 +26,6 @@ type UserTableType = {
   status: string;
 };
 
-// const rows = (): UserTableType[] => {
-//   const statuses = ["Pending", "Processed", "Returned", "Cancelled"];
-//   const data: UserTableType[] = Array.from({ length: 15 }, (_, i) => ({
-//     id: "100" + (i + 1),
-//     name: "Rosemary Sunday",
-//     type: "House",
-//     details: "3-bedroom house in Ikeja",
-//     date: new Date().toUTCString(),
-//     status: statuses[i % 4], // Randomly assign status
-//   }));
-//   return data;
-// };
-
-// const chartData = () => {
-//   const monthArray = [
-//     "Jan",
-//     "Feb",
-//     "Mar",
-//     "Apr",
-//     "May",
-//     "Jun",
-//     "Jul",
-//     "Aug",
-//     "Sep",
-//     "Oct",
-//     "Nov",
-//     "Dec",
-//   ];
-
-//   const returnArray = monthArray.map((item) => {
-//     return { name: item, earnings: generateRandomNumber(900000, 100000) };
-//   });
-
-//   return returnArray;
-// };
-
 export type IFilter = {
   type: string;
   status: string;
@@ -78,8 +34,8 @@ export type IFilter = {
 };
 
 export default function Orders() {
-  const [exportModal, setExportModal] = useState(false);
-  const [selectedData, setSelectedData] = useState<UserTableType[]>([]);
+  // const [exportModal, setExportModal] = useState(false);
+  // const [selectedData, setSelectedData] = useState<UserTableType[]>([]);
   const [revenueData, setRevenueData] = useState<TotalRevenue | null>(null);
   const [filters, setFilters] = useState<IFilter>({
     type: "",
@@ -105,17 +61,10 @@ export default function Orders() {
       dataName: "purchase Enquiries",
     }
   );
-  const handleTableSelectionChange = (newSelection: UserTableType[]) => {
-    setSelectedData(newSelection);
-  };
+  // const handleTableSelectionChange = (newSelection: UserTableType[]) => {
+  //   setSelectedData(newSelection);
+  // };
 
-  function openExportModal() {
-    setExportModal(true);
-  }
-
-  function closeExportModal() {
-    setExportModal(false);
-  }
   useEffect(() => {
     const fetchRevenue = async () => {
       try {
@@ -131,13 +80,13 @@ export default function Orders() {
 
   return (
     <div className="w-full h-full bg-white overflow-y-auto flex flex-col custom-scrollbar py-20">
-      <ExportModal
+      {/* <ExportModal
         isOpen={exportModal}
         onClose={closeExportModal}
         allData={purchaseEnquiries.rows}
         selectedData={selectedData}
         filename="orders-data"
-      />
+      /> */}
       <div className="w-full py-3.5 px-5 md:px-10 fixed z-10 left-2 top-0 border-b bg-white  border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
@@ -159,14 +108,14 @@ export default function Orders() {
             </span>
           </h1>
 
-          <div className="flex items-center gap-x-5">
+          {/* <div className="flex items-center gap-x-5">
             <button
               onClick={openExportModal}
               className="text-sm flex  gap-3 rounded-lg px-4 py-2.5 bg-defaultOrange hover:bg-defaultOrangeHover text-white"
             >
               <FaFileDownload size={18} /> Export
             </button>
-          </div>
+          </div> */}
         </div>
 
         <div className="w-full flex justify-between items-end pb-3 mt-4 border-b border-b-primaryBorder">
@@ -242,7 +191,6 @@ export default function Orders() {
           <div className="min-w-[900px]">
             <MuiTableComponent
               columns={purchaseEnqColumns}
-              showCheckbox={true}
               rows={purchaseEnquiries.rows}
               onRowClick={(row) => {
                 navigate(`/admin/purchase-enquiries/enquiry/${row.id}`);
@@ -259,7 +207,6 @@ export default function Orders() {
               loading={purchaseEnquiries.loading}
               totalRowCount={purchaseEnquiries.totalRowCount}
               currentPage={purchaseEnquiries.pagination.page}
-              onSelect={handleTableSelectionChange}
               rowHeight={60}
               pageSize={purchaseEnquiries.pagination.pageSize}
             />

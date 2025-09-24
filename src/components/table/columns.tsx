@@ -647,11 +647,17 @@ export const purchaseEnqColumns: GridColDef[] = [
     headerName: "Agent",
     renderCell: ({ value }) => {
       return (
-        <div className="flex flex-col">
-          <span className="text-xs text-gray-500">{value?.id}</span>
-          <span className="text-sm font-medium">{value?.name}</span>
-          <span className="text-xs text-gray-500">{value?.email}</span>
-        </div>
+        <>
+          {value === null ? (
+            <span className="text-xs text-gray-500">Not Assigned</span>
+          ) : (
+            <div className="flex flex-col">
+              {/* <span className="text-xs text-gray-500">{value?.id}</span> */}
+              <span className="text-sm font-medium">{value?.name}</span>
+              {/* <span className="text-xs text-gray-500">{value?.email}</span> */}
+            </div>
+          )}
+        </>
       );
     },
     flex: 0.5,
@@ -669,17 +675,23 @@ export const purchaseEnqColumns: GridColDef[] = [
     headerName: "Inspection Request",
     renderCell: ({ value }) => {
       return (
-        <div className="flex flex-col">
-          <span className="text-xs text-gray-500">
-            {formatIsoString(value?.scheduled_at).formattedDate} at{" "}
-            {formatIsoString(value?.scheduled_at).formattedTime}
-          </span>
-          <span className="text-xs text-gray-500">
-            {formatIsoString(value?.completed_at).formattedDate} at{" "}
-            {formatIsoString(value?.completed_at).formattedTime}
-          </span>
-          <span className="text-xs text-gray-500">{value?.notes}</span>
-        </div>
+        <>
+          {value === null ? (
+            <span className="text-xs text-gray-500">No Request</span>
+          ) : (
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-500">
+                {formatIsoString(value?.scheduled_at).formattedDate} at{" "}
+                {formatIsoString(value?.scheduled_at).formattedTime}
+              </span>
+              <span className="text-xs text-gray-500">
+                {formatIsoString(value?.completed_at).formattedDate} at{" "}
+                {formatIsoString(value?.completed_at).formattedTime}
+              </span>
+              <span className="text-xs text-gray-500">{value?.notes}</span>
+            </div>
+          )}
+        </>
       );
     },
     flex: 1,

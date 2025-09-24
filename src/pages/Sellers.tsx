@@ -166,9 +166,9 @@ export default function Sellers() {
           <div className="min-w-[900px]">
             <MuiTableComponent
               columns={sellerColumns}
+              showCheckbox={true}
               rows={sellersData.rows}
               onRowClick={handleRowClick}
-              showCheckbox={true}
               onSelect={handleTableSelectionChange}
               rowHeight={60}
               loading={sellersData.loading}
