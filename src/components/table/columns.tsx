@@ -599,125 +599,145 @@ export const BidsActionCellComponent = ({ row }: { row: any }) => {
 };
 
 export const purchaseEnqColumns: GridColDef[] = [
-  {
-    field: "id",
-    headerName: "Enquiry ID",
-    flex: 0.5,
-  },
-  {
-    field: "buyer",
-    headerName: "Buyer",
-    renderCell: ({ value }) => {
-      return (
-        <div className="flex flex-col">
-          <span className="text-xs text-gray-500">{value?.id}</span>
-          <span className=" text-sm font-medium">{value?.name}</span>
-          <span className="text-xs text-gray-500">{value?.email}</span>
-        </div>
-      );
-    },
-    flex: 0.5,
-  },
+	{
+		field: "id",
+		headerName: "ID",
+		flex: 0.2,
+	},
+	{
+		field: "buyer",
+		headerName: "Buyer",
+		renderCell: ({ value }) => {
+			return (
+				<div className="flex flex-col">
+					<span className="text-xs text-gray-500">{value?.id}</span>
+					<span className=" text-sm font-medium">{value?.name}</span>
+					<span className="text-xs text-gray-500">{value?.email}</span>
+				</div>
+			);
+		},
+		flex: 0.5,
+	},
 
-  {
-    field: "product",
-    headerName: "Product",
-    renderCell: ({ value }) => {
-      return (
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1">
-            <span className="text-sm font-medium truncate">{value?.name}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="text-sm font-medium">{value?.type}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="text-sm font-medium">
-              N{formatPrice(Number(value?.price))}
-            </span>
-          </div>
-        </div>
-      );
-    },
-    flex: 1,
-    sortable: false,
-  },
-  {
-    field: "agent",
-    headerName: "Agent",
-    renderCell: ({ value }) => {
-      return (
-        <>
-          {value === null ? (
-            <span className="text-xs text-gray-500">Not Assigned</span>
-          ) : (
-            <div className="flex flex-col">
-              {/* <span className="text-xs text-gray-500">{value?.id}</span> */}
-              <span className="text-sm font-medium">{value?.name}</span>
-              {/* <span className="text-xs text-gray-500">{value?.email}</span> */}
-            </div>
-          )}
-        </>
-      );
-    },
-    flex: 0.5,
-  },
-  {
-    field: "message",
-    headerName: "Message",
-    flex: 1,
-    renderCell: ({ value }) => (
-      <span className="font-medium  truncate">{value}</span>
-    ),
-  },
-  {
-    field: "inspection_request",
-    headerName: "Inspection Request",
-    renderCell: ({ value }) => {
-      return (
-        <>
-          {value === null ? (
-            <span className="text-xs text-gray-500">No Request</span>
-          ) : (
-            <div className="flex flex-col">
-              <span className="text-xs text-gray-500">
-                {formatIsoString(value?.scheduled_at).formattedDate} at{" "}
-                {formatIsoString(value?.scheduled_at).formattedTime}
-              </span>
-              <span className="text-xs text-gray-500">
-                {formatIsoString(value?.completed_at).formattedDate} at{" "}
-                {formatIsoString(value?.completed_at).formattedTime}
-              </span>
-              <span className="text-xs text-gray-500">{value?.notes}</span>
-            </div>
-          )}
-        </>
-      );
-    },
-    flex: 1,
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    flex: 0.5,
-    renderCell: ({ value }) => {
-      return (
-        <span
-          className={`flex gap-x-1 items-center justify-start w-[120px] capitalize px-2 py-1 rounded-full font-medium text-sm
+	{
+		field: "product",
+		headerName: "Product",
+		renderCell: ({ value }) => {
+			return (
+				<div className="flex flex-col">
+					<div className="flex items-center gap-1">
+						<span className="text-sm font-medium truncate">
+							{value?.name}
+						</span>
+					</div>
+					<div className="flex items-center gap-1">
+						<span className="text-xs font-medium text-gray-500">
+							{value?.type}
+						</span>
+					</div>
+					<div className="flex items-center gap-1">
+						<span className="text-sm font-medium">
+							₦ {formatPrice(Number(value?.price))}
+						</span>
+					</div>
+				</div>
+			);
+		},
+		flex: 1,
+		sortable: false,
+	},
+	{
+		field: "agent",
+		headerName: "Agent",
+		renderCell: ({ value }) => {
+			return (
+				<>
+					{value === null ? (
+						<span className="text-xs text-gray-500">Not Assigned</span>
+					) : (
+						<span className="text-sm font-medium capitalize">
+							{value?.name}
+						</span>
+						// <div className="flex flex-col">
+						// 	<span className="text-xs text-gray-500">{value?.id}</span> */}
+						// 	{/* <span className="text-xs text-gray-500">{value?.email}</span>
+						// </div>
+					)}
+				</>
+			);
+		},
+		flex: 0.5,
+	},
+	{
+		field: "message",
+		headerName: "Message",
+		flex: 1,
+		renderCell: ({ value }) => (
+			<span className="font-medium  truncate">{value}</span>
+		),
+	},
+	{
+		field: "inspection_request",
+		headerName: "Inspection Request",
+		renderCell: ({ value }) => {
+			return (
+				<>
+					{value === null ? (
+						<span className="text-xs text-gray-500">No Request</span>
+					) : (
+						<div className="flex flex-col">
+							<span className="text-xs text-gray-500">
+								<span className="text-[10px]">Scheduled on</span> <br />
+								{new Date(value?.scheduled_at).toDateString()} at{" "}
+								{formatIsoString(value?.scheduled_at).formattedTime}
+							</span>
+							<span className="text-xs text-gray-500">
+								<span className="text-[10px]">Completed on</span> <br />
+								{new Date(value?.completed_at).toDateString()} at{" "}
+								{formatIsoString(value?.completed_at).formattedTime}
+							</span>
+							{/* <span className="text-xs text-gray-500">
+								{formatIsoString(value?.scheduled_at).formattedDate} at{" "}
+								{formatIsoString(value?.scheduled_at).formattedTime}
+							</span>
+							<span className="text-xs text-gray-500">
+								{formatIsoString(value?.completed_at).formattedDate} at{" "}
+								{formatIsoString(value?.completed_at).formattedTime}
+							</span> */}
+							<span className="text-xs text-gray-500">
+								{value?.notes}
+							</span>
+						</div>
+					)}
+				</>
+			);
+		},
+		flex: 1,
+	},
+	{
+		field: "status",
+		headerName: "Status",
+		flex: 0.5,
+		renderCell: ({ value }) => {
+			return (
+				<div className="h-full w-full flex items-center justify-center">
+					<span
+						className={`flex gap-x-1 items-center justify-start w-fit capitalize px-2 py-1 rounded-full font-medium text-xs
               ${getStatusClassPurchaseEnquiry(value)}`}
-        >
-          <GoDotFill size={20} /> {value}
-        </span>
-      );
-    },
-  },
-  {
-    field: "Action",
-    flex: 0.5,
-    renderCell: ({ row }) => {
-      return <PurchaseActionCellComponent rowId={row.id} />;
-    },
-  },
+					>
+						<GoDotFill size={10} /> {value}
+					</span>
+				</div>
+			);
+		},
+	},
+	{
+		field: "Action",
+		flex: 0.4,
+		renderCell: ({ row }) => {
+			return <PurchaseActionCellComponent rowId={row.id} />;
+		},
+	},
 ];
 
 export const PurchaseActionCellComponent = ({ rowId }: { rowId: number }) => {
