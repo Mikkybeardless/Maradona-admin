@@ -5,10 +5,10 @@ import "react-quill/dist/quill.snow.css";
 import { useState } from "react";
 import auctionService from "../api/services/auction.service";
 import { toast } from "react-toastify";
-import { appendArrayField } from "../helper/appendArrayField";
 import { Spinner } from "../components/common/spinner";
 import formatDateToYYYYMMDD from "../helper/formatDate";
 import { AddAuctionForm } from "../components/add-auction";
+import { appendCreateDataField } from "../helper/AppendFormData";
 
 export default function AddAuction() {
   const [isLoading, setIsLoading] = useState(false);
@@ -87,34 +87,8 @@ export default function AddAuction() {
     const formData = new FormData();
 
     for (const [key, value] of Object.entries(apiData)) {
-      // Global empty check for all fields
-      if (
-        value === null ||
-        value === undefined ||
-        (typeof value === "string" && value.trim() === "") ||
-        (Array.isArray(value) && value.length === 0 && key !== "data")
-      ) {
-        const capitalized = key.charAt(0).toUpperCase() + key.slice(1);
-        toast.error(`The field "${capitalized}" cannot be empty.`);
-        return;
-      }
-
-      // Special handling for array-required fields
-      if (key === "documents" || key === "media") {
-        appendArrayField(formData, key, value as File[], true);
-        continue;
-      }
-      if (key === "tags") {
-        appendArrayField(formData, key, value as string[], false);
-        continue;
-      }
-
-      // Append the rest
-      if (Array.isArray(value) || typeof value === "object") {
-        formData.append(key, JSON.stringify(value));
-      } else {
-        formData.append(key, value as string | Blob);
-      }
+      const success = appendCreateDataField(formData, key, value);
+      if (!success) return; // stops on validation error
     }
 
     for (const [key, value] of formData.entries()) {

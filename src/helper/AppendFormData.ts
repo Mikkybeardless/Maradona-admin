@@ -42,6 +42,51 @@ export function appendUpdateDataField(
 
   if (key === "data") {
     appendObjectArrayField(formData, value as string[]);
+    return true;
+  }
+
+  // Default: append value
+  if (Array.isArray(value) || typeof value === "object") {
+    formData.append(key, JSON.stringify(value));
+  } else {
+    formData.append(key, value as string | Blob);
+  }
+
+  return true;
+}
+
+export function appendCreateDataField(
+  formData: FormData,
+  key: string,
+  value: unknown
+): boolean {
+  // Global empty check → skip if empty
+  if (
+    value === null ||
+    value === undefined ||
+    (typeof value === "string" && value.trim() === "") ||
+    (Array.isArray(value) && value.length === 0 && key !== "data")
+  ) {
+    const capitalized = key.charAt(0).toUpperCase() + key.slice(1);
+    toast.error(`The field "${capitalized}" cannot be empty.`);
+    return false; // do nothing for empty fields
+  }
+
+  // Special handling: documents & media
+  if (key === "documents" || key === "media") {
+    appendArrayField(formData, key, value as File[], true);
+    return true;
+  }
+
+  // Special handling: tags
+  if (key === "tags") {
+    appendArrayField(formData, key, value as number[], false);
+    return true;
+  }
+
+  if (key === "data") {
+    appendObjectArrayField(formData, value as string[]);
+    return true;
   }
 
   // Default: append value

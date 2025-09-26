@@ -6,8 +6,8 @@ import productService from "../api/services/product.service";
 import { toast } from "react-toastify";
 import { Spinner } from "../components/common/spinner";
 import { getProductShape } from "../helper/ReShapeData";
-import { appendArrayField } from "../helper/appendArrayField";
 import { AddProductForm } from "../components/add-product";
+import { appendCreateDataField } from "../helper/AppendFormData";
 
 export default function AddProducts() {
   const navigate = useNavigate();
@@ -85,34 +85,8 @@ export default function AddProducts() {
     const formData = new FormData();
 
     for (const [key, value] of Object.entries(payLoad)) {
-      // Global empty check for all fields
-      if (
-        value === null ||
-        value === undefined ||
-        (typeof value === "string" && value.trim() === "") ||
-        (Array.isArray(value) && value.length === 0)
-      ) {
-        const capitalized = key.charAt(0).toUpperCase() + key.slice(1);
-        toast.error(`The field "${capitalized}" cannot be empty.`);
-        return;
-      }
-
-      // Special handling for array-required fields
-      if (key === "documents" || key === "media") {
-        appendArrayField(formData, key, value as File[], true);
-        continue;
-      }
-      if (key === "tags") {
-        appendArrayField(formData, key, value as number[], false);
-        continue;
-      }
-
-      // Append the rest
-      if (Array.isArray(value) || typeof value === "object") {
-        formData.append(key, JSON.stringify(value));
-      } else {
-        formData.append(key, value as string | Blob);
-      }
+      const success = appendCreateDataField(formData, key, value);
+      if (!success) return; // stops on validation error
     }
 
     for (const [key, value] of formData.entries()) {
