@@ -76,16 +76,16 @@ export default function FieldAgents() {
   });
 
   const [requestData, setRequestData] = usePaginatedData(
-    InspectionService.getAllInspections, 
-    {
-      initialPage: 1,
-      initialPageSize: 10,
-      filters: {
-        category: filters.request,
-        search: debouncedRequestSearchQuery,
-      },
-        dataName: "inspection requests"
-    }
+		InspectionService.getAllInspections,
+		{
+			initialPage: 1,
+			initialPageSize: 10,
+			filters: {
+				category: filters.request,
+				search: debouncedRequestSearchQuery,
+			},
+			dataName: "inspection requests",
+		}
   );
 
   const [inspectionData, setInspectionData] = usePaginatedData(
@@ -112,48 +112,51 @@ export default function FieldAgents() {
 
     // reformats request data on data change
   useEffect(() => {
-    const formattedRequestData: Product[] = requestData.rows.map((item) => (
-      (item as Inspection).product,
-    ));
+    const formattedRequestData: Product[] = requestData.rows.map(
+			(item) => (item as Inspection).product
+		);
     setFormattedData((prev) => ({ ...prev, requests: formattedRequestData }));
   }, [requestData]);
 
   return (
-    <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-7 bg-[#F5F5F5]">
-      <AddAgentModal
-        newAgentModal={newAgentModal}
-        setNewAgentModal={setNewAgentModal}
-      />
-{/* 
+		<div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-7 bg-[#F5F5F5]">
+			<AddAgentModal
+				newAgentModal={newAgentModal}
+				setNewAgentModal={setNewAgentModal}
+			/>
+			{/*
       <InspectionModal
         inspectionModal={inspectionModal}
         setInspectionModal={setInspectionModal}
         currentAgent={currentAgent}
       /> */}
 
-      <div className="w-full py-5 px-5 md:pl-[250px] md:pr-[100px] bg-white fixed z-10 left-10 top-0 border-b border-b-primaryBorder">
-        <DashboardSearchBar />
-      </div>
+			<div className="w-full py-5 px-5 md:pl-[250px] md:pr-[100px] bg-white fixed z-10 left-10 top-0 border-b border-b-primaryBorder">
+				<DashboardSearchBar />
+			</div>
 
-      <main className=" px-5 md:px-10 w-full mt-20 flex flex-col flex-1">
-        <section
-          id="agents-tab"
-          className="flex flex-wrap-reverse gap-y-3 justify-between items-center mt-1"
-        >
-          <div className=" w-full md:w-fit flex gap-x-6 items-center mt-3 text-sm border-b border-b-primaryBorder">
-            <button
-              className={`${
-                agentType === "agent"
-                  ? "border-b-[3px] border-b-defaultOrange"
-                  : "text-[#585858]"
-              } py-3`}
-              onClick={() =>
-                agentType !== "agent" ? setAgentType("agent") : null
-              }
-            >
-              Agents <span className="text-xs text-defaultOrange">{agentData.totalRowCount}</span>
-            </button>
-            {/* <button
+			<main className=" px-5 md:px-10 w-full mt-20 flex flex-col flex-1">
+				<section
+					id="agents-tab"
+					className="flex flex-wrap-reverse gap-y-3 justify-between items-center mt-1"
+				>
+					<div className=" w-full md:w-fit flex gap-x-6 items-center mt-3 text-sm border-b border-b-primaryBorder">
+						<button
+							className={`${
+								agentType === "agent"
+									? "border-b-[3px] border-b-defaultOrange"
+									: "text-[#585858]"
+							} py-3`}
+							onClick={() =>
+								agentType !== "agent" ? setAgentType("agent") : null
+							}
+						>
+							Agents{" "}
+							<span className="text-xs text-defaultOrange">
+								{agentData.totalRowCount}
+							</span>
+						</button>
+						{/* <button
               className={`${
                 agentType === "request"
                   ? "border-b-[3px] border-b-defaultOrange"
@@ -178,69 +181,69 @@ export default function FieldAgents() {
             >
               Inspection <span className="text-xs text-defaultOrange">{inspectionData.totalRowCount}</span>
             </button> */}
-          </div>
+					</div>
 
-          <button
-            onClick={() => setNewAgentModal(true)}
-            className="rounded-lg flex items-center md:gap-x-2 md:px-5 px-2 py-1.5 md:py-2.5 text-white text-xs md:text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
-          >
-            <FaPlus size={18} />
-            New Agent
-          </button>
-        </section>
-        <h1 className="text-3xl font-bold my-6">Field Agents</h1>
-  <>
-            <div className="flex flex-wrap gap-2 justify-between items-end mt-3 w-full">
-              <StatusSelect
-                options={[
-                  { label: "All", value: "" },
-                  { label: "Active", value: "active" },
-                  { label: "Inactive", value: "inactive" },
-                ]}
-                onChange={(value) => {
-                  setFilters((prev) => ({ ...prev, agent: value }));
-                }}
-                value={filters.agent}
-              />
+					<button
+						onClick={() => setNewAgentModal(true)}
+						className="rounded-lg flex items-center md:gap-x-2 md:px-5 px-2 py-1.5 md:py-2.5 text-white text-xs md:text-sm bg-defaultOrange hover:bg-defaultOrangeHover"
+					>
+						<FaPlus size={18} />
+						New Agent
+					</button>
+				</section>
+				<h1 className="text-3xl font-bold my-6">Field Agents</h1>
+				<>
+					<div className="flex flex-wrap gap-2 justify-between items-end mt-3 w-full">
+						<StatusSelect
+							options={[
+								{ label: "All", value: "" },
+								{ label: "Active", value: "active" },
+								{ label: "Inactive", value: "inactive" },
+							]}
+							onChange={(value) => {
+								setFilters((prev) => ({ ...prev, agent: value }));
+							}}
+							value={filters.agent}
+						/>
 
-              <TableSearchInput
-                searchQuery={searchQuery.agent}
-                setSearchQuery={(val) =>
-                  setSearchQuery((prev) => ({ ...prev, agent: val }))
-                }
-                placeholder="Search agents"
-              />
-            </div>
+						<TableSearchInput
+							searchQuery={searchQuery.agent}
+							setSearchQuery={(val) =>
+								setSearchQuery((prev) => ({ ...prev, agent: val }))
+							}
+							placeholder="Search agents"
+						/>
+					</div>
 
-            <section
-              id="table"
-              className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
-            >
-              <div className="min-w-[900px]">
-                <MuiTableComponent
-                  showCheckbox={false}
-                  columns={AgentColumns}
-                  onRowClick={handleRowClick}
-                  rows={agentData.rows}
-                  loading={agentData.loading}
-                  rowHeight={60}
-                  currentPage={agentData.pagination.page}
-                  onPageChange={(model) =>
-                    setAgentData((prev) => ({
-                      ...prev,
-                      pagination: {
-                        page: model.page,
-                        pageSize: model.pageSize,
-                      },
-                    }))
-                  }
-                  pageSize={agentData.pagination.pageSize}
-                  totalRowCount={agentData.totalRowCount}
-                />
-              </div>
-            </section>
-          </>
-        {/* {agentType === "agent" ? (
+					<section
+						id="table"
+						className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
+					>
+						<div className="min-w-[900px]">
+							<MuiTableComponent
+								showCheckbox={false}
+								columns={AgentColumns}
+								onRowClick={handleRowClick}
+								rows={agentData.rows}
+								loading={agentData.loading}
+								rowHeight={60}
+								currentPage={agentData.pagination.page}
+								onPageChange={(model) =>
+									setAgentData((prev) => ({
+										...prev,
+										pagination: {
+											page: model.page,
+											pageSize: model.pageSize,
+										},
+									}))
+								}
+								pageSize={agentData.pagination.pageSize}
+								totalRowCount={agentData.totalRowCount}
+							/>
+						</div>
+					</section>
+				</>
+				{/* {agentType === "agent" ? (
           <>
             <div className="flex flex-wrap gap-2 justify-between items-end mt-3 w-full">
               <StatusSelect
@@ -386,7 +389,7 @@ export default function FieldAgents() {
             </section>
           </>
         )} */}
-      </main>
-    </div>
+			</main>
+		</div>
   );
 }
