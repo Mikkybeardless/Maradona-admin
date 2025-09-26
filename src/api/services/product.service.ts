@@ -12,7 +12,7 @@ const productService = {
       headers: { "Content-Type": "multipart/form-data" },
     }),
   approveOrRejectProduct: (id: number, action: "approve" | "cancel") =>
-    apiClient.post(`/admin/products/${id}/toggle-approval?action=${action}`),
+    apiClient.post(`/products/${id}/toggle-approval?action=${action}`),
   updateProduct: <T extends keyof ProductPayloadMap>(
     id: number,
     data: ProductUpdate<T> | FormData

@@ -19,7 +19,7 @@ import { ProductColumns } from "../components/table/columns";
 type IFilter = {
   type: string;
   status: string;
-  date: Dayjs | null;
+  // date: Dayjs | null;
 };
 
 export default function Products() {
@@ -29,14 +29,13 @@ export default function Products() {
   const [filters, setFilters] = useState<IFilter>({
     type: "",
     status: "",
-    date: null,
   });
 
   const handleTableSelectionChange = (selectedRows: any[]) => {
     console.log("Selected Rows:", selectedRows);
   };
 
-  const formatedDate = formatDayJs(filters.date);
+  // const formatedDate = formatDayJs(filters.date);
   const [productData, setProductData] = usePaginatedData(
     productService.getAllProducts,
     {
@@ -45,7 +44,6 @@ export default function Products() {
       filters: {
         status: filters.status,
         type: filters.type,
-        created_at: formatedDate,
         search: debouncedSearchQuery,
       },
       dataName: "Products",
@@ -120,12 +118,12 @@ export default function Products() {
                   }}
                   value={filters.status}
                 />
-                <DateSelect
+                {/* <DateSelect
                   onChange={(date) => {
                     setFilters((prev) => ({ ...prev, date }));
                   }}
                   value={filters.date}
-                />
+                /> */}
               </>
             }
             searchNode={

@@ -66,6 +66,7 @@ export default function ProductDetails() {
     approved_at: null,
   };
   const [isLoading, setIsLoading] = useState(true);
+  const [updating, setUpdating] = useState("");
   const [product, setProduct] = useState(initialProductDetails);
 
   useEffect(() => {
@@ -127,6 +128,7 @@ export default function ProductDetails() {
     status: "approve" | "cancel"
   ) => {
     try {
+      setUpdating(status);
       const response = await productService.approveOrRejectProduct(id, status);
 
       if (response.status === 200) {
@@ -141,6 +143,8 @@ export default function ProductDetails() {
       toast.error(
         `Failed to ${status === "approve" ? "approve" : "reject"} product`
       );
+    } finally {
+      setUpdating("");
     }
   };
 
@@ -201,13 +205,13 @@ export default function ProductDetails() {
                     onClick={() => handleStatusUpdate(Number(id), "approve")}
                     className="text-sm text-green-500 hover:underline"
                   >
-                    Approve
+                    {updating === "approve" ? "Approving..." : "Approve"}
                   </button>
                   <button
                     onClick={() => handleStatusUpdate(Number(id), "cancel")}
                     className="text-sm text-red-500 hover:underline"
                   >
-                    Reject
+                    {updating === "cancel" ? "Rejecting..." : "Reject"}
                   </button>
                 </>
               )}

@@ -7,7 +7,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { Popper } from "@mui/material";
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
-import { GoDotFill } from "react-icons/go";
+import { GoDotFill, GoTrash } from "react-icons/go";
 import purchaseEnquiriesService from "../../api/services/purchaseEnquiries.service";
 import { toast } from "react-toastify";
 import { BiEditAlt } from "react-icons/bi";
@@ -241,7 +241,7 @@ export const ProductColumns: GridColDef[] = [
               row.status
             )} capitalize rounded-[100px] !text-xs px-2.5 py-1`}
           >
-            {row.status}
+            {row.status === "cancelled" ? "rejected" : row.status}
           </span>
         </div>
       );
@@ -272,6 +272,9 @@ const ProductActionCellComponent = ({ row }: { row: any }) => {
     event.stopPropagation();
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
+  // const handleDelete = async (id: string) => {
+  //   await productService.deleteProduct(Number(id));
+  // };
 
   return (
     <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
@@ -331,6 +334,8 @@ function renderStatusColor(status: string) {
       return "bg-[#FEF3B8] text-[#897a28]";
     case "draft":
       return "bg-[#DAE9FB] text-[#0B283E]";
+    case "cancelled":
+      return "bg-red-100 text-red-500";
     default:
       return "";
   }
@@ -423,23 +428,6 @@ export const BidsColumns: GridColDef[] = [
     },
     flex: 0.7,
   },
-  // {
-  //   field: "name",
-  //   headerName: "Product",
-  //   renderCell: ({ row }) => {
-  //     return (
-  //       <div className="flex gap-x-5 items-center">
-  //         <img
-  //           className="w-[40px] h-[40px]"
-  //           src={row.media[0] || "/images/placeholder.png"}
-  //           alt="product"
-  //         />
-  //         <p className="text-sm font-medium text-darkBlue">{row.name}</p>
-  //       </div>
-  //     );
-  //   },
-  //   flex: 1,
-  // },
   {
     field: "amount",
     headerName: "Price(₦)",
@@ -455,12 +443,14 @@ export const BidsColumns: GridColDef[] = [
         <span
           className={`px-3 py-1 rounded-full capitalize font-medium text-sm
           ${
-            value === "published"
+            value === "reopened"
               ? "bg-[#FE8E49] text-white"
               : value === "sold"
               ? "bg-[#E8F8E8] text-[#0C560B]"
               : value === "accepted"
               ? "bg-blue-100 text-blue-600"
+              : value === "closed"
+              ? "bg-gray-100 text-gray-600"
               : "bg-[#DC1313] text-white"
           }`}
         >
@@ -513,10 +503,21 @@ export const BidsActionCellComponent = ({ row }: { row: any }) => {
   const handleUpdateBid = async (status: string) => {
     try {
       setUpdating(status);
+      if (row.status === status) {
+        toast.info(`Bid is already ${status}`);
+        setUpdating("");
+        return;
+      }
+      if (row.status === "accepted" && status === "reopened") {
+        toast.error(`Bid cannot be reopened until closed`);
+        setUpdating("");
+        return;
+      }
+
       const response = await bidsService.updateBid(row.id, { status });
       if (response.status === 200) {
         // Handle successful update
-        toast.success("bid updated successfully");
+        toast.success(`Bid ${status} successfully`);
       }
     } catch (error) {
       toast.error("Error updating bid, pls try again later");
@@ -526,6 +527,32 @@ export const BidsActionCellComponent = ({ row }: { row: any }) => {
       setUpdating("");
     }
   };
+  const buttons = [
+    {
+      name: "Accept",
+      status: "accepted",
+      loading: "Accepting",
+      color: "text-green-600",
+    },
+    {
+      name: "Reopen",
+      status: "reopened",
+      loading: "Reopening",
+      color: "text-[#FE8E49]",
+    },
+    {
+      name: "Reject",
+      status: "rejected",
+      loading: "Rejecting",
+      color: "text-red-600",
+    },
+    {
+      name: "Close",
+      status: "closed",
+      loading: "Closing",
+      color: "text-gray-600",
+    },
+  ];
 
   return (
     <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
@@ -562,141 +589,120 @@ export const BidsActionCellComponent = ({ row }: { row: any }) => {
           },
         ]}
       >
-        {/* <Link
-          to={`/admin/purchase-enquiries/enquiry/${rowId}`}
-          className="text-xs hover:underline hover:text-green-600"
-        >
-          View Details
-        </Link> */}
-        <button
-          onClick={() => handleUpdateBid("accepted")}
-          className="text-xs hover:underline hover:text-green-600"
-        >
-          {updating === "accepted" ? "Accepting..." : "Accept Bid"}
-        </button>
-
-        <button
-          onClick={() => handleUpdateBid("reopened")}
-          className="text-xs hover:underline hover:text-blue-600"
-        >
-          {updating === "reopened" ? "Reopening..." : "Reopen Bid"}
-        </button>
-        <button
-          onClick={() => handleUpdateBid("rejected")}
-          className="text-xs hover:underline hover:text-red-600"
-        >
-          {updating === "rejected" ? "Rejecting..." : "Reject Bid"}
-        </button>
-        <button
-          onClick={() => handleUpdateBid("closed")}
-          className="text-xs hover:underline hover:text-red-600"
-        >
-          {updating === "closed" ? "Closing..." : "Close deal"}
-        </button>
+        {buttons.map(
+          (button, index) =>
+            button.status !== row.status && (
+              <button
+                key={index}
+                onClick={() => handleUpdateBid(button.status)}
+                className={`text-xs hover:underline ${button.color}`}
+              >
+                {updating === button.status ? button.loading : button.name}
+              </button>
+            )
+        )}
       </Popper>
     </div>
   );
 };
 
 export const purchaseEnqColumns: GridColDef[] = [
-	{
-		field: "id",
-		headerName: "ID",
-		flex: 0.2,
-	},
-	{
-		field: "buyer",
-		headerName: "Buyer",
-		renderCell: ({ value }) => {
-			return (
-				<div className="flex flex-col">
-					<span className="text-xs text-gray-500">{value?.id}</span>
-					<span className=" text-sm font-medium">{value?.name}</span>
-					<span className="text-xs text-gray-500">{value?.email}</span>
-				</div>
-			);
-		},
-		flex: 0.5,
-	},
+  {
+    field: "id",
+    headerName: "ID",
+    flex: 0.2,
+  },
+  {
+    field: "buyer",
+    headerName: "Buyer",
+    renderCell: ({ value }) => {
+      return (
+        <div className="flex flex-col">
+          <span className="text-xs text-gray-500">{value?.id}</span>
+          <span className=" text-sm font-medium">{value?.name}</span>
+          <span className="text-xs text-gray-500">{value?.email}</span>
+        </div>
+      );
+    },
+    flex: 0.5,
+  },
 
-	{
-		field: "product",
-		headerName: "Product",
-		renderCell: ({ value }) => {
-			return (
-				<div className="flex flex-col">
-					<div className="flex items-center gap-1">
-						<span className="text-sm font-medium truncate">
-							{value?.name}
-						</span>
-					</div>
-					<div className="flex items-center gap-1">
-						<span className="text-xs font-medium text-gray-500">
-							{value?.type}
-						</span>
-					</div>
-					<div className="flex items-center gap-1">
-						<span className="text-sm font-medium">
-							₦ {formatPrice(Number(value?.price))}
-						</span>
-					</div>
-				</div>
-			);
-		},
-		flex: 1,
-		sortable: false,
-	},
-	{
-		field: "agent",
-		headerName: "Agent",
-		renderCell: ({ value }) => {
-			return (
-				<>
-					{value === null ? (
-						<span className="text-xs text-gray-500">Not Assigned</span>
-					) : (
-						<span className="text-sm font-medium capitalize">
-							{value?.name}
-						</span>
-						// <div className="flex flex-col">
-						// 	<span className="text-xs text-gray-500">{value?.id}</span> */}
-						// 	{/* <span className="text-xs text-gray-500">{value?.email}</span>
-						// </div>
-					)}
-				</>
-			);
-		},
-		flex: 0.5,
-	},
-	{
-		field: "message",
-		headerName: "Message",
-		flex: 1,
-		renderCell: ({ value }) => (
-			<span className="font-medium  truncate">{value}</span>
-		),
-	},
-	{
-		field: "inspection_request",
-		headerName: "Inspection Request",
-		renderCell: ({ value }) => {
-			return (
-				<>
-					{value === null ? (
-						<span className="text-xs text-gray-500">No Request</span>
-					) : (
-						<div className="flex flex-col">
-							<span className="text-xs text-gray-500">
-								<span className="text-[10px]">Scheduled on</span> <br />
-								{new Date(value?.scheduled_at).toDateString()} at{" "}
-								{formatIsoString(value?.scheduled_at).formattedTime}
-							</span>
-							<span className="text-xs text-gray-500">
-								<span className="text-[10px]">Completed on</span> <br />
-								{new Date(value?.completed_at).toDateString()} at{" "}
-								{formatIsoString(value?.completed_at).formattedTime}
-							</span>
-							{/* <span className="text-xs text-gray-500">
+  {
+    field: "product",
+    headerName: "Product",
+    renderCell: ({ value }) => {
+      return (
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1">
+            <span className="text-sm font-medium truncate">{value?.name}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-xs font-medium text-gray-500">
+              {value?.type}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-sm font-medium">
+              ₦ {formatPrice(Number(value?.price))}
+            </span>
+          </div>
+        </div>
+      );
+    },
+    flex: 1,
+    sortable: false,
+  },
+  {
+    field: "agent",
+    headerName: "Agent",
+    renderCell: ({ value }) => {
+      return (
+        <>
+          {value === null ? (
+            <span className="text-xs text-gray-500">Not Assigned</span>
+          ) : (
+            <span className="text-sm font-medium capitalize">
+              {value?.name}
+            </span>
+            // <div className="flex flex-col">
+            // 	<span className="text-xs text-gray-500">{value?.id}</span> */}
+            // 	{/* <span className="text-xs text-gray-500">{value?.email}</span>
+            // </div>
+          )}
+        </>
+      );
+    },
+    flex: 0.5,
+  },
+  {
+    field: "message",
+    headerName: "Message",
+    flex: 1,
+    renderCell: ({ value }) => (
+      <span className="font-medium  truncate">{value}</span>
+    ),
+  },
+  {
+    field: "inspection_request",
+    headerName: "Inspection Request",
+    renderCell: ({ value }) => {
+      return (
+        <>
+          {value === null ? (
+            <span className="text-xs text-gray-500">No Request</span>
+          ) : (
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-500">
+                <span className="text-[10px]">Scheduled on</span> <br />
+                {new Date(value?.scheduled_at).toDateString()} at{" "}
+                {formatIsoString(value?.scheduled_at).formattedTime}
+              </span>
+              <span className="text-xs text-gray-500">
+                <span className="text-[10px]">Completed on</span> <br />
+                {new Date(value?.completed_at).toDateString()} at{" "}
+                {formatIsoString(value?.completed_at).formattedTime}
+              </span>
+              {/* <span className="text-xs text-gray-500">
 								{formatIsoString(value?.scheduled_at).formattedDate} at{" "}
 								{formatIsoString(value?.scheduled_at).formattedTime}
 							</span>
@@ -704,40 +710,38 @@ export const purchaseEnqColumns: GridColDef[] = [
 								{formatIsoString(value?.completed_at).formattedDate} at{" "}
 								{formatIsoString(value?.completed_at).formattedTime}
 							</span> */}
-							<span className="text-xs text-gray-500">
-								{value?.notes}
-							</span>
-						</div>
-					)}
-				</>
-			);
-		},
-		flex: 1,
-	},
-	{
-		field: "status",
-		headerName: "Status",
-		flex: 0.5,
-		renderCell: ({ value }) => {
-			return (
-				<div className="h-full w-full flex items-center justify-center">
-					<span
-						className={`flex gap-x-1 items-center justify-start w-fit capitalize px-2 py-1 rounded-full font-medium text-xs
+              <span className="text-xs text-gray-500">{value?.notes}</span>
+            </div>
+          )}
+        </>
+      );
+    },
+    flex: 1,
+  },
+  {
+    field: "status",
+    headerName: "Status",
+    flex: 0.5,
+    renderCell: ({ value }) => {
+      return (
+        <div className="h-full w-full flex items-center justify-center">
+          <span
+            className={`flex gap-x-1 items-center justify-start w-fit capitalize px-2 py-1 rounded-full font-medium text-xs
               ${getStatusClassPurchaseEnquiry(value)}`}
-					>
-						<GoDotFill size={10} /> {value}
-					</span>
-				</div>
-			);
-		},
-	},
-	{
-		field: "Action",
-		flex: 0.4,
-		renderCell: ({ row }) => {
-			return <PurchaseActionCellComponent rowId={row.id} />;
-		},
-	},
+          >
+            <GoDotFill size={10} /> {value}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    field: "Action",
+    flex: 0.4,
+    renderCell: ({ row }) => {
+      return <PurchaseActionCellComponent rowId={row.id} />;
+    },
+  },
 ];
 
 export const PurchaseActionCellComponent = ({ rowId }: { rowId: number }) => {
