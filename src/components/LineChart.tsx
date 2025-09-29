@@ -29,6 +29,7 @@ interface ComponentProps {
   tooltipBgColor?: string; // Add dynamic background color for Tooltip
   tooltipTextColor?: string; // Add dynamic text color for Toolt
   xKey: string;
+  yKey?: string;
 }
 
 export default function LineChartComponent({
@@ -39,6 +40,7 @@ export default function LineChartComponent({
   gridShow,
   paddingX,
   xKey,
+  yKey = "Time",
   tooltipBgColor = "#fff", // Default background color
   tooltipTextColor = "#333", // Default text colo
 }: ComponentProps) {
@@ -62,7 +64,7 @@ export default function LineChartComponent({
           padding={paddingX ? paddingX : {}}
         />
         <YAxis
-          name={"Time"}
+          name={yKey}
           tickSize={2}
           tickCount={tickCount || 5}
           tickFormatter={(value) => `${(value / 1000).toFixed(1)}k`}

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const ExpensesReport = () => {
   const navigate = useNavigate();
   const handleToExpensesReport = () => {
-    navigate("/seller/reports/expenses-report");
+    navigate("/admin/reports/expenses-report");
   };
   return (
     <div>

@@ -16,14 +16,14 @@ interface IMonthlySalesSummary {
     | {
         month: string;
         month_key: string;
-        revenue: number;
-        orders: number;
+        total_revenue: number;
+        total_orders: number;
       }
     | {
         month: string;
         month_key: string;
-        revenue: string;
-        orders: number;
+        total_revenue: string;
+        total_orders: number;
       }
   )[];
   period: {
@@ -101,7 +101,7 @@ const MonthlyRevenueChart = () => {
             );
           }}
         />
-        <Bar dataKey="revenue" fill="#0095FF" />
+        <Bar dataKey="total_revenue" fill="#0095FF" />
       </BarChart>
     </ResponsiveContainer>
   );

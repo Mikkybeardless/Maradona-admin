@@ -7,14 +7,17 @@ import LineChartComponent from "../LineChart";
 import { DateSelect } from "../common/dateSelect";
 import { useDateRange } from "../../hooks/DateRangeContex";
 import reportService from "../../api/services/report.service";
+import { generateLineChartData1SellerDashboard } from "../../helper/generateFillData";
 
 interface ISalesPerformanceChart {
   chart_data: {
     month: string;
     month_key: string;
-    income: string;
-    expenses: string;
-    net: number;
+    direct_sales_income: number;
+    auction_sales_income: number;
+    promotion_income: number;
+    total_income: number;
+    sales_income: number;
   }[];
   period: {
     start: string;
@@ -28,7 +31,7 @@ const SalesPerfformance = () => {
   const [date, setDate] = useState<Dayjs | null>(null);
 
   const handleToSaleReport = () => {
-    navigate("/seller/reports/sale-report");
+    navigate("/admin/reports/sale-report");
   };
 
   const [salesPerformanceData, setSalesPerformanceData] =
@@ -90,16 +93,14 @@ const SalesPerfformance = () => {
           <DateSelect onChange={(newValue) => setDate(newValue)} value={date} />
         </div>
       </div>
-      {/* <div className="h-[250px] w-full reports-page">
+      <div className="h-[250px] w-full reports-page">
         <LineChartComponent
-          chartData={generateLineChartData1SellerDashboard(
-            salesPerformanceData?.chart_data ?? []
-          )}
-          customX={true}
-          customY={true}
+          chartData={salesPerformanceData?.chart_data ?? []}
+          xKey="month"
+          yKey="total_income"
           lines={[
             {
-              name: "Expenditure",
+              name: "direct_sales_income",
               type: "monotone",
               color: "#e65800",
               lineWidth: 3,
@@ -107,16 +108,24 @@ const SalesPerfformance = () => {
               dotShow: false,
             },
             {
-              name: "Income",
+              name: "auction_sales_income",
               type: "monotone",
               color: "#0B0C52",
               lineWidth: 3,
               dotSize: 7,
               dotShow: false,
             },
+            {
+              name: "promotion_income",
+              type: "monotone",
+              color: "#1137D0",
+              lineWidth: 3,
+              dotSize: 7,
+              dotShow: false,
+            },
           ]}
         />
-      </div> */}
+      </div>
     </div>
   );
 };

@@ -7,12 +7,14 @@ import reportService from "../../api/services/report.service";
 import { formatPrice } from "../../helper/helperFunctions";
 
 interface IFinancialSummary {
-  gross_revenue: string;
-  net_revenue: number;
-  total_expenses: string;
+  direct_sales_revenue: number;
+  auction_sales_revenue: string;
+  total_sales_revenue: number;
+  promotion_income: string;
   platform_commission: number;
-  profit_margin: number;
-  expense_breakdown: {
+  total_admin_revenue: number;
+  total_admin_income: number;
+  promotion_income_breakdown: {
     type: string;
     amount: string;
   }[];
@@ -25,7 +27,7 @@ interface IFinancialSummary {
 const FinancialSummary = () => {
   const navigate = useNavigate();
   const handleToFinancialTracking = () => {
-    navigate("/seller/reports/financial-tracking");
+    navigate("/admin/reports/financial-tracking");
   };
   const [financialSummaryData, setFinancialSummaryData] =
     useState<IFinancialSummary>();
@@ -91,38 +93,41 @@ const FinancialSummary = () => {
       <div className="grid grid-cols-2 gap-4 px-5 md:px-7 mt-5">
         <div>
           <p className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1">
-            Gross Revenue:
+            Direct Sale Revenue:
           </p>
           <p className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1">
-            Net Revenue:
+            Auction Sale Revenue:
           </p>
           <p className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1">
             Commission to Platform
             <MdInfo size={14} color="#838383" />
           </p>
           <p className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1">
-            Total Expenses
+            Total Sales Revenue
           </p>
           <p className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1">
-            Profit Margin:
+            Total Admin Revenue
           </p>
           <p className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1">
-            {financialSummaryData?.expense_breakdown[0].type ?? "-"}
+            Total Admin Income
           </p>
           <p className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1">
-            {financialSummaryData?.expense_breakdown[1].type ?? "-"}
+            {financialSummaryData?.promotion_income_breakdown[0].type ?? "-"}
+          </p>
+          <p className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1">
+            {financialSummaryData?.promotion_income_breakdown[1].type ?? "-"}
           </p>
         </div>
 
         <div className="text-right">
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData
-              ? formatPrice(Number(financialSummaryData?.gross_revenue))
+              ? formatPrice(Number(financialSummaryData?.direct_sales_revenue))
               : "-"}
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData
-              ? formatPrice(financialSummaryData?.net_revenue)
+              ? formatPrice(Number(financialSummaryData?.auction_sales_revenue))
               : "-"}
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
@@ -132,23 +137,30 @@ const FinancialSummary = () => {
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData
-              ? formatPrice(Number(financialSummaryData?.total_expenses))
+              ? formatPrice(Number(financialSummaryData?.total_sales_revenue))
               : "-"}
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
-            {financialSummaryData?.profit_margin ?? "-"}%
+            {financialSummaryData?.total_admin_revenue ?? "-"}%
+          </p>
+          <p className="text-sm font-normal text-[#585858] mb-3">
+            {financialSummaryData?.total_admin_income ?? "-"}%
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData
               ? formatPrice(
-                  Number(financialSummaryData?.expense_breakdown[0].amount)
+                  Number(
+                    financialSummaryData?.promotion_income_breakdown[0].amount
+                  )
                 )
               : "-"}
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData
               ? formatPrice(
-                  Number(financialSummaryData?.expense_breakdown[1].amount)
+                  Number(
+                    financialSummaryData?.promotion_income_breakdown[1].amount
+                  )
                 )
               : "-"}
           </p>
