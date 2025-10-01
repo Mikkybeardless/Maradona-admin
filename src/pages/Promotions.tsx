@@ -6,6 +6,7 @@ import { promoColumns } from "../components/table/columns";
 
 export default function Promotions() {
   const [promotionType, setPromotionType] = useState("promotion");
+  const [totalPromotions, setTotalPromotions] = useState(0);
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col  custom-scrollbar py-20">
       <div className="w-full py-5 fixed z-10 left-2 top-0 px-5 md:px-10 border-b bg-white border-b-primaryBorder">
@@ -27,7 +28,10 @@ export default function Promotions() {
                   : null
               }
             >
-              Promotions <span className="text-xs text-defaultOrange">10</span>
+              Promotions{" "}
+              <span className="text-xs text-defaultOrange">
+                {totalPromotions}
+              </span>
             </button>
             <button
               className={`${
@@ -47,7 +51,10 @@ export default function Promotions() {
         </div>
 
         {promotionType === "promotion" ? (
-          <PromoAd columns={promoColumns} />
+          <PromoAd
+            columns={promoColumns}
+            totalPromotions={setTotalPromotions}
+          />
         ) : (
           <div className="max-w-xl">
             <PromoSetting />

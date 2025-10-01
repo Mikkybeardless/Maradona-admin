@@ -11,6 +11,7 @@ import {
   TableRow,
   TableCell,
 } from "@mui/material";
+import { formatAmountToNaira } from "../../helper/helperFunctions";
 
 type Props = {
   open: boolean;
@@ -46,10 +47,21 @@ export default function NotificationModal({
               <TableBody>
                 {Object.entries(human).map(([k, v]) => (
                   <TableRow key={k}>
-                    <TableCell sx={{ fontWeight: 600, width: "35%" }}>
-                      {k.replace(/_/g, " ")}
-                    </TableCell>
-                    <TableCell>{String(v)}</TableCell>
+                    {k === "Winning Bid" ? (
+                      <>
+                        <TableCell sx={{ fontWeight: 600, width: "35%" }}>
+                          {k.replace(/_/g, " ")}
+                        </TableCell>
+                        <TableCell>{formatAmountToNaira(Number(v))}</TableCell>
+                      </>
+                    ) : (
+                      <>
+                        <TableCell sx={{ fontWeight: 600, width: "35%" }}>
+                          {k.replace(/_/g, " ")}
+                        </TableCell>
+                        <TableCell>{String(v)}</TableCell>
+                      </>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

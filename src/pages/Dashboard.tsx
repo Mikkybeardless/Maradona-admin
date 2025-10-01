@@ -39,15 +39,8 @@ import DefaultImg from "../assets/no-image.png";
 import { BidsColumns } from "../components/table/columns";
 import bidsService from "../api/services/bids.service";
 import { ErrorState } from "../components/common/ErrorState";
+import { spawn } from "child_process";
 
-type BidTableType = {
-  id: number;
-  bidder: any;
-  product: string;
-  price: string;
-  status: string;
-  date: Date | string;
-};
 type IFilter = {
   category: string;
   status: string;
@@ -386,7 +379,7 @@ export default function Dashboard() {
               className="w-full p-6 grid gap-y-4 md:gap-x-4 grid-col-1 md:grid-cols-3 bg-white shadow-md rounded-lg my-7"
             >
               <div className="bg-darkBlue rounded-lg p-2 text-white">
-                <div className="flex flex-col gap-y-1 border rounded-lg border-white p-2">
+                <div className="flex flex-col gap-y-1 border rounded-lg border-white p-2 pb-4">
                   <div className="flex gap-x-3 mb-5 items-center">
                     <img src={TEarnings} alt="DB Image" />
                     <p className="font-bold">Total Earnings</p>
@@ -432,18 +425,33 @@ export default function Dashboard() {
 
               <div className="bg-lightBlue rounded-lg p-2 text-white">
                 <div className="flex flex-col gap-y-1 border rounded-lg border-white p-2">
-                  <div className="flex mb-5 gap-x-3 items-center">
+                  <div className="flex mb-2 gap-x-3 items-center">
                     <img src={TUser} alt="DB Image" />
-                    <p className="font-bold">Total Users</p>
+                    <p className="flex gap-4">
+                      <span>Total Users</span>
+                      <span>
+                        {stats.totalUsers.data.reduce(
+                          (sum, obj) => sum + Number(obj.count),
+                          0
+                        )}
+                      </span>
+                    </p>
+                    {/* <p className="font-bold">Total Users</p> */}
                   </div>
                   {/* <p className="text-xs">Last 7 days</p> */}
-                  <p className="flex gap-x-2 text-2xl font-bold">
-                    {stats.totalUsers.total_users}
-                    <span className="text-sm px-2 py-1 flex gap-1 items-center rounded-3xl bg-white text-green-500">
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+                    {stats.totalUsers.data.map((item, index) => (
+                      <p className="flex gap-4" key={index}>
+                        <span className="capitalize">{item.user_type}</span>
+                        <span>{item.count}</span>
+                      </p>
+                    ))}
+                    {/* <span className="text-sm px-2 py-1 flex gap-1 items-center rounded-3xl bg-white text-green-500">
                       <BsArrowUp className="font-bold" />
                       10.4%
-                    </span>
-                  </p>
+                    </span> */}
+                  </div>
+
                   <p className="text-xs">
                     {stats.totalUsers.period.description}{" "}
                     {/* Previous 7 days{" "}

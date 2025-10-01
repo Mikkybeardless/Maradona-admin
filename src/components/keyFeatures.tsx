@@ -72,8 +72,8 @@ export const KeyFeatures = ({ product }: KeyFeatureProps) => {
           <li className="opacity-70">
             Price: {formatAmountToNaira(Number(product.price))}
           </li>
-          <li className="opacity-70">Negotiable: No</li>
-          <li className="opacity-70">Location: Lekki, Lagos</li>
+          {/* <li className="opacity-70">Negotiable: No</li>
+          <li className="opacity-70">Location: Lekki, Lagos</li> */}
         </ul>
       </div>
     </div>

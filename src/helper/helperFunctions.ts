@@ -111,3 +111,21 @@ export const convertUrlsToFiles = async (
     return [];
   }
 };
+
+export const extractNumberFromString = (str: string): number | null => {
+  const match = str.match(/(\d+(\.\d+)?)/);
+  return match ? parseFloat(match[0]) : null;
+};
+
+export const formatMessageWithFormatedNaira = (message: string): string => {
+  return message.replace(/(?<![^\s])\d+(\.\d+)?(?![^\s])/g, (numStr) => {
+    const num = parseFloat(numStr);
+
+    // Only format if number is 1000 or more
+    if (!isNaN(num) && num >= 1000) {
+      return formatAmountToNaira(num);
+    }
+
+    return numStr; // leave smaller numbers as they are
+  });
+};

@@ -1,41 +1,25 @@
-import { CiSearch } from "react-icons/ci";
 import MuiTableComponent from "./table/TableComponent";
-import LineChartComponent from "./LineChart";
-import { ProgressUI } from "./common/progressUi";
-import { VscCircleFilled } from "react-icons/vsc";
-import { PiExport, PiMagnetStraightLight } from "react-icons/pi";
-import { HiMiniChartBarSquare } from "react-icons/hi2";
-import { AiFillFileText } from "react-icons/ai";
-import { LuRefreshCw } from "react-icons/lu";
-import { Button } from "@mui/material";
 import { GridColDef, GridRowParams } from "@mui/x-data-grid";
-import { DateSelect } from "./common/dateSelect";
-import { HiSortDescending } from "react-icons/hi";
 import { TableSearchInput } from "./common/TableSearchInput";
-import { FilterGroup } from "./common/FilterGroup";
 import { useDebounce } from "../hooks/useDebounce";
-import { useState } from "react";
-import { Dayjs } from "dayjs";
+import { useEffect, useState } from "react";
 import { StatusSelect } from "./common/statusSelect";
 import { usePaginatedData } from "../hooks/usePaginatedData";
 import promotionService from "../api/services/promotion.service";
-import { useNavigate } from "react-router-dom";
 
 interface PromoAdProps {
   columns: GridColDef[];
+  totalPromotions?: (total: number) => void;
 }
 
 type IFilter = {
   status: string;
-  date: Dayjs | null;
 };
-export default function PromoAd({ columns }: PromoAdProps) {
-  const navigate = useNavigate();
+export default function PromoAd({ columns, totalPromotions }: PromoAdProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery);
   const [filters, setFilters] = useState<IFilter>({
     status: "",
-    date: null,
   });
 
   const [promoData, setPromoData] = usePaginatedData(
@@ -50,11 +34,11 @@ export default function PromoAd({ columns }: PromoAdProps) {
       dataName: "Promotionss",
     }
   );
-
-  const handleRowClick = (params: GridRowParams) => {
-    console.log("item", params.row);
-    // navigate(`/admin/buyers/buyer/${params.row.id}`);
-  };
+  useEffect(() => {
+    if (totalPromotions) {
+      totalPromotions(promoData.totalRowCount);
+    }
+  }, [promoData.totalRowCount]);
 
   return (
     <div className="flex flex-col gap-20">
@@ -65,21 +49,21 @@ export default function PromoAd({ columns }: PromoAdProps) {
           <div className="flex gap-x-5 items-center">
             <StatusSelect
               options={[
-                { label: "Published", value: "published" },
-                { label: "Pending", value: "pending" },
-                { label: "Cancelled", value: "cancelled" },
+                { label: "Active", value: "active" },
+                { label: "Pending Payment", value: "pending_payment" },
+                // { label: "Cancelled", value: "cancelled" },
               ]}
               onChange={(value) => {
                 setFilters((prev) => ({ ...prev, status: value }));
               }}
               value={filters.status}
             />
-            <DateSelect
+            {/* <DateSelect
               onChange={(date) => {
                 setFilters((prev) => ({ ...prev, date }));
               }}
               value={filters.date}
-            />
+            /> */}
           </div>
 
           <TableSearchInput

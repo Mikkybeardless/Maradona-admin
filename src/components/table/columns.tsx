@@ -115,20 +115,20 @@ export const AgentColumns: GridColDef[] = [
     flex: 1,
     sortable: false,
   },
-  {
-    field: "verifiedListings",
-    headerName: "Verified Listings",
-    flex: 0.5,
-    sortable: false,
-    renderCell: () => {
-      return (
-        <div className="h-full w-full relative flex justify-center items-center gap-x-0.5">
-          <TbAward size={18} className="flex-shrink-0" />
-          <span className="text-xs text-defaultOrange">10</span>
-        </div>
-      );
-    },
-  },
+  // {
+  //   field: "verifiedListings",
+  //   headerName: "Verified Listings",
+  //   flex: 0.5,
+  //   sortable: false,
+  //   renderCell: () => {
+  //     return (
+  //       <div className="h-full w-full relative flex justify-center items-center gap-x-0.5">
+  //         <TbAward size={18} className="flex-shrink-0" />
+  //         <span className="text-xs text-defaultOrange">10</span>
+  //       </div>
+  //     );
+  //   },
+  // },
 ];
 export const RequestColumns: GridColDef[] = [
   {
@@ -212,7 +212,7 @@ export const ProductColumns: GridColDef[] = [
         <div className="flex flex-1 h-full  items-center gap-x-2">
           <img
             className="w-20 h-auto rounded-lg object-contain bg-gray-100"
-            src={row.media[0] || "/images/placeholder.png"}
+            src={row.media[0]?.file_url || "/images/placeholder.png"}
             alt={`image-${row.name}`}
           />
           <span className="text-sm">{row.name}</span>

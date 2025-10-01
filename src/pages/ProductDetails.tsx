@@ -202,6 +202,12 @@ export default function ProductDetails() {
               {!product.belongs_to_admin && product.approved_at === null && (
                 <>
                   <button
+                    onClick={() => setAssignAgentModal(true)}
+                    className="px-4 py-2.5 rounded-lg text-sm text-white bg-defaultOrange hover:bg-defaultOrangeHover"
+                  >
+                    Assign Agent
+                  </button>
+                  <button
                     onClick={() => handleStatusUpdate(Number(id), "approve")}
                     className="text-sm text-green-500 hover:underline"
                   >

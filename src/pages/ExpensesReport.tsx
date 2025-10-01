@@ -23,9 +23,9 @@ interface IExpensesReport {
     id: number;
     date: string;
     product_name: string;
-    expenses: string;
-    revenue: number;
-    net_revenue: number;
+    promotion_income: string;
+    sales_revenue: number;
+    total_admin_revenue: number;
   }[];
   first_page_url: string;
   from: number;
@@ -71,7 +71,7 @@ function ExpensesReport() {
             </Link>
             <FaChevronRight size={14} color="#14199C" />
             <span className="text-sm sm:text-xl font-semibold bg-[#14199C] px-4 py-2 rounded-lg text-white">
-              Expenses
+              Admin Revenue
             </span>
           </div>
 
@@ -80,7 +80,7 @@ function ExpensesReport() {
 
           {/* Table Component */}
           <h3 className="font-semibold text-base sm:text-lg text-[#1E1A1C] mt-6 sm:mt-[30px] mb-4 sm:mb-[25px]">
-            Expenses Report Table
+            Admin Revenue Report Table
           </h3>
 
           <div className="overflow-x-auto">
@@ -130,9 +130,18 @@ const ExpensesReportTable = () => {
       type: "date",
     },
     { field: "product_name", headerName: "Product Name", flex: 0.7 },
-    { field: "expenses", headerName: "Expenses", flex: 1, sortable: false },
-    { field: "revenue", headerName: "Revenue", flex: 0.5 },
-    { field: "net_revenue", headerName: "Net Revenue", flex: 1 },
+    {
+      field: "promotion_income",
+      headerName: "Promotion Income(₦)",
+      flex: 1,
+      sortable: false,
+    },
+    { field: "sales_revenue", headerName: "Sales Revenue(₦)", flex: 0.5 },
+    {
+      field: "total_admin_revenue",
+      headerName: "Total Admin Revenue(₦)",
+      flex: 1,
+    },
   ];
   return (
     <TableContainer component={Paper} sx={{ border: "1px solid #ddd" }}>
@@ -163,13 +172,13 @@ const ExpensesReportTable = () => {
               <TableCell sx={{ border: "none" }}>{row.date}</TableCell>
               <TableCell sx={{ border: "none" }}>{row.product_name}</TableCell>
               <TableCell sx={{ border: "none" }}>
-                {formatPrice(Number(row.expenses))}
+                {formatPrice(Number(row.promotion_income))}
               </TableCell>
               <TableCell sx={{ border: "none" }}>
-                {formatPrice(row.revenue)}
+                {formatPrice(row.sales_revenue)}
               </TableCell>
               <TableCell sx={{ border: "none" }}>
-                {formatPrice(row.net_revenue)}
+                {formatPrice(row.total_admin_revenue)}
               </TableCell>
             </TableRow>
           ))}

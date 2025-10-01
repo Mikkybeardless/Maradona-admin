@@ -24,8 +24,8 @@ interface IRevenueTrackingData {
     date: string;
     product_name: string;
     revenue: string;
-    expenses: number;
-    net_revenue: number;
+    promotion_income: number;
+    total_revenue: number;
   }[];
   first_page_url: string;
   from: number;
@@ -127,8 +127,8 @@ const RevenueTrackingTable = () => {
     { field: "orderId", headerName: "Order ID", flex: 0.5 },
     { field: "product", headerName: "Product", flex: 0.7 },
     { field: "revenue", headerName: "Revenue", flex: 0.5 },
-    { field: "expenses", headerName: "Expenses", flex: 1 },
-    { field: "netRevenue", headerName: "Net Revenue", flex: 1 },
+    { field: "expenses", headerName: "Promotion Income(₦)", flex: 1 },
+    { field: "netRevenue", headerName: "Total Revenue(₦)", flex: 1 },
   ];
   return (
     <TableContainer component={Paper} sx={{ border: "1px solid #ddd" }}>
@@ -162,10 +162,10 @@ const RevenueTrackingTable = () => {
                 {formatPrice(Number(row.revenue))}
               </TableCell>
               <TableCell sx={{ border: "none" }}>
-                {formatPrice(row.expenses)}
+                {formatPrice(row.promotion_income)}
               </TableCell>
               <TableCell sx={{ border: "none" }}>
-                {formatPrice(row.net_revenue)}
+                {formatPrice(row.total_revenue)}
               </TableCell>
             </TableRow>
           ))}

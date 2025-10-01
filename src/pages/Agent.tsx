@@ -18,31 +18,7 @@ import UserService from "../api/services/userMgt.service";
 // import { toast } from "react-toastify";
 import { DetailLoadingState } from "../components/common/detailLoadingState";
 
-const rows = (): any[] => {
-  const loopArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-  const returnArray: any[] = [];
-  loopArray.forEach((num) => {
-    returnArray.push({
-      id: "CS" + num,
-      date: new Date(),
-      itemName: {
-        name: "Toyota Camry",
-        location: "Lagos",
-        image: Profile,
-      },
-      category: `${num % 2 === 0 ? "Car" : "House"}`,
-      status:
-        num <= 6
-          ? num <= 3
-            ? "Pending"
-            : "Declined"
-          : num <= 12
-          ? "Approved"
-          : "Sheduled",
-    });
-  });
-  return returnArray;
-};
+
 
 export default function Agent() {
   const [editAgentModal, setEditAgentModal] = useState(false);
@@ -329,7 +305,7 @@ export default function Agent() {
 								<span className="font-medium">Phone:</span>
 								<span className="">{agent?.agent_profile.phone}</span>
 							</div>
-							<div className="flex flex-col gap-y-3 p-3 rounded-lg text-sm border border-primaryBorder bg-black/[2%]">
+							{/* <div className="flex flex-col gap-y-3 p-3 rounded-lg text-sm border border-primaryBorder bg-black/[2%]">
 								<p className="font-semibold">Notes</p>
 								<p className="">
 									"Rosemary has been an exemplary field agent,
@@ -339,7 +315,7 @@ export default function Agent() {
 									has significantly improved the quality of our
 									listings. Keep up the excellent work, Rosemary."
 								</p>
-							</div>
+							</div> */}
 						</div>
 					</div>
 

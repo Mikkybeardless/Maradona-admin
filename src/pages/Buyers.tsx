@@ -4,21 +4,17 @@ import MuiTableComponent from "../components/table/TableComponent";
 import { GridRowParams } from "@mui/x-data-grid";
 import { useState } from "react";
 import { TableSearchInput } from "../components/common/TableSearchInput";
-import { DateSelect } from "../components/common/dateSelect";
 import { FilterGroup } from "../components/common/FilterGroup";
 import { useDebounce } from "../hooks/useDebounce";
-import { Dayjs } from "dayjs";
 import { ExportModal } from "../components/modals/export-modal";
-import formatDayJs from "../helper/formatDateJs";
 import UserService from "../api/services/userMgt.service";
 import { usePaginatedData } from "../hooks/usePaginatedData";
 import { BuyerColumns } from "../components/table/columns";
-// import formatDateToYYYYMMDD from "../helper/formatDate";
 import { formatIsoString } from "../helper/formatIIsoString";
 
 type IFilter = {
   status: string;
-  date: Dayjs | null;
+  // date: Dayjs | null;
 };
 type SelectedBuyerData = {
   "Buyer Id": number;
@@ -36,10 +32,9 @@ export default function Buyers() {
   const debouncedSearchQuery = useDebounce(searchQuery);
   const [filters, setFilters] = useState<IFilter>({
     status: "",
-    date: null,
   });
 
-  const formatedDate = formatDayJs(filters.date);
+  // const formatedDate = formatDayJs(filters.date);
   const [buyersData, setBuyersData] = usePaginatedData(
     UserService.getAllBuyers,
     {
@@ -47,8 +42,6 @@ export default function Buyers() {
       initialPageSize: 10,
       filters: {
         status: filters.status,
-        date: formatedDate,
-        created_at: formatedDate,
         search: debouncedSearchQuery,
       },
       dataName: "buyers",
@@ -108,8 +101,8 @@ export default function Buyers() {
         </div>
 
         {/* Filters & Search Bar */}
-        <section id="buyers-filters" className="">
-          <FilterGroup
+        <section id="buyers-filters" className=" flex justify-end mt-4 gap-x-3">
+          {/* <FilterGroup
             filters={filters}
             onChange={(updated) => {
               setFilters((prev) => ({ ...prev, ...updated }));
@@ -126,16 +119,7 @@ export default function Buyers() {
                 ],
               },
             ]}
-            extraFilters={
-              <>
-                <DateSelect
-                  onChange={(date) => {
-                    setFilters((prev) => ({ ...prev, date }));
-                  }}
-                  value={filters.date}
-                />
-              </>
-            }
+          
             searchNode={
               <TableSearchInput
                 searchQuery={searchQuery}
@@ -143,6 +127,11 @@ export default function Buyers() {
                 placeholder="Search orders"
               />
             }
+          /> */}
+          <TableSearchInput
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            placeholder="Search orders"
           />
         </section>
 

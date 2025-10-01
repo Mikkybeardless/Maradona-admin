@@ -54,6 +54,6 @@ export default function Seller() {
   return isLoading ? (
     <DetailLoadingState message="Loading seller details" />
   ) : (
-    <Customer user={seller} customer="buyer" />
+    <Customer user={seller} customer="seller" />
   );
 }

@@ -20,7 +20,7 @@ import { formatIsoString } from "../helper/formatIIsoString";
 
 type IFilter = {
   status: string;
-  date: Dayjs | null;
+  // date: Dayjs | null;
 };
 type SelectedSellerData = {
   "Seller Id": number;
@@ -31,8 +31,6 @@ type SelectedSellerData = {
 };
 
 export default function Sellers() {
-  const location = useLocation();
-  const { pathname } = location;
   const navigate = useNavigate();
   const [exportModal, setExportModal] = useState(false);
   const [selectedData, setSelectedData] = useState<SelectedSellerData[]>([]);
@@ -40,10 +38,9 @@ export default function Sellers() {
   const debouncedSearchQuery = useDebounce(searchQuery);
   const [filters, setFilters] = useState<IFilter>({
     status: "",
-    date: null,
   });
 
-  const formatedDate = formatDayJs(filters.date);
+  // const formatedDate = formatDayJs(filters.date);
   const [sellersData, setSellersData] = usePaginatedData(
     UserService.getAllSellers,
     {
@@ -51,8 +48,6 @@ export default function Sellers() {
       initialPageSize: 10,
       filters: {
         status: filters.status,
-        date: formatedDate,
-        created_at: formatedDate,
         search: debouncedSearchQuery,
       },
       dataName: "sellers",
@@ -121,8 +116,8 @@ export default function Sellers() {
         </div>
 
         {/* Filters & Search Bar */}
-        <div className="">
-          <FilterGroup
+        <div className="flex justify-end mt-4 gap-x-3">
+          {/* <FilterGroup
             filters={filters}
             onChange={(updated) => {
               setFilters((prev) => ({ ...prev, ...updated }));
@@ -156,6 +151,11 @@ export default function Sellers() {
                 placeholder="Search sellers"
               />
             }
+          /> */}
+          <TableSearchInput
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            placeholder="Search sellers"
           />
         </div>
 

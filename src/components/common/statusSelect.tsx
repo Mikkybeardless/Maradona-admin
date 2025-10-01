@@ -19,7 +19,7 @@ export const StatusSelect = ({
           onChange={(e) => onChange(e.target.value)}
           className="text-sm outline-none h-full py-2.5"
         >
-          <option value="">status</option>
+          <option value="">Status</option>
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}

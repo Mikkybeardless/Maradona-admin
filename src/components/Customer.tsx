@@ -1,6 +1,6 @@
 import { FaDotCircle } from "react-icons/fa";
 import DashboardSearchBar from "../components/DashboardSearchBar";
-import Car from "../assets/Product-page-car.png";
+// import Car from "../assets/Product-page-car.png";
 import { Link, useLocation } from "react-router-dom";
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
@@ -61,13 +61,15 @@ export default function AdminCustomer({
         <div className=" flex flex-col gap-y-2">
           <p className="text-sm text-[#6D6D6D]">{item.amount} x 1</p>
           <p className="font-medium">
-            {formatAmountToNaira(Number(item.amount))}
+            {formatAmountToNaira(Number(item.amount || 0))}
           </p>
         </div>
 
         <div className="flex flex-col gap-2">
           <span>Order type</span>
-          <span className="text-sm text-[#6D6D6D]">{item.type}</span>
+          <span className="text-sm text-[#6D6D6D]">
+            {item.type === "auction_purchase" ? "Auction Purchase" : "Direct"}
+          </span>
         </div>
       </div>
     );
@@ -86,10 +88,17 @@ export default function AdminCustomer({
   const Breakdown = [
     { label: "Direct Orders", value: buyerStats?.breakdown.direct_orders },
     { label: "Auction Orders", value: buyerStats?.breakdown.auction_orders },
-    { label: "Direct Spendings", value: buyerStats?.breakdown.direct_spending },
+    {
+      label: "Direct Spendings",
+      value: formatAmountToNaira(
+        Number(buyerStats?.breakdown.direct_spending || 0)
+      ),
+    },
     {
       label: "Auction Spendings",
-      value: buyerStats?.breakdown.auction_spending,
+      value: formatAmountToNaira(
+        Number(buyerStats?.breakdown.auction_spending || 0)
+      ),
     },
   ];
 
@@ -123,11 +132,11 @@ export default function AdminCustomer({
             <h1 className="text-3xl font-bold flex items-start">
               {user?.name || "Rose Mary"}
             </h1>
-            <div className="flex gap-x-2 text-[#5D5D5D] items-center">
+            {/* <div className="flex gap-x-2 text-[#5D5D5D] items-center">
               <span className="text-sm">FCT, Abuja, Nigeria</span>
               <FaDotCircle size={5} color="#D9D9D9" />
               <span className="text-sm">2 days ago</span>
-            </div>
+            </div> */}
           </div>
           {/* <div className="relative overflow-visible">
             <BsThreeDots

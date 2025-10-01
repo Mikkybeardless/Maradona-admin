@@ -1,5 +1,6 @@
 import { Box, Card, CardContent, Chip, Typography } from "@mui/material";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { formatMessageWithFormatedNaira } from "../../helper/helperFunctions";
 
 const NotificationCard = ({
   n,
@@ -39,7 +40,9 @@ const NotificationCard = ({
               )}
             </div>
             <Typography variant="body2" color="textSecondary" className="mb-2">
-              {n.data?.message || n.message || "No message"}
+              {formatMessageWithFormatedNaira(n.data?.message || "") ||
+                formatMessageWithFormatedNaira(n.message || "") ||
+                "No message"}
             </Typography>
             <Typography variant="caption" color="textDisabled">
               {new Date(n.created_at).toLocaleString()}

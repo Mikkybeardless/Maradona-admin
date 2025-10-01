@@ -72,6 +72,11 @@ export default function AdminSidebar() {
       icon: <FcAdvertising size={16} />,
       label: "Promotions",
     },
+  ];
+
+  const userLinks = [
+    { to: "buyers", icon: <FaHandHoldingUsd size={16} />, label: "Buyers" },
+    { to: "sellers", icon: <GiBlockHouse size={16} />, label: "Sellers" },
     { to: "agents", icon: <TbTie size={16} />, label: "Field Agents" },
   ];
   // Function to check if a link is active for root (/admin) dashboard
@@ -181,7 +186,7 @@ export default function AdminSidebar() {
           {/* Users dropdown section */}
           <div
             className={`flex cursor-pointer ${
-              userCategoryOpen && "bg-defaultOrange "
+              userCategoryOpen && "bg-defaultOrange rounded-[6px] "
             } flex-col gap-y-2`}
           >
             <div
@@ -209,33 +214,23 @@ export default function AdminSidebar() {
                 userCategoryOpen ? "flex" : "hidden"
               }  p-2.5 flex-col gap-1  shadow-lg `}
             >
-              <NavLink
-                to={"/admin/buyers"}
-                className={({ isActive }) =>
-                  `${
-                    isActive
-                      ? "text-defaultOrange bg-white"
-                      : "text-black hover:bg-white hover:text-defaultOrange"
-                  } rounded-[8px] p-2.5 px-3 flex items-center gap-x-3 text-sm w-full`
-                }
-                onClick={() => isMobile && setIsSidebarOpen(false)}
-              >
-                <FaHandHoldingUsd /> Buyers
-              </NavLink>
-
-              <NavLink
-                to={"/admin/sellers"}
-                className={({ isActive }) =>
-                  `${
-                    isActive
-                      ? "text-defaultOrange bg-white"
-                      : "text-black hover:bg-white hover:text-defaultOrange"
-                  }  rounded-[8px] p-2.5 px-3 flex items-center gap-x-3 text-sm w-full`
-                }
-                onClick={() => isMobile && setIsSidebarOpen(false)}
-              >
-                <GiBlockHouse /> Sellers
-              </NavLink>
+              {/* User links */}
+              {userLinks.map((link, index) => (
+                <NavLink
+                  key={index}
+                  to={`/admin/${link.to}`}
+                  className={({ isActive }) =>
+                    `${
+                      isActive
+                        ? "text-defaultOrange bg-white"
+                        : "text-white  hover:bg-white hover:text-defaultOrange"
+                    } rounded-[8px] p-2.5 px-3 flex items-center gap-x-3 text-sm w-full`
+                  }
+                  onClick={() => isMobile && setIsSidebarOpen(false)}
+                >
+                  {link.icon} {link.label}
+                </NavLink>
+              ))}
             </div>
           </div>
 

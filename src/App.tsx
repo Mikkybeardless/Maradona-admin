@@ -9,7 +9,6 @@ import Buyers from "./pages/Buyers";
 import Sellers from "./pages/Sellers";
 import AddCustomer from "./pages/AddCustomer";
 import Orders from "./pages/PurchaseEnquiries";
-import Reports from "./pages/Reports";
 import Promotions from "./pages/Promotions";
 import Documents from "./pages/Documents";
 import Shipments from "./pages/Shipments";
@@ -19,8 +18,6 @@ import AdminOrder from "./pages/AdminOrder";
 import TransactionHistory from "./pages/TransactionHistory";
 import CustomerNotifications from "./pages/CustomerNotifications";
 import CustomerFeedback from "./pages/CustomerFeedback";
-// import Listings from "./pages/Listings";
-// import Listing from "./pages/Listing";
 import TrackShipment from "./pages/TrackShipment";
 import FieldAgents from "./pages/FieldAgents";
 import Agent from "./pages/Agent";
@@ -39,7 +36,7 @@ import EditProduct from "./pages/UpdateProduct";
 import Buyer from "./pages/Buyer";
 import Seller from "./pages/Seller";
 import NotificationsPage from "./pages/Notification";
-import Reports2 from "./pages/Report2";
+import Reports from "./pages/Reports";
 
 function App() {
   return (
@@ -109,7 +106,7 @@ function App() {
             <Route path="enquiry/:id" element={<AdminOrder />} />
           </Route>
           <Route path="reports">
-            <Route index element={<Reports2 />} />
+            <Route index element={<Reports />} />
             <Route path="sale-report" element={<SaleReport />} />
             <Route path="revenue-report" element={<RevenueReport />} />
             <Route path="expenses-report" element={<ExpensesReport />} />
