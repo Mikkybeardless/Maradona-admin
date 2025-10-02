@@ -56,13 +56,13 @@ function ExpensesReport() {
     <DateRangeProvider>
       <div className="h-screen overflow-auto">
         {/* Header & Search Bar */}
-        <div className="w-full py-3.5 px-6 sm:px-12 lg:px-24 border-b border-b-primaryBorder">
+        <div className="w-full py-3.5 px-4 sm:px-12 lg:px-24 border-b border-b-primaryBorder">
           <DashboardSearchBar />
         </div>
 
         {/* Page Content */}
-        <div className="w-[95%] sm:w-[90%] mx-auto mb-20 pt-6 sm:pt-12">
-          <div className="flex flex-wrap gap-3 sm:gap-x-7 items-center mb-6 sm:mb-12">
+        <main className="w-full max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8 mb-20 pt-12">
+          <div className="flex flex-wrap gap-3 sm:gap-x-7 items-center mb-6 ">
             <Link
               to="/admin/reports"
               className="text-[16px] sm:text-[20px] font-semibold text-[#14199C]"
@@ -86,7 +86,7 @@ function ExpensesReport() {
           <div className="overflow-x-auto">
             <ExpensesReportTable />
           </div>
-        </div>
+        </main>
       </div>
     </DateRangeProvider>
   );

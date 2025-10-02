@@ -4,7 +4,7 @@ import { MdInfo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useDateRange } from "../../hooks/DateRangeContex";
 import reportService from "../../api/services/report.service";
-import { formatPrice } from "../../helper/helperFunctions";
+import { formatAmountToNaira } from "../../helper/helperFunctions";
 
 interface IFinancialSummary {
   direct_sales_revenue: number;
@@ -122,22 +122,28 @@ const FinancialSummary = () => {
         <div className="text-right">
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData
-              ? formatPrice(Number(financialSummaryData?.direct_sales_revenue))
+              ? formatAmountToNaira(
+                  Number(financialSummaryData?.direct_sales_revenue)
+                )
               : "-"}
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData
-              ? formatPrice(Number(financialSummaryData?.auction_sales_revenue))
+              ? formatAmountToNaira(
+                  Number(financialSummaryData?.auction_sales_revenue)
+                )
               : "-"}
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData
-              ? formatPrice(financialSummaryData?.platform_commission)
+              ? formatAmountToNaira(financialSummaryData?.platform_commission)
               : "-"}
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData
-              ? formatPrice(Number(financialSummaryData?.total_sales_revenue))
+              ? formatAmountToNaira(
+                  Number(financialSummaryData?.total_sales_revenue)
+                )
               : "-"}
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
@@ -148,7 +154,7 @@ const FinancialSummary = () => {
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData
-              ? formatPrice(
+              ? formatAmountToNaira(
                   Number(
                     financialSummaryData?.promotion_income_breakdown[0].amount
                   )
@@ -157,7 +163,7 @@ const FinancialSummary = () => {
           </p>
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData
-              ? formatPrice(
+              ? formatAmountToNaira(
                   Number(
                     financialSummaryData?.promotion_income_breakdown[1].amount
                   )

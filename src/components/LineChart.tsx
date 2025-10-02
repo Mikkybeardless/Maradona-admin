@@ -81,13 +81,25 @@ export default function LineChartComponent({
           itemStyle={{
             color: tooltipTextColor, // Use dynamic text color prop for items
           }}
+          formatter={(value, name) => [
+            value,
+            typeof name === "string"
+              ? name
+                  .replace(/_/g, " ")
+                  .replace(/^\w/, (c: string) => c.toUpperCase())
+              : String(name),
+          ]}
         />
         {typeof legend !== "undefined" ? (
-          legend ? (
-            <Legend />
-          ) : null
-        ) : (
           <Legend />
+        ) : (
+          <Legend
+            formatter={(name) =>
+              name
+                .replace(/_/g, " ")
+                .replace(/^\w/, (c: string) => c.toUpperCase())
+            }
+          />
         )}
         {lines.map((line, index) => (
           <Line

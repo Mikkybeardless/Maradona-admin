@@ -73,14 +73,14 @@ function SaleReport() {
     <DateRangeProvider>
       <div className="h-screen overflow-auto">
         {/* Header & Search Bar */}
-        <div className="w-full py-3.5 px-6 md:px-12 lg:px-24 border-b border-b-primaryBorder">
+        <div className="w-full py-3.5 px-4 md:px-12 lg:px-24 border-b border-b-primaryBorder">
           <DashboardSearchBar />
         </div>
 
         {/* Page Content */}
-        <div className="w-[95%] md:w-[90%] mx-auto mb-20 pt-12">
+        <main className="w-full max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8 mb-20 pt-12">
           {/* Breadcrumbs */}
-          <div className="flex flex-wrap gap-3 md:gap-x-7 items-center mb-8 md:mb-12">
+          <div className="flex flex-wrap gap-3 md:gap-x-7 items-center mb-6">
             <Link
               to="/admin/reports"
               className="text-lg font-semibold text-[#14199C]"
@@ -105,7 +105,7 @@ function SaleReport() {
           <div className="overflow-x-auto">
             <SalesTable columns={columns} />
           </div>
-        </div>
+        </main>
       </div>
     </DateRangeProvider>
   );

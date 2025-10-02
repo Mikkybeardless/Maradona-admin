@@ -109,7 +109,7 @@ function App() {
             <Route index element={<Reports />} />
             <Route path="sale-report" element={<SaleReport />} />
             <Route path="revenue-report" element={<RevenueReport />} />
-            <Route path="expenses-report" element={<ExpensesReport />} />
+            <Route path="admin-revenue-report" element={<ExpensesReport />} />
             <Route path="financial-tracking" element={<FinancialTracking />} />
           </Route>
           <Route path="promotions">

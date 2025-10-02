@@ -16,9 +16,9 @@ export const ReportTab = () => {
       href: "revenue-report",
     },
     {
-      name: "Expense",
+      name: "Admin Revenue",
 
-      href: "expenses-report",
+      href: "admin-revenue-report",
     },
     {
       name: "Financial Tracking",

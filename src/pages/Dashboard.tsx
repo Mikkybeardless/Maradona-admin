@@ -639,12 +639,12 @@ export default function Dashboard() {
                         {formatAmountToNaira(stats.totalRevenue.total_revenue)}
                       </span>
                     </p>
-                    <p className="text-xs flex flex-col font-semibold text-darkBlue">
+                    {/* <p className="text-xs flex flex-col font-semibold text-darkBlue">
                       Total expenditure:{" "}
                       <span className="md:text-lg text-defaultOrange">
                         ₦0.00
                       </span>
-                    </p>
+                    </p> */}
                   </div>
                 </div>
 
@@ -654,11 +654,11 @@ export default function Dashboard() {
                       <span className="w-1 h-1 md:w-3 md:h-3 rounded-full bg-[#0B0C52]"></span>
                       Income
                     </p>
-                    <p className="flex gap-1 md:gap-2 items-center">
+                    {/* <p className="flex gap-1 md:gap-2 items-center">
                       {" "}
                       <span className="w-1 h-1 md:w-3 md:h-3  rounded-full bg-defaultOrange"></span>
                       Expenses
-                    </p>
+                    </p> */}
                   </div>
                   <p className="text-sm rounded-lg outline-none p-2.5 bg-defaultOrange text-white border border-primaryBorder">
                     {stats.monthlyReport.period.description}
