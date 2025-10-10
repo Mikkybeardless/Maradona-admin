@@ -17,18 +17,18 @@ import {
   formatAmountToNaira,
   generateRandomNumber,
 } from "../helper/helperFunctions";
-import { GridColDef } from "@mui/x-data-grid";
+// import { GridColDef } from "@mui/x-data-grid";
 import MuiTableComponent from "../components/table/TableComponent";
-import Car2 from "../assets/Dashboard-listing-car.png";
+// import Car2 from "../assets/Dashboard-listing-car.png";
 import { Props } from "recharts/types/component/DefaultLegendContent";
 import { useWindowResizer } from "../hooks/useWindowResize";
 import { ProgressUI } from "../components/common/progressUi";
 import { useCallback, useEffect, useState } from "react";
-import auctionService from "../api/services/auction.service";
+// import auctionService from "../api/services/auction.service";
 import statsService from "../api/services/stats.service";
 import { ProductLoadingSkeleton } from "../components/common/SquareLoadingState";
 import CustomPeriodModal from "../components/modals/customPeriod";
-import { DateSelect } from "../components/common/dateSelect";
+// import { DateSelect } from "../components/common/dateSelect";
 import { TableSearchInput } from "../components/common/TableSearchInput";
 import { StatusSelect } from "../components/common/statusSelect";
 import { FilterGroup } from "../components/common/FilterGroup";
@@ -39,7 +39,7 @@ import DefaultImg from "../assets/no-image.png";
 import { BidsColumns } from "../components/table/columns";
 import bidsService from "../api/services/bids.service";
 import { ErrorState } from "../components/common/ErrorState";
-import { spawn } from "child_process";
+// import { spawn } from "child_process";
 
 type IFilter = {
   category: string;
@@ -718,7 +718,7 @@ export default function Dashboard() {
                 </div>
               </div> */}
 
-              <div className="w-full rounded-lg p-5 bg-white">
+              {/* <div className="w-full rounded-lg p-5 bg-white">
                 <div className="flex justify-between rounded-t-lg ">
                   <h5 className="font-bold">Top Selling Locations</h5>
                 </div>
@@ -770,7 +770,7 @@ export default function Dashboard() {
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
-              </div>
+              </div> */}
             </section>
 
             {/*sales order summary*/}

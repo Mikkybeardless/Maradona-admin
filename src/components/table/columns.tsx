@@ -1,13 +1,13 @@
 import { GridColDef } from "@mui/x-data-grid";
 import { formatPrice } from "../../helper/helperFunctions";
-import { TbAward } from "react-icons/tb";
+// import { TbAward } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import { formatIsoString } from "../../helper/formatIIsoString";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Popper } from "@mui/material";
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
-import { GoDotFill, GoTrash } from "react-icons/go";
+import { GoDotFill } from "react-icons/go";
 import purchaseEnquiriesService from "../../api/services/purchaseEnquiries.service";
 import { toast } from "react-toastify";
 import { BiEditAlt } from "react-icons/bi";
@@ -35,22 +35,22 @@ export const BuyerColumns: GridColDef[] = [
     sortable: false,
   },
 
-  {
-    field: "email_verified_at",
-    headerName: "Verification Status",
-    renderCell: ({ row }) => (
-      <span
-        className={`text-sm ${
-          row.email_verified_at !== null ? "text-green-600" : "text-red-600"
-        }`}
-      >
-        {row.email_verified_at !== null
-          ? formatIsoString(row.email_verified_at).formattedDate
-          : "Not Verified"}
-      </span>
-    ),
-    sortable: false,
-  },
+  // {
+  //   field: "email_verified_at",
+  //   headerName: "Verification Status",
+  //   renderCell: ({ row }) => (
+  //     <span
+  //       className={`text-sm ${
+  //         row.email_verified_at !== null ? "text-green-600" : "text-red-600"
+  //       }`}
+  //     >
+  //       {row.email_verified_at !== null
+  //         ? formatIsoString(row.email_verified_at).formattedDate
+  //         : "Not Verified"}
+  //     </span>
+  //   ),
+  //   sortable: false,
+  // },
 ];
 // sellers
 export const sellerColumns: GridColDef[] = [
@@ -73,22 +73,22 @@ export const sellerColumns: GridColDef[] = [
     sortable: false,
   },
 
-  {
-    field: "email_verified_at",
-    headerName: "Verification Status",
-    renderCell: ({ row }) => (
-      <span
-        className={`text-sm ${
-          row.email_verified_at !== null ? "text-green-600" : "text-red-600"
-        }`}
-      >
-        {row.email_verified_at !== null
-          ? formatIsoString(row.email_verified_at).formattedDate
-          : "Not Verified"}
-      </span>
-    ),
-    sortable: false,
-  },
+  // {
+  //   field: "email_verified_at",
+  //   headerName: "Verification Status",
+  //   renderCell: ({ row }) => (
+  //     <span
+  //       className={`text-sm ${
+  //         row.email_verified_at !== null ? "text-green-600" : "text-red-600"
+  //       }`}
+  //     >
+  //       {row.email_verified_at !== null
+  //         ? formatIsoString(row.email_verified_at).formattedDate
+  //         : "Not Verified"}
+  //     </span>
+  //   ),
+  //   sortable: false,
+  // },
 ];
 
 //   field agents
