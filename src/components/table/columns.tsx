@@ -343,144 +343,144 @@ function renderStatusColor(status: string) {
 
 // auction
 export const AuctionColumns: GridColDef[] = [
-  {
-    field: "id",
-    headerName: " ID",
-    // renderCell: ({ value }) => {
-    //   return (
-    //     <span className={`${value === "No Bid" && "text-[#DC1313]"}`}>
-    //       {value}
-    //     </span>
-    //   );
-    // },
-    flex: 0.3,
-  },
-  {
-    field: "name",
-    headerName: "Product",
-    renderCell: ({ row }) => {
-      return (
-        <div className="flex gap-x-5 items-center">
-          <img
-            className="w-[40px] h-[40px]"
-            src={row.media[0] || "/images/placeholder.png"}
-            alt="product"
-          />
-          <p className="text-sm font-medium text-darkBlue">{row.name}</p>
-        </div>
-      );
-    },
-    flex: 1,
-  },
-  {
-    field: "price",
-    headerName: "Price(₦)",
-    renderCell: ({ value }) => <span>{formatPrice(value)}</span>,
-    flex: 0.7,
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    flex: 0.7,
-    renderCell: ({ value }) => {
-      return (
-        <span
-          className={`px-3 py-1 rounded-full capitalize font-medium text-sm
+	{
+		field: "id",
+		headerName: " ID",
+		// renderCell: ({ value }) => {
+		//   return (
+		//     <span className={`${value === "No Bid" && "text-[#DC1313]"}`}>
+		//       {value}
+		//     </span>
+		//   );
+		// },
+		flex: 0.3,
+	},
+	{
+		field: "name",
+		headerName: "Product",
+		renderCell: ({ row }) => {
+			return (
+				<div className="flex gap-x-5 items-center">
+					<img
+						className="w-[40px] h-[40px]"
+						src={row.media[0] || "/images/placeholder.png"}
+						alt="product"
+					/>
+					<p className="text-sm font-medium text-darkBlue">{row.name}</p>
+				</div>
+			);
+		},
+		flex: 1,
+	},
+	{
+		field: "price",
+		headerName: "Price(₦)",
+		renderCell: ({ value }) => <span>{formatPrice(value)}</span>,
+		flex: 0.7,
+	},
+	{
+		field: "status",
+		headerName: "Status",
+		flex: 0.7,
+		renderCell: ({ value }) => {
+			return (
+				<span
+					className={`px-3 py-1 rounded-full capitalize font-medium text-sm
           ${
-            value === "published"
-              ? "bg-[#FE8E49] text-white"
-              : value === "sold"
-              ? "bg-[#E8F8E8] text-[#0C560B]"
-              : value === "draft"
-              ? "bg-[#FEF3B8] "
-              : "bg-[#DC1313] text-white"
-          }`}
-        >
-          {value}
-        </span>
-      );
-    },
-  },
+					value === "published"
+						? "bg-[#FE8E49] text-white"
+						: value === "sold"
+						? "bg-[#E8F8E8] text-[#0C560B]"
+						: value === "draft"
+						? "bg-[#FEF3B8] "
+						: "bg-[#DC1313] text-white"
+				}`}
+				>
+					{value}
+				</span>
+			);
+		},
+	},
 
-  {
-    field: "created_at",
-    headerName: "Time",
-    renderCell: ({ value }) => {
-      const { formattedDate, formattedTime } = formatIsoString(value);
-      return (
-        <div className="flex">
-          <div>{formattedDate}</div>
-          <div>{formattedTime}</div>
-        </div>
-      );
-    },
-    flex: 0.9,
-  },
+	{
+		field: "created_at",
+		headerName: "Time",
+		renderCell: ({ value }) => {
+			const { formattedDate, formattedTime } = formatIsoString(value);
+			return (
+				<div className="flex">
+					<div>{formattedDate}&nbsp;</div>
+					<div>{formattedTime}</div>
+				</div>
+			);
+		},
+		flex: 0.9,
+	},
 ];
 
 // active auctions/bids
 export const BidsColumns: GridColDef[] = [
-  {
-    field: "buyer_id",
-    headerName: "Bidders ID",
-    renderCell: ({ value }) => {
-      return <span>{value}</span>;
-    },
-    flex: 0.7,
-  },
-  {
-    field: "amount",
-    headerName: "Price(₦)",
-    renderCell: ({ value }) => <span>{formatPrice(value)}</span>,
-    flex: 0.7,
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    flex: 0.7,
-    renderCell: ({ value }) => {
-      return (
-        <span
-          className={`px-3 py-1 rounded-full capitalize font-medium text-sm
+	{
+		field: "buyer_id",
+		headerName: "Bidders ID",
+		renderCell: ({ value }) => {
+			return <span>{value}</span>;
+		},
+		flex: 0.7,
+	},
+	{
+		field: "amount",
+		headerName: "Price(₦)",
+		renderCell: ({ value }) => <span>{formatPrice(value)}</span>,
+		flex: 0.7,
+	},
+	{
+		field: "status",
+		headerName: "Status",
+		flex: 0.7,
+		renderCell: ({ value }) => {
+			return (
+				<span
+					className={`px-3 py-1 rounded-full capitalize font-medium text-sm
           ${
-            value === "reopened"
-              ? "bg-[#FE8E49] text-white"
-              : value === "sold"
-              ? "bg-[#E8F8E8] text-[#0C560B]"
-              : value === "accepted"
-              ? "bg-blue-100 text-blue-600"
-              : value === "closed"
-              ? "bg-gray-100 text-gray-600"
-              : "bg-[#DC1313] text-white"
-          }`}
-        >
-          {value}
-        </span>
-      );
-    },
-  },
+					value === "reopened"
+						? "bg-[#FE8E49] text-white"
+						: value === "sold"
+						? "bg-[#E8F8E8] text-[#0C560B]"
+						: value === "accepted"
+						? "bg-blue-100 text-blue-600"
+						: value === "closed"
+						? "bg-gray-100 text-gray-600"
+						: "bg-[#DC1313] text-white"
+				}`}
+				>
+					{value}
+				</span>
+			);
+		},
+	},
 
-  {
-    field: "created_at",
-    headerName: "Date",
-    renderCell: ({ value }) => {
-      const { formattedDate, formattedTime } = formatIsoString(value);
-      return (
-        <div className="flex">
-          <div>{formattedDate}</div>
-          <div>{formattedTime}</div>
-        </div>
-      );
-    },
-    flex: 0.9,
-  },
-  {
-    field: "Action",
-    flex: 0.5,
-    renderCell: ({ row }) => {
-      return <BidsActionCellComponent row={row} />;
-    },
-  },
+	{
+		field: "created_at",
+		headerName: "Date",
+		renderCell: ({ value }) => {
+			const { formattedDate, formattedTime } = formatIsoString(value);
+			return (
+				<div className="flex">
+					<div>{formattedDate}&nbsp;</div>
+					<div>{formattedTime}</div>
+				</div>
+			);
+		},
+		flex: 0.9,
+	},
+	{
+		field: "Action",
+		flex: 0.5,
+		renderCell: ({ row }) => {
+			return <BidsActionCellComponent row={row} />;
+		},
+	},
 ];
 
 export const BidsActionCellComponent = ({ row }: { row: any }) => {
