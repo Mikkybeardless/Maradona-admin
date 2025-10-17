@@ -13,6 +13,12 @@ import { toast } from "react-toastify";
 import { BiEditAlt } from "react-icons/bi";
 import { FaRegEye } from "react-icons/fa6";
 import bidsService from "../../api/services/bids.service";
+import formatDateToYYYYMMDD, {
+  formatTimeToHHMMSS,
+} from "../../helper/formatDate";
+import { ReOpenPromotion } from "../modals/ReOpenPromotion";
+import promotionService from "../../api/services/promotion.service";
+import { ClosePromotion } from "../modals/ClosePromotion";
 
 // buyer columns
 export const BuyerColumns: GridColDef[] = [
@@ -909,4 +915,154 @@ export const promoColumns: GridColDef[] = [
     flex: 0.6,
     sortable: false,
   },
+  {
+    field: "Action",
+    flex: 0.5,
+    renderCell: ({ row }) => {
+      return <PromoActionCellComponent rowId={row.id} rowStatus={row.status} />;
+    },
+  },
 ];
+
+export const PromoActionCellComponent = ({
+  rowId,
+  rowStatus,
+}: {
+  rowId: string;
+  rowStatus: string;
+}) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [reOpenModalOpen, setReOpenModalOpen] = useState(false); // 🔑 second modal state
+  const dotsPopupRef = useRef(null);
+  const [isReOpening, setIsReOpening] = useState(false);
+  const [closeModalOpen, setCloseModalOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const open = Boolean(anchorEl);
+  const id = open ? `popper-${rowId}` : undefined;
+
+  useClickAway(dotsPopupRef, () => {
+    setAnchorEl(null);
+  });
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const handleClose = async (notes: string) => {
+    setIsClosing(true);
+    if (rowStatus === "pending_payment") {
+      setIsClosing(false);
+      return toast.error("Only active promotions can be closed");
+    }
+    if (rowStatus === "closed") {
+      setIsClosing(false);
+      toast.error("Promotion has been closed already");
+      return;
+    }
+
+    try {
+      const response = await promotionService.close(rowId, notes);
+      if (response.status === 200) {
+        toast.success(`Successfully closed promotion`);
+        setAnchorEl(null);
+        window.location.reload();
+      }
+    } catch (error) {
+      toast.error("Failed to mark as completed");
+      console.error("Error marking as completed:", error);
+    } finally {
+      setIsClosing(false);
+    }
+  };
+
+  const handleReOpen = async (date: Date | null) => {
+    setIsReOpening(true);
+    if (!date) {
+      toast.error("Please select a date and time");
+      setIsReOpening(false);
+      return;
+    }
+    const now = new Date();
+    if (date < now) {
+      toast.error("Reopened date cannot be in the past");
+      setIsReOpening(false);
+      return;
+    }
+    const formatedDate = formatDateToYYYYMMDD(date);
+    try {
+      const response = await promotionService.reOpenPromotion(
+        rowId,
+        formatedDate
+      );
+
+      if (response.status === 200) {
+        toast.success(`Promotion successfully reopened`);
+        setReOpenModalOpen(false);
+        window.location.reload();
+      }
+    } catch (error) {
+      toast.error("Failed to reopen promotion, please try again later");
+      console.error("Error reopening promotion:", error);
+    } finally {
+      setIsReOpening(false);
+    }
+  };
+
+  return (
+    <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
+      <button
+        aria-describedby={id}
+        type="button"
+        onClick={handleClick}
+        className="cursor-pointer bg-transparent border-none p-2 m-0 rounded-full hover:bg-gray-100"
+        style={{ lineHeight: 0 }}
+      >
+        <BsThreeDotsVertical size={16} />
+      </button>
+
+      <Popper
+        ref={dotsPopupRef}
+        className="p-3 px-4 text-sm z-10 flex flex-col gap-3 items-center rounded-lg border border-primaryBorder bg-white"
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        placement="bottom-end"
+        style={{ zIndex: 1300 }}
+      >
+        <button
+          onClick={() => setCloseModalOpen(true)}
+          className="text-xs hover:underline hover:text-green-600 "
+        >
+          Close Promotion
+        </button>
+        <button
+          className="text-xs hover:underline hover:text-green-600"
+          onClick={() => {
+            setReOpenModalOpen(true);
+            setAnchorEl(null); // close popper when opening modal
+          }}
+        >
+          Reopen Promotion
+        </button>
+      </Popper>
+
+      {/* 🔑 ReOpen Promotion Modal */}
+      <ReOpenPromotion
+        isReOpening={isReOpening}
+        handleReOpen={handleReOpen}
+        reOpenPromoModalOpen={reOpenModalOpen}
+        setReOpenPromoModalOpen={setReOpenModalOpen}
+      />
+
+      <ClosePromotion
+        isClosing={isClosing}
+        handleClose={handleClose}
+        closeModalOpen={closeModalOpen}
+        setCloseModalOpen={setCloseModalOpen}
+      />
+    </div>
+  );
+};

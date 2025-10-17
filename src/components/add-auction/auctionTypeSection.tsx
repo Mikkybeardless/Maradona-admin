@@ -6,6 +6,7 @@ import { SearchableSelect } from "../common/SearchAndFilterSelect";
 import { usePaginatedData } from "../../hooks/usePaginatedData";
 import categoryService from "../../api/services/category.service";
 import { useDebounce } from "../../hooks/useDebounce";
+import StateCitySelector2 from "../common/stateCitySelector";
 
 interface AuctionTypeSectionProps {
   auctionDetails: Auction;
@@ -77,6 +78,35 @@ export const AuctionTypeSection: React.FC<AuctionTypeSectionProps> = ({
           className="p-3 w-full rounded-lg border border-primaryBorder text-sm outline-none"
           placeholder="Enter name"
         />
+      </div>
+      <div className="w-full">
+        <label htmlFor="location" className="text-sm mb-2 font-medium">
+          Location:
+        </label>
+        <div className="flex items-center gap-x-2 mb-2">
+          <StateCitySelector2
+            onCityChange={(city) =>
+              setAuctionDetails((prev: Auction) => ({
+                ...prev,
+                location_city: city ? city.value : "",
+              }))
+            }
+            onStateChange={(state) =>
+              setAuctionDetails((prev: Auction) => ({
+                ...prev,
+                location_state: state ? state.value : "",
+              }))
+            }
+          />
+          <input
+            type="text"
+            name="location_address"
+            value={auctionDetails.location_address}
+            onChange={handleInputChange}
+            className="p-3 w-full rounded-lg border border-primaryBorder text-sm outline-none"
+            placeholder="Address"
+          />
+        </div>
       </div>
       <div className="w-full">
         <h5 className="text-sm mb-2 font-medium">Product description:</h5>

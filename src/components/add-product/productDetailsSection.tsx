@@ -40,20 +40,20 @@ export const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
             onCityChange={(city) =>
               setProductDetails((prev: ProductDetails) => ({
                 ...prev,
-                city: city ? city.value : "",
+                location_city: city ? city.value : "",
               }))
             }
             onStateChange={(state) =>
               setProductDetails((prev: ProductDetails) => ({
                 ...prev,
-                state: state ? state.value : "",
+                location_state: state ? state.value : "",
               }))
             }
           />
           <input
             type="text"
-            name="address"
-            value={productDetails.address}
+            name="location_address"
+            value={productDetails.location_address}
             onChange={handleInputChange}
             className="p-3 w-full rounded-lg border border-primaryBorder text-sm outline-none"
             placeholder="Address"

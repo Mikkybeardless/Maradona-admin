@@ -14,6 +14,10 @@ const promotionService = {
     }),
   getPromotionCost: (type: ProductType) =>
     apiClient.get(`/promotion-settings/${type}`),
+  close: (id: string, notes?: string) =>
+    apiClient.post(`/promotions/${id}/close`, { notes }),
+  reOpenPromotion: (id: string, new_end_date: string) =>
+    apiClient.post(`/promotions/${id}/reopen`, { new_end_date }),
 };
 
 export default promotionService;

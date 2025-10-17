@@ -21,11 +21,8 @@ declare interface Product {
   description: string;
   category_id: string;
   price: number;
-  address: string;
-  city: string;
   sale_price: number;
   continue_selling: boolean;
-  state: string;
   weight_unit: WeightUnit;
   sku: string;
   media: Media;
@@ -38,6 +35,9 @@ declare interface Product {
   auction_duration: number | null;
   condition: ProductCondition | null;
   auction_type: ProductAuctionType;
+  location_city: string;
+  location_state: string;
+  location_address: string;
 }
 declare interface ApiMedia {
   id: string | null;
@@ -56,8 +56,6 @@ declare interface ApiProduct {
   description: string;
   category_id: string;
   price: number;
-  address: string;
-  city: string;
   sale_price: number;
   continue_selling: boolean;
   state: string;
@@ -73,6 +71,9 @@ declare interface ApiProduct {
   auction_duration: number | null;
   condition: ProductCondition | null;
   auction_type: ProductAuctionType;
+  location_city: string;
+  location_state: string;
+  location_address: string;
 }
 
 declare interface Auction {
@@ -95,6 +96,9 @@ declare interface Auction {
   incremental_bid_amount: string;
   minimum_bid_increment: string;
   auto_extend: "0" | "1";
+  location_city: string;
+  location_state: string;
+  location_address: string;
   data: Record<string, string | number>[] | [];
 }
 
@@ -172,6 +176,9 @@ declare type ProductPayloadMap = {
     Land,
     | "name"
     | "description"
+    | "location_address"
+    | "location_city"
+    | "location_state"
     | "price"
     | "category_id"
     | "type"
@@ -200,8 +207,9 @@ declare type ProductPayloadMap = {
     | "house_condition"
     | "house_size"
     | "accessibility"
-    // | "fencing"
-    // | "status"
+    | "location_address"
+    | "location_city"
+    | "location_state"
     | "media"
     | "tags"
     | "documents"
@@ -212,6 +220,9 @@ declare type ProductPayloadMap = {
     Car,
     | "name"
     | "description"
+    | "location_address"
+    | "location_city"
+    | "location_state"
     | "price"
     | "category_id"
     | "type"
