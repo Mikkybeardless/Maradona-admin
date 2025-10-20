@@ -18,6 +18,9 @@ const allowedKeysMap: {
     "documents",
     "condition",
     "inventory",
+    "location_address",
+    "location_city",
+    "location_state",
   ],
   HOUSE: [
     "name",
@@ -35,6 +38,9 @@ const allowedKeysMap: {
     "tags",
     "documents",
     "inventory",
+    "location_address",
+    "location_city",
+    "location_state",
   ],
   CAR: [
     "name",
@@ -52,6 +58,9 @@ const allowedKeysMap: {
     "documents",
     "condition",
     "inventory",
+    "location_address",
+    "location_city",
+    "location_state",
   ],
 } as const;
 

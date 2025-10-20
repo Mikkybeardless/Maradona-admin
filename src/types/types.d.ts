@@ -35,9 +35,9 @@ declare interface Product {
   auction_duration: number | null;
   condition: ProductCondition | null;
   auction_type: ProductAuctionType;
-  location_city: string;
-  location_state: string;
-  location_address: string;
+  location_city: string | null;
+  location_state: string | null;
+  location_address: string | null;
 }
 declare interface ApiMedia {
   id: string | null;
@@ -71,9 +71,9 @@ declare interface ApiProduct {
   auction_duration: number | null;
   condition: ProductCondition | null;
   auction_type: ProductAuctionType;
-  location_city: string;
-  location_state: string;
-  location_address: string;
+  location_city: string | null;
+  location_state: string | null;
+  location_address: string | null;
 }
 
 declare interface Auction {

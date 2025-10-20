@@ -31,7 +31,7 @@ export const ReOpenPromotion = ({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>Reopen Promotion</DialogTitle>
+      <DialogTitle>Set New End Date</DialogTitle>
       <DialogContent className="flex flex-col gap-4 mt-2">
         <CustomDateInput value={newEndDate} onChange={setNewEndDate} />
         {/* <TimeInput

@@ -3,7 +3,7 @@ import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight } from "react-icons/fa6";
 import MuiTableComponent from "../components/table/TableComponent";
 import { GridRowParams } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import productService from "../api/services/product.service";
 // import { DateSelect } from "../components/common/dateSelect";
@@ -31,10 +31,6 @@ export default function Products() {
     status: "",
   });
 
-  const handleTableSelectionChange = (selectedRows: any[]) => {
-    console.log("Selected Rows:", selectedRows);
-  };
-
   // const formatedDate = formatDayJs(filters.date);
   const [productData, setProductData] = usePaginatedData(
     productService.getAllProducts,
@@ -49,6 +45,10 @@ export default function Products() {
       dataName: "Products",
     }
   );
+
+  useEffect(() => {
+    console.log("fetched products:", productData.rows);
+  }, [productData.rows]);
 
   const handleRowClick = (params: GridRowParams) => {
     // console.log("Row clicked:", params.row);
@@ -157,7 +157,6 @@ export default function Products() {
                   },
                 }));
               }}
-              onSelect={handleTableSelectionChange}
               rowHeight={60}
               pageSize={productData.pagination.pageSize}
             />

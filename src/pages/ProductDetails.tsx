@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight } from "react-icons/fa6";
 import { CiEdit } from "react-icons/ci";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useClickAway } from "react-use";
 import ProductCarousel from "../components/ProductCarousel";
 import productService from "../api/services/product.service";
@@ -32,8 +32,9 @@ export default function ProductDetails() {
     price: 0,
     sale_price: 0,
     house_type: "",
-    address: "",
-    city: "",
+    location_address: "",
+    location_city: "",
+    location_state: "",
     // weight: 0,
     continue_selling: false,
     state: "",
@@ -74,7 +75,7 @@ export default function ProductDetails() {
       if (id) {
         try {
           const response = await productService.getProduct(parseInt(id));
-          // console.log("Product details:", response.data);
+          console.log("Product details:", response.data);
           setProduct(response.data);
         } catch (error) {
           console.error("Error fetching product details:", error);
@@ -147,6 +148,10 @@ export default function ProductDetails() {
       setUpdating("");
     }
   };
+
+  const images = useMemo(() => {
+    return (product.media as ApiMedia[]).map((media) => media.file_url);
+  }, [product.media]);
 
   return isLoading ? (
     <DetailLoadingState message="Loading product details" />
@@ -239,7 +244,7 @@ export default function ProductDetails() {
 
         <div className="flex flex-col md:flex-row gap-x-5 mt-10">
           <div className="w-full md:w-1/2">
-            <ProductCarousel images={product.media} />
+            <ProductCarousel images={images} />
           </div>
           {/* Images */}
 

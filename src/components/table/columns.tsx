@@ -12,10 +12,8 @@ import purchaseEnquiriesService from "../../api/services/purchaseEnquiries.servi
 import { toast } from "react-toastify";
 import { BiEditAlt } from "react-icons/bi";
 import { FaRegEye } from "react-icons/fa6";
-import bidsService from "../../api/services/bids.service";
-import formatDateToYYYYMMDD, {
-  formatTimeToHHMMSS,
-} from "../../helper/formatDate";
+// import bidsService from "../../api/services/bids.service";
+import formatDateToYYYYMMDD from "../../helper/formatDate";
 import { ReOpenPromotion } from "../modals/ReOpenPromotion";
 import promotionService from "../../api/services/promotion.service";
 import { ClosePromotion } from "../modals/ClosePromotion";
@@ -480,137 +478,137 @@ export const BidsColumns: GridColDef[] = [
     },
     flex: 0.9,
   },
-  {
-    field: "Action",
-    flex: 0.5,
-    renderCell: ({ row }) => {
-      return <BidsActionCellComponent row={row} />;
-    },
-  },
+  // {
+  //   field: "Action",
+  //   flex: 0.5,
+  //   renderCell: ({ row }) => {
+  //     return <BidsActionCellComponent row={row} />;
+  //   },
+  // },
 ];
 
-export const BidsActionCellComponent = ({ row }: { row: any }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [updating, setUpdating] = useState("");
-  const dotsPopupRef = useRef(null);
-  const open = Boolean(anchorEl);
-  const id = open ? `popper-${row.id}` : undefined;
+// export const BidsActionCellComponent = ({ row }: { row: any }) => {
+//   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+//   const [updating, setUpdating] = useState("");
+//   const dotsPopupRef = useRef(null);
+//   const open = Boolean(anchorEl);
+//   const id = open ? `popper-${row.id}` : undefined;
 
-  useClickAway(dotsPopupRef, () => {
-    setAnchorEl(null);
-  });
+//   useClickAway(dotsPopupRef, () => {
+//     setAnchorEl(null);
+//   });
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
+//   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+//     event.preventDefault();
+//     event.stopPropagation();
+//     setAnchorEl(anchorEl ? null : event.currentTarget);
+//   };
 
-  const handleUpdateBid = async (status: string) => {
-    try {
-      setUpdating(status);
-      if (row.status === status) {
-        toast.info(`Bid is already ${status}`);
-        setUpdating("");
-        return;
-      }
-      if (row.status === "accepted" && status === "reopened") {
-        toast.error(`Bid cannot be reopened until closed`);
-        setUpdating("");
-        return;
-      }
+//   const handleUpdateBid = async (status: string) => {
+//     try {
+//       setUpdating(status);
+//       if (row.status === status) {
+//         toast.info(`Bid is already ${status}`);
+//         setUpdating("");
+//         return;
+//       }
+//       if (row.status === "accepted" && status === "reopened") {
+//         toast.error(`Bid cannot be reopened until closed`);
+//         setUpdating("");
+//         return;
+//       }
 
-      const response = await bidsService.updateBid(row.id, { status });
-      if (response.status === 200) {
-        // Handle successful update
-        toast.success(`Bid ${status} successfully`);
-      }
-    } catch (error) {
-      toast.error("Error updating bid, pls try again later");
-      console.error("Error updating bid:", error);
-    } finally {
-      setAnchorEl(null);
-      setUpdating("");
-    }
-  };
-  const buttons = [
-    {
-      name: "Accept",
-      status: "accepted",
-      loading: "Accepting",
-      color: "text-green-600",
-    },
-    {
-      name: "Reopen",
-      status: "reopened",
-      loading: "Reopening",
-      color: "text-[#FE8E49]",
-    },
-    {
-      name: "Reject",
-      status: "rejected",
-      loading: "Rejecting",
-      color: "text-red-600",
-    },
-    {
-      name: "Close",
-      status: "closed",
-      loading: "Closing",
-      color: "text-gray-600",
-    },
-  ];
+//       const response = await bidsService.updateBid(row.id, { status });
+//       if (response.status === 200) {
+//         // Handle successful update
+//         toast.success(`Bid ${status} successfully`);
+//       }
+//     } catch (error) {
+//       toast.error("Error updating bid, pls try again later");
+//       console.error("Error updating bid:", error);
+//     } finally {
+//       setAnchorEl(null);
+//       setUpdating("");
+//     }
+//   };
+//   const buttons = [
+//     {
+//       name: "Accept",
+//       status: "accepted",
+//       loading: "Accepting",
+//       color: "text-green-600",
+//     },
+//     {
+//       name: "Reopen",
+//       status: "reopened",
+//       loading: "Reopening",
+//       color: "text-[#FE8E49]",
+//     },
+//     {
+//       name: "Reject",
+//       status: "rejected",
+//       loading: "Rejecting",
+//       color: "text-red-600",
+//     },
+//     {
+//       name: "Close",
+//       status: "closed",
+//       loading: "Closing",
+//       color: "text-gray-600",
+//     },
+//   ];
 
-  return (
-    <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
-      <button
-        aria-describedby={id}
-        type="button"
-        onClick={handleClick}
-        className="cursor-pointer bg-transparent border-none p-2 m-0 rounded-full hover:bg-gray-100"
-        style={{ lineHeight: 0 }}
-      >
-        <BsThreeDotsVertical size={16} />
-      </button>
-      <Popper
-        ref={dotsPopupRef}
-        className="p-3 px-4 text-sm z-10 flex flex-col gap-3 items-center rounded-lg border border-primaryBorder bg-white"
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        placement="bottom-end"
-        style={{ zIndex: 1300 }}
-        modifiers={[
-          {
-            name: "offset",
-            options: {
-              offset: [0, 8],
-            },
-          },
-          {
-            name: "preventOverflow",
-            options: {
-              boundary: "viewport",
-              padding: 8,
-            },
-          },
-        ]}
-      >
-        {buttons.map(
-          (button, index) =>
-            button.status !== row.status && (
-              <button
-                key={index}
-                onClick={() => handleUpdateBid(button.status)}
-                className={`text-xs hover:underline ${button.color}`}
-              >
-                {updating === button.status ? button.loading : button.name}
-              </button>
-            )
-        )}
-      </Popper>
-    </div>
-  );
-};
+//   return (
+//     <div className="h-full w-full relative z-10 flex justify-center items-center overflow-visible">
+//       <button
+//         aria-describedby={id}
+//         type="button"
+//         onClick={handleClick}
+//         className="cursor-pointer bg-transparent border-none p-2 m-0 rounded-full hover:bg-gray-100"
+//         style={{ lineHeight: 0 }}
+//       >
+//         <BsThreeDotsVertical size={16} />
+//       </button>
+//       <Popper
+//         ref={dotsPopupRef}
+//         className="p-3 px-4 text-sm z-10 flex flex-col gap-3 items-center rounded-lg border border-primaryBorder bg-white"
+//         id={id}
+//         open={open}
+//         anchorEl={anchorEl}
+//         placement="bottom-end"
+//         style={{ zIndex: 1300 }}
+//         modifiers={[
+//           {
+//             name: "offset",
+//             options: {
+//               offset: [0, 8],
+//             },
+//           },
+//           {
+//             name: "preventOverflow",
+//             options: {
+//               boundary: "viewport",
+//               padding: 8,
+//             },
+//           },
+//         ]}
+//       >
+//         {buttons.map(
+//           (button, index) =>
+//             button.status !== row.status && (
+//               <button
+//                 key={index}
+//                 onClick={() => handleUpdateBid(button.status)}
+//                 className={`text-xs hover:underline ${button.color}`}
+//               >
+//                 {updating === button.status ? button.loading : button.name}
+//               </button>
+//             )
+//         )}
+//       </Popper>
+//     </div>
+//   );
+// };
 
 export const purchaseEnqColumns: GridColDef[] = [
   {
@@ -905,7 +903,7 @@ export const promoColumns: GridColDef[] = [
       return (
         <span
           className={`capitalize ${
-            value === "active" ? "text-[#008000]" : "text-yellow-600"
+            value === "active" ? "text-[#008000]" : "text-red-600"
           }`}
         >
           {value}
@@ -987,7 +985,7 @@ export const PromoActionCellComponent = ({
     }
     const now = new Date();
     if (date < now) {
-      toast.error("Reopened date cannot be in the past");
+      toast.error("New end date cannot be in the past");
       setIsReOpening(false);
       return;
     }
@@ -1034,18 +1032,18 @@ export const PromoActionCellComponent = ({
       >
         <button
           onClick={() => setCloseModalOpen(true)}
-          className="text-xs hover:underline hover:text-green-600 "
+          className="text-xs hover:underline hover:text-red-600 "
         >
-          Close Promotion
+          Close
         </button>
         <button
-          className="text-xs hover:underline hover:text-green-600"
+          className="text-xs hover:underline hover:text-blue-600"
           onClick={() => {
             setReOpenModalOpen(true);
             setAnchorEl(null); // close popper when opening modal
           }}
         >
-          Reopen Promotion
+          Reopen
         </button>
       </Popper>
 

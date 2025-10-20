@@ -53,7 +53,11 @@ export const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = ({
           <input
             type="text"
             name="location_address"
-            value={productDetails.location_address}
+            value={
+              productDetails.location_address
+                ? productDetails.location_address
+                : ""
+            }
             onChange={handleInputChange}
             className="p-3 w-full rounded-lg border border-primaryBorder text-sm outline-none"
             placeholder="Address"

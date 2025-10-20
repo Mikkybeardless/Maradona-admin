@@ -10,7 +10,7 @@ interface KeyFeatureProps {
 
 export const KeyFeatures = ({ product }: KeyFeatureProps) => {
   return (
-    <div className="w-full bg-white p-4 pl-7 rounded-xl flex gap-x-2 items-start">
+    <div className="w-full bg-white md:p-4 p-2 pl-7 rounded-xl flex gap-x-2 items-start">
       <div className="w-2/4">
         <h3 className="text-sm font-semibold">Key Features</h3>
         {product.type === "CAR" ? (
