@@ -11,6 +11,7 @@ import { formatIsoString } from "../helper/formatIIsoString";
 import { formatPrice } from "../helper/helperFunctions";
 import { MarkAsSoldModal } from "../components/modals/MarKAsSold-modal";
 import ActionModal from "../components/modals/actionModal";
+import { DetailLoadingState } from "../components/common/detailLoadingState";
 
 export default function Enquiry() {
   const location = useLocation();
@@ -161,7 +162,9 @@ export default function Enquiry() {
     }
   };
 
-  return (
+  return isLoading ? (
+    <DetailLoadingState message="Loading Enquiry details" />
+  ) : (
     <>
       {/* {markModal ? (
         <div className="fixed z-30 flex justify-center items-center top-0 left-0 w-screen h-screen bg-black/50">

@@ -54,11 +54,11 @@ export default function ProductCarousel({ images }: { images: string[] }) {
           </div>
 
           {/* Main image container */}
-          <div className="flex-grow w-40 md:w-[486px] h-fit max-h-96 rounded-3xl overflow-hidden mb-4">
+          <div className="flex-grow w-40 md:w-[486px] h-60 max-h-96 rounded-3xl overflow-hidden mb-4">
             <img
               src={images[currentIndex]}
               alt={`Product image ${currentIndex + 1}`}
-              className="w-full h-full rounded-lg object-contain"
+              className="w-full h-full rounded-lg object-cover"
             />
           </div>
 

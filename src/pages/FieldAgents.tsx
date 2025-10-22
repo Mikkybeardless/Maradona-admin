@@ -19,6 +19,7 @@ import {
   InspectionColumns,
   RequestColumns,
 } from "../components/table/columns";
+import AssignAgentModal from "../components/modals/assignAgent";
 
 export default function FieldAgents() {
   const location = useLocation();
@@ -32,26 +33,14 @@ export default function FieldAgents() {
     inspection: "",
   });
   const debouncedAgentSearchQuery = useDebounce(searchQuery.agent);
-  const debouncedRequestSearchQuery = useDebounce(searchQuery.request);
   const debouncedInspectionSearchQuery = useDebounce(searchQuery.inspection);
   const [agentType, setAgentType] = useState(locationAgentType || "agent");
-  const [inspectionModal, setInspectionModal] = useState(false);
-  const [currentAgent, setCurrentAgent] = useState({
-    id: 0,
-    name: "James Bond",
-    email: "",
-    phone: "",
-    status: "",
-    verifiedListings: 0,
-  });
+  const [assignAgentModal, setAssignAgentModal] = useState(false);
+  const [currentInspectionId, setCurrentInspectionId] = useState(null);
   const [filters, setFilters] = useState({
     agent: "",
     request: "",
     inspection: "",
-  });
-  const [formattedData, setFormattedData] = useState({
-    inspections: [] as Product[],
-    requests: [] as Product[],
   });
 
   // function openNewAgentModal() {
@@ -67,8 +56,13 @@ export default function FieldAgents() {
   //   setInspectionModal(true);
   // }
   const handleRowClick = (params: GridRowParams) => {
-    console.log("Row clicked:", params.row);
     navigate(`/admin/agents/agent/${params.row.id}`);
+  };
+  const handleInspectionRowClick = (params: GridRowParams) => {
+    setCurrentInspectionId(params.row.id);
+    if (params.row.status === "pending") {
+      setAssignAgentModal(true);
+    }
   };
 
   const [agentData, setAgentData] = usePaginatedData(UserService.getAllAgents, {
@@ -78,57 +72,54 @@ export default function FieldAgents() {
     dataName: "field Agents",
   });
 
-  const [requestData, setRequestData] = usePaginatedData(
-    InspectionService.getAllInspections,
-    {
-      initialPage: 1,
-      initialPageSize: 10,
-      filters: {
-        category: filters.request,
-        search: debouncedRequestSearchQuery,
-      },
-      dataName: "inspection requests",
-    }
-  );
-
   const [inspectionData, setInspectionData] = usePaginatedData(
     InspectionService.getAllInspections,
     {
       initialPage: 1,
       initialPageSize: 10,
       filters: {
-        category: filters.request,
+        category: filters.inspection,
         search: debouncedInspectionSearchQuery,
       },
       dataName: "inspections",
     }
   );
 
-  // reformats inspection data on data change
-  useEffect(() => {
-    const formattedInspectionData: Product[] = inspectionData.rows.map(
-      (item) => (item as Inspection).product
-    );
-    setFormattedData((prev) => ({
-      ...prev,
-      inspections: formattedInspectionData,
-    }));
-    console.log(" Inspections:", inspectionData.rows);
-  }, [inspectionData]);
-
-  // reformats request data on data change
-  useEffect(() => {
-    const formattedRequestData: Product[] = requestData.rows.map(
-      (item) => (item as Inspection).product
-    );
-    setFormattedData((prev) => ({ ...prev, requests: formattedRequestData }));
-  }, [requestData]);
+  const handleAssignAgent = async (agentId: number) => {
+    try {
+      const response = await InspectionService.assignAgent(
+        Number(currentInspectionId),
+        agentId
+      );
+      if (response.status === 200) {
+        return {
+          success: true,
+          message: "Agent successfully assigned",
+        };
+      }
+      return {
+        success: false,
+        message: "Failed to assign agent, please try again",
+      };
+    } catch (error) {
+      console.error("Error assigning agent:", error);
+      return {
+        success: false,
+        message: "An error occurred while assigning the agent",
+      };
+    }
+  };
 
   return (
     <div className="w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-7 bg-[#F5F5F5]">
       <AddAgentModal
         newAgentModal={newAgentModal}
         setNewAgentModal={setNewAgentModal}
+      />
+      <AssignAgentModal
+        onSubmit={handleAssignAgent}
+        assignAgentModal={assignAgentModal}
+        closeAssignAgentModal={() => setAssignAgentModal(false)}
       />
       {/*
       <InspectionModal
@@ -260,16 +251,21 @@ export default function FieldAgents() {
         ) : (
           <>
             <h1 className="text-3xl font-bold my-6">Inspection Requests</h1>
-            <div className="flex flex-wrap gap-2 justify-end items-end mt-5 w-full">
-              {/* <div className="flex gap-x-5 items-center">
-                <div className=" gap-y-1">
-                  <select className="p-2.5 text-sm rounded-lg border border-primaryBorder bg-white outline-none">
-                    <option>Category</option>
-                    <option>2</option>
-                  </select>
-                </div>
-              </div> */}
-
+            <div className="flex flex-wrap gap-2 justify-between items-end mt-5 w-full">
+              <StatusSelect
+                options={[
+                  { label: "All", value: "" },
+                  { label: "Pending", value: "pending" },
+                  { label: "Passed", value: "passed" },
+                  { label: "Assigned", value: "assigned" },
+                  { label: "Scheduled", value: "scheduled" },
+                  { label: "Failed", value: "failed" },
+                ]}
+                onChange={(value) => {
+                  setFilters((prev) => ({ ...prev, inspection: value }));
+                }}
+                value={filters.inspection}
+              />
               <TableSearchInput
                 searchQuery={searchQuery.inspection}
                 setSearchQuery={(val) =>
@@ -287,6 +283,7 @@ export default function FieldAgents() {
                   columns={InspectionColumns}
                   rows={inspectionData.rows}
                   currentPage={inspectionData.pagination.page}
+                  onRowClick={handleInspectionRowClick}
                   onPageChange={(model) =>
                     setInspectionData((prev) => ({
                       ...prev,

@@ -205,26 +205,26 @@ export const InspectionColumns: GridColDef[] = [
     flex: 0.7,
   },
   { field: "status", headerName: "Status", flex: 0.5 },
-  // {
-  //   field: "Action",
-  //   headerName: "Action",
-  //   renderCell: ({ row }) => {
-  //     return (
-  //       <div className="h-full w-full relative flex justify-center items-center gap-x-4">
-  //         <button
-  //           // onClick={() => openInspectionModal(row.id)}
-  //           className="text-sm text-[#C38D00] hover:underline"
-  //         >
-  //           View
-  //         </button>
-  //         <button className="text-sm text-green-800">Approve</button>
-  //         <button className="text-sm text-red-500">Reject</button>
-  //       </div>
-  //     );
-  //   },
-  //   flex: 1,
-  //   sortable: false,
-  // },
+  {
+    field: "Action",
+    headerName: "Action",
+    renderCell: ({ row }) => {
+      return (
+        <div className="h-full w-full relative flex justify-center items-center gap-x-4">
+          {row.status === "pending" && (
+            <button
+              // onClick={() => openInspectionModal(row.id)}
+              className="text-sm text-[#C38D00] hover:underline"
+            >
+              Assign Agent
+            </button>
+          )}
+        </div>
+      );
+    },
+    flex: 0.5,
+    sortable: false,
+  },
 ];
 
 // product
