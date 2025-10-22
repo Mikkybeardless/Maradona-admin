@@ -437,7 +437,7 @@ export const AuctionColumns: GridColDef[] = [
       const { formattedDate, formattedTime } = formatIsoString(value);
       return (
         <div className="flex">
-          <div>{formattedDate}</div>
+          <div>{formattedDate}&nbsp;</div>
           <div>{formattedTime}</div>
         </div>
       );
