@@ -8,13 +8,11 @@ import ProductDetails from "./pages/ProductDetails";
 import Buyers from "./pages/Buyers";
 import Sellers from "./pages/Sellers";
 import AddCustomer from "./pages/AddCustomer";
-import Orders from "./pages/PurchaseEnquiries";
 import Promotions from "./pages/Promotions";
 import Documents from "./pages/Documents";
 import Shipments from "./pages/Shipments";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
-import AdminOrder from "./pages/AdminOrder";
 import TransactionHistory from "./pages/TransactionHistory";
 import CustomerNotifications from "./pages/CustomerNotifications";
 import CustomerFeedback from "./pages/CustomerFeedback";
@@ -37,6 +35,8 @@ import Buyer from "./pages/Buyer";
 import Seller from "./pages/Seller";
 import NotificationsPage from "./pages/Notification";
 import Reports from "./pages/Reports";
+import PurchaseEnquiries from "./pages/PurchaseEnquiries";
+import Enquiry from "./pages/Enquiry";
 
 function App() {
   return (
@@ -102,8 +102,8 @@ function App() {
           </Route>
 
           <Route path="purchase-enquiries">
-            <Route index element={<Orders />} />
-            <Route path="enquiry/:id" element={<AdminOrder />} />
+            <Route index element={<PurchaseEnquiries />} />
+            <Route path="enquiry/:id" element={<Enquiry />} />
           </Route>
           <Route path="reports">
             <Route index element={<Reports />} />

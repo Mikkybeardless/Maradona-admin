@@ -173,34 +173,58 @@ export const RequestColumns: GridColDef[] = [
 ];
 export const InspectionColumns: GridColDef[] = [
   {
+    field: "id",
+    headerName: "ID",
+    flex: 0.3,
+    sortable: false,
+  },
+  {
     field: "name",
     headerName: "Product",
+    renderCell: ({ row }) => row.product?.name,
     flex: 1,
     sortable: false,
   },
-  { field: "type", headerName: "Category", flex: 1, sortable: false },
-  { field: "price", headerName: "Price(₦)", flex: 1 },
-  { field: "stock", headerName: "Stock", flex: 0.5, type: "number" },
   {
-    field: "Action",
-    headerName: "Action",
-    renderCell: ({ row }) => {
-      return (
-        <div className="h-full w-full relative flex justify-center items-center gap-x-4">
-          <button
-            // onClick={() => openInspectionModal(row.id)}
-            className="text-sm text-[#C38D00] hover:underline"
-          >
-            View
-          </button>
-          <button className="text-sm text-green-800">Approve</button>
-          <button className="text-sm text-red-500">Reject</button>
-        </div>
-      );
-    },
-    flex: 1,
+    field: "price",
+    headerName: "Price(₦)",
+    renderCell: ({ row }) => formatPrice(row.product?.price),
+    flex: 0.5,
+  },
+  {
+    field: "type",
+    headerName: "Category",
+    renderCell: ({ row }) => row.product?.type,
+    flex: 0.5,
     sortable: false,
   },
+  {
+    field: "assigned_at",
+    headerName: "Assigned At",
+    renderCell: ({ value }) => formatIsoString(value).formattedDate,
+    flex: 0.7,
+  },
+  { field: "status", headerName: "Status", flex: 0.5 },
+  // {
+  //   field: "Action",
+  //   headerName: "Action",
+  //   renderCell: ({ row }) => {
+  //     return (
+  //       <div className="h-full w-full relative flex justify-center items-center gap-x-4">
+  //         <button
+  //           // onClick={() => openInspectionModal(row.id)}
+  //           className="text-sm text-[#C38D00] hover:underline"
+  //         >
+  //           View
+  //         </button>
+  //         <button className="text-sm text-green-800">Approve</button>
+  //         <button className="text-sm text-red-500">Reject</button>
+  //       </div>
+  //     );
+  //   },
+  //   flex: 1,
+  //   sortable: false,
+  // },
 ];
 
 // product

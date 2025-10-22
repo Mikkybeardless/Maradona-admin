@@ -33,7 +33,7 @@ export type IFilter = {
   modified: Dayjs | null;
 };
 
-export default function Orders() {
+export default function PurchaseEnquiries() {
   // const [exportModal, setExportModal] = useState(false);
   // const [selectedData, setSelectedData] = useState<UserTableType[]>([]);
   const [revenueData, setRevenueData] = useState<TotalRevenue | null>(null);
@@ -79,36 +79,36 @@ export default function Orders() {
   }, []);
 
   return (
-		<div className="w-full h-full bg-white overflow-y-auto flex flex-col custom-scrollbar py-20">
-			{/* <ExportModal
+    <div className="w-full h-full bg-white overflow-y-auto flex flex-col custom-scrollbar py-20">
+      {/* <ExportModal
         isOpen={exportModal}
         onClose={closeExportModal}
         allData={purchaseEnquiries.rows}
         selectedData={selectedData}
         filename="orders-data"
       /> */}
-			<div className="w-full py-3.5 px-5 md:px-10 fixed z-10 left-2 top-0 border-b bg-white  border-b-primaryBorder">
-				<DashboardSearchBar />
-			</div>
+      <div className="w-full py-3.5 px-5 md:px-10 fixed z-10 left-2 top-0 border-b bg-white  border-b-primaryBorder">
+        <DashboardSearchBar />
+      </div>
 
-			<div className="px-5 md:px-10 w-full mt-3 flex flex-col flex-1">
-				<div className="flex gap-x-4 mb-3 items-center">
-					<Link to={`/`} className="text-sm opacity-60">
-						Dashboard
-					</Link>
-					<FaChevronRight size={18} />
-					<span className="text-sm">Purchase Enquiries</span>
-				</div>
+      <div className="px-5 md:px-10 w-full mt-3 flex flex-col flex-1">
+        <div className="flex gap-x-4 mb-3 items-center">
+          <Link to={`/`} className="text-sm opacity-60">
+            Dashboard
+          </Link>
+          <FaChevronRight size={18} />
+          <span className="text-sm">Purchase Enquiries</span>
+        </div>
 
-				<div className="flex justify-between items-center">
-					<h1 className="md:text-3xl font-bold flex items-start">
-						Purchase Enquiries
-						<span className="text-xs text-defaultOrange">
-							{purchaseEnquiries.rows.length}
-						</span>
-					</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="md:text-3xl font-bold flex items-start">
+            Purchase Enquiries
+            <span className="text-xs text-defaultOrange">
+              {purchaseEnquiries.rows.length}
+            </span>
+          </h1>
 
-					{/* <div className="flex items-center gap-x-5">
+          {/* <div className="flex items-center gap-x-5">
             <button
               onClick={openExportModal}
               className="text-sm flex  gap-3 rounded-lg px-4 py-2.5 bg-defaultOrange hover:bg-defaultOrangeHover text-white"
@@ -116,108 +116,106 @@ export default function Orders() {
               <FaFileDownload size={18} /> Export
             </button>
           </div> */}
-				</div>
+        </div>
 
-				<div className="w-full flex justify-between items-end pb-3 mt-4 border-b border-b-primaryBorder">
-					<div className="flex flex-col gap-y-2">
-						<div className="flex items-center gap-x-2">
-							<PiCoinVerticalDuotone size={22} color="#686677" />
-							<span className="text-xs text-[#686677]">
-								Total earnings
-							</span>
-						</div>
-						<div className="flex items-baseline gap-x-2">
-							<span className="text-xl md:text-3xl text-defaultOrange font-semibold">
-								{formatAmountToNaira(revenueData?.total_revenue || 0)}
-							</span>
-							<span className="text-xs text-[#686677]">
-								{revenueData?.period.description}
-							</span>
-						</div>
-					</div>
-				</div>
+        <div className="w-full flex justify-between items-end pb-3 mt-4 border-b border-b-primaryBorder">
+          <div className="flex flex-col gap-y-2">
+            <div className="flex items-center gap-x-2">
+              <PiCoinVerticalDuotone size={22} color="#686677" />
+              <span className="text-xs text-[#686677]">Total earnings</span>
+            </div>
+            <div className="flex items-baseline gap-x-2">
+              <span className="text-xl md:text-3xl text-defaultOrange font-semibold">
+                {formatAmountToNaira(revenueData?.total_revenue || 0)}
+              </span>
+              <span className="text-xs text-[#686677]">
+                {revenueData?.period.description}
+              </span>
+            </div>
+          </div>
+        </div>
 
-				{/* Filters & Search Bar */}
-				<div className="mb-4">
-					<FilterGroup
-						filters={filters}
-						onChange={(updated) => {
-							setFilters((prev) => ({ ...prev, ...updated }));
-						}}
-						selects={[
-							{
-								name: "type",
-								placeholder: "Category",
-								options: [
-									{ label: "House", value: "house" },
-									{ label: "Cars", value: "cars" },
-									{ label: "Land", value: "land" },
-								],
-							},
-						]}
-						extraFilters={
-							<>
-								<StatusSelect
-									options={[
-										{ label: "Published", value: "published" },
-										{ label: "Pending", value: "pending" },
-										{ label: "Cancelled", value: "cancelled" },
-									]}
-									onChange={(value) => {
-										setFilters((prev) => ({
-											...prev,
-											status: value,
-										}));
-									}}
-									value={filters.status}
-								/>
-								{/* <DateSelect
+        {/* Filters & Search Bar */}
+        <div className="mb-4">
+          <FilterGroup
+            filters={filters}
+            onChange={(updated) => {
+              setFilters((prev) => ({ ...prev, ...updated }));
+            }}
+            selects={[
+              {
+                name: "type",
+                placeholder: "Category",
+                options: [
+                  { label: "House", value: "house" },
+                  { label: "Cars", value: "cars" },
+                  { label: "Land", value: "land" },
+                ],
+              },
+            ]}
+            extraFilters={
+              <>
+                <StatusSelect
+                  options={[
+                    { label: "Published", value: "published" },
+                    { label: "Pending", value: "pending" },
+                    { label: "Cancelled", value: "cancelled" },
+                  ]}
+                  onChange={(value) => {
+                    setFilters((prev) => ({
+                      ...prev,
+                      status: value,
+                    }));
+                  }}
+                  value={filters.status}
+                />
+                {/* <DateSelect
                   onChange={(date) => {
                     setFilters((prev) => ({ ...prev, date }));
                   }}
                   value={filters.date}
                 /> */}
-							</>
-						}
-						searchNode={
-							<TableSearchInput
-								searchQuery={searchQuery}
-								setSearchQuery={setSearchQuery}
-								placeholder="Search orders"
-							/>
-						}
-					/>
-				</div>
+              </>
+            }
+            searchNode={
+              <TableSearchInput
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                placeholder="Search orders"
+              />
+            }
+          />
+        </div>
 
-				<section
-					id="orders-table"
-					className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
-				>
-					<div className="min-w-[900px]">
-						<MuiTableComponent
-							columns={purchaseEnqColumns}
-							rows={purchaseEnquiries.rows}
-							onRowClick={(row) => {
-								navigate(`/admin/purchase-enquiries/enquiry/${row.id}`);
-							}}
-							onPageChange={(model) => {
-								setPurchaseEnquiries((prev) => ({
-									...prev,
-									pagination: {
-										page: model.page,
-										pageSize: model.pageSize,
-									},
-								}));
-							}}
-							loading={purchaseEnquiries.loading}
-							totalRowCount={purchaseEnquiries.totalRowCount}
-							currentPage={purchaseEnquiries.pagination.page}
-							rowHeight={70}
-							pageSize={purchaseEnquiries.pagination.pageSize}
-						/>
-					</div>
-				</section>
-			</div>
-		</div>
+        <section
+          id="orders-table"
+          className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
+        >
+          <div className="min-w-[900px]">
+            <MuiTableComponent
+              columns={purchaseEnqColumns}
+              rows={purchaseEnquiries.rows}
+              onRowClick={(row) => {
+                navigate(`/admin/purchase-enquiries/enquiry/${row.id}`);
+              }}
+              onPageChange={(model) => {
+                setPurchaseEnquiries((prev) => ({
+                  ...prev,
+                  pagination: {
+                    page: model.page,
+                    pageSize: model.pageSize,
+                  },
+                }));
+              }}
+              loading={purchaseEnquiries.loading}
+              totalRowCount={purchaseEnquiries.totalRowCount}
+              currentPage={purchaseEnquiries.pagination.page}
+              rowHeight={70}
+              pageSize={purchaseEnquiries.pagination.pageSize}
+            />
+          </div>
+        </section>
+      </div>
+    </div>
   );
 }

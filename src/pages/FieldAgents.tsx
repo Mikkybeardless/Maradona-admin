@@ -113,6 +113,7 @@ export default function FieldAgents() {
       ...prev,
       inspections: formattedInspectionData,
     }));
+    console.log(" Inspections:", inspectionData.rows);
   }, [inspectionData]);
 
   // reformats request data on data change
@@ -171,8 +172,11 @@ export default function FieldAgents() {
                 agentType !== "request" ? setAgentType("request") : null
               }
             >
-              Requests <span className="text-xs text-defaultOrange">{requestData.totalRowCount}</span>
-            </button>
+              Requests{" "}
+              <span className="text-xs text-defaultOrange">
+                {requestData.totalRowCount}
+              </span>
+            </button> */}
 
             <button
               className={`${
@@ -184,8 +188,11 @@ export default function FieldAgents() {
                 agentType !== "inspection" ? setAgentType("inspection") : null
               }
             >
-              Inspection <span className="text-xs text-defaultOrange">{inspectionData.totalRowCount}</span>
-            </button> */}
+              Inspections
+              <span className="text-xs text-defaultOrange">
+                {inspectionData.totalRowCount}
+              </span>
+            </button>
           </div>
 
           <button
@@ -196,62 +203,12 @@ export default function FieldAgents() {
             New Agent
           </button>
         </section>
-        <h1 className="text-3xl font-bold my-6">Field Agents</h1>
-        <>
-          <div className="flex flex-wrap gap-2 justify-end items-end mt-3 w-full">
-            {/* <StatusSelect
-							options={[
-								{ label: "All", value: "" },
-								{ label: "Active", value: "active" },
-								{ label: "Inactive", value: "inactive" },
-							]}
-							onChange={(value) => {
-								setFilters((prev) => ({ ...prev, agent: value }));
-							}}
-							value={filters.agent}
-						/> */}
 
-            <TableSearchInput
-              searchQuery={searchQuery.agent}
-              setSearchQuery={(val) =>
-                setSearchQuery((prev) => ({ ...prev, agent: val }))
-              }
-              placeholder="Search agents"
-            />
-          </div>
-
-          <section
-            id="table"
-            className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
-          >
-            <div className="min-w-[900px]">
-              <MuiTableComponent
-                showCheckbox={false}
-                columns={AgentColumns}
-                onRowClick={handleRowClick}
-                rows={agentData.rows}
-                loading={agentData.loading}
-                rowHeight={60}
-                currentPage={agentData.pagination.page}
-                onPageChange={(model) =>
-                  setAgentData((prev) => ({
-                    ...prev,
-                    pagination: {
-                      page: model.page,
-                      pageSize: model.pageSize,
-                    },
-                  }))
-                }
-                pageSize={agentData.pagination.pageSize}
-                totalRowCount={agentData.totalRowCount}
-              />
-            </div>
-          </section>
-        </>
-        {/* {agentType === "agent" ? (
+        {agentType === "agent" ? (
           <>
-            <div className="flex flex-wrap gap-2 justify-between items-end mt-3 w-full">
-              <StatusSelect
+            <h1 className="text-3xl font-bold my-6">Field Agents</h1>
+            <div className="flex flex-wrap gap-2 justify-end items-end w-full">
+              {/* <StatusSelect
                 options={[
                   { label: "All", value: "" },
                   { label: "Active", value: "active" },
@@ -261,7 +218,7 @@ export default function FieldAgents() {
                   setFilters((prev) => ({ ...prev, agent: value }));
                 }}
                 value={filters.agent}
-              />
+              /> */}
 
               <TableSearchInput
                 searchQuery={searchQuery.agent}
@@ -300,63 +257,18 @@ export default function FieldAgents() {
               </div>
             </section>
           </>
-        ) : agentType === "request" ? (
-          <>
-            <div className="flex flex-wrap gap-2 justify-between items-end mt-5 w-full">
-              <div className="flex gap-x-5 items-center">
-                <div className=" gap-y-1">
-                  <select className="p-2.5 text-sm rounded-lg border border-primaryBorder bg-white outline-none">
-                    <option>Category</option>
-                    <option>2</option>
-                  </select>
-                </div>
-              </div>
-
-              <TableSearchInput
-                searchQuery={searchQuery.request}
-                setSearchQuery={(val) =>
-                  setSearchQuery((prev) => ({ ...prev, request: val }))
-                }
-                placeholder="Search requests"
-              />
-            </div>
-            <section
-              id="table"
-              className="mt-3 w-full bg-white overflow-x-auto rounded-md custom-scrollbar"
-            >
-              <div className="min-w-[900px]">
-                <MuiTableComponent
-                  columns={RequestColumns}
-                  rows={formattedData.requests}
-                  rowHeight={60}
-                  currentPage={requestData.pagination.page}
-                  onPageChange={(model) =>
-                    setRequestData((prev) => ({
-                      ...prev,
-                      pagination: {
-                        page: model.page,
-                        pageSize: model.pageSize,
-                      },
-                    }))
-                  }
-                  loading={requestData.loading}
-                  totalRowCount={requestData.totalRowCount}
-                  pageSize={requestData.pagination.pageSize}
-                />
-              </div>
-            </section>
-          </>
         ) : (
           <>
-            <div className="flex flex-wrap gap-2 justify-between items-end mt-5 w-full">
-              <div className="flex gap-x-5 items-center">
+            <h1 className="text-3xl font-bold my-6">Inspection Requests</h1>
+            <div className="flex flex-wrap gap-2 justify-end items-end mt-5 w-full">
+              {/* <div className="flex gap-x-5 items-center">
                 <div className=" gap-y-1">
                   <select className="p-2.5 text-sm rounded-lg border border-primaryBorder bg-white outline-none">
                     <option>Category</option>
                     <option>2</option>
                   </select>
                 </div>
-              </div>
+              </div> */}
 
               <TableSearchInput
                 searchQuery={searchQuery.inspection}
@@ -373,8 +285,7 @@ export default function FieldAgents() {
               <div className="min-w-[900px]">
                 <MuiTableComponent
                   columns={InspectionColumns}
-                  onRowClick={(params) => openInspectionModal(params.row.id)}
-                  rows={formattedData.inspections || rows2()}
+                  rows={inspectionData.rows}
                   currentPage={inspectionData.pagination.page}
                   onPageChange={(model) =>
                     setInspectionData((prev) => ({
@@ -393,7 +304,7 @@ export default function FieldAgents() {
               </div>
             </section>
           </>
-        )} */}
+        )}
       </main>
     </div>
   );

@@ -129,3 +129,18 @@ export const formatMessageWithFormatedNaira = (message: string): string => {
     return numStr; // leave smaller numbers as they are
   });
 };
+
+export const getCurrentYearDateRange = (): {
+  start_date: string;
+  end_date: string;
+} => {
+  const today = new Date();
+  const startOfYear = new Date(today.getFullYear(), 0, 1);
+
+  const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+  return {
+    start_date: formatDate(startOfYear),
+    end_date: formatDate(today),
+  };
+};

@@ -8,11 +8,11 @@ import AssignAgentModal from "../components/modals/assignAgent";
 import { HiDotsHorizontal } from "react-icons/hi";
 import purchaseEnquiriesService from "../api/services/purchaseEnquiries.service";
 import { formatIsoString } from "../helper/formatIIsoString";
-import { formatAmountToNaira, formatPrice } from "../helper/helperFunctions";
+import { formatPrice } from "../helper/helperFunctions";
 import { MarkAsSoldModal } from "../components/modals/MarKAsSold-modal";
 import ActionModal from "../components/modals/actionModal";
 
-export default function AdminOrder() {
+export default function Enquiry() {
   const location = useLocation();
   const { state } = location;
   const { id } = useParams();
@@ -44,10 +44,7 @@ export default function AdminOrder() {
   // const [invoiceModal, setInvoiceModal] = useState(false);
   // const [shipmentModal, setShipmentModal] = useState(false);
   const dropDownRef = useRef<HTMLDivElement>(null);
-  const markModalRef = useRef<HTMLDivElement>(null);
-  const cancelModalRef = useRef<HTMLDivElement>(null);
-  const invoiceModalRef = useRef<HTMLDivElement>(null);
-  const shipmentModalRef = useRef<HTMLDivElement>(null);
+
   const shipment = {
     data: {
       accountNumber: "0491190391",
