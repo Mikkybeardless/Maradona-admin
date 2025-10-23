@@ -17,8 +17,8 @@ import { KeyFeatures } from "../components/keyFeatures";
 export default function ProductDetails() {
   const location = useLocation();
   const { state } = location;
-  const [assignAgentModal, setAssignAgentModal] = useState(false);
-  const assignAgentModalRef = useRef(null);
+  // const [assignAgentModal, setAssignAgentModal] = useState(false);
+  // const assignAgentModalRef = useRef(null);
   const { id } = useParams();
 
   const initialProductDetails = {
@@ -90,39 +90,39 @@ export default function ProductDetails() {
     fetchProductDetails();
   }, [id]);
 
-  useClickAway(assignAgentModalRef, () => {
-    setAssignAgentModal(false);
-  });
+  // useClickAway(assignAgentModalRef, () => {
+  //   setAssignAgentModal(false);
+  // });
 
   const handleDelete = async (id: string) => {
     await productService.deleteProduct(Number(id));
   };
 
-  const handleAssignAgent = async (agentId: number) => {
-    try {
-      const response = await purchaseEnquiriesService.assignAgent(
-        Number(id),
-        agentId
-      );
-      if (response.status === 200) {
-        return {
-          success: true,
-          message: "Agent successfully assigned",
-        };
-      } else {
-        return {
-          success: false,
-          message: "Failed to assign agent, please try again",
-        };
-      }
-    } catch (error) {
-      console.error("Error assigning agent:", error);
-      return {
-        success: false,
-        message: "An error occurred while assigning the agent",
-      };
-    }
-  };
+  // const handleAssignAgent = async (agentId: number) => {
+  //   try {
+  //     const response = await purchaseEnquiriesService.assignAgent(
+  //       Number(id),
+  //       agentId
+  //     );
+  //     if (response.status === 200) {
+  //       return {
+  //         success: true,
+  //         message: "Agent successfully assigned",
+  //       };
+  //     } else {
+  //       return {
+  //         success: false,
+  //         message: "Failed to assign agent, please try again",
+  //       };
+  //     }
+  //   } catch (error) {
+  //     console.error("Error assigning agent:", error);
+  //     return {
+  //       success: false,
+  //       message: "An error occurred while assigning the agent",
+  //     };
+  //   }
+  // };
 
   const handleStatusUpdate = async (
     id: number,
@@ -157,11 +157,11 @@ export default function ProductDetails() {
     <DetailLoadingState message="Loading product details" />
   ) : (
     <div className="w-full h-full overflow-hidden overflow-y-auto custom-scrollbar pb-10 bg-[#F5F5F5]">
-      <AssignAgentModal
+      {/* <AssignAgentModal
         onSubmit={handleAssignAgent}
         assignAgentModal={assignAgentModal}
         closeAssignAgentModal={() => setAssignAgentModal(false)}
-      />
+      /> */}
       <div className="w-full py-5 px-5 md:px-10 border-b border-b-primaryBorder">
         <DashboardSearchBar />
       </div>
@@ -197,7 +197,7 @@ export default function ProductDetails() {
 
           {state?.fieldAgent ? (
             <button
-              onClick={() => setAssignAgentModal(true)}
+              // onClick={() => setAssignAgentModal(true)}
               className="px-4 py-2.5 rounded-lg text-sm text-white bg-defaultOrange hover:bg-defaultOrangeHover"
             >
               Assign Field Agent
@@ -206,12 +206,12 @@ export default function ProductDetails() {
             <div className="flex gap-x-4 items-center">
               {!product.belongs_to_admin && product.approved_at === null && (
                 <>
-                  <button
+                  {/* <button
                     onClick={() => setAssignAgentModal(true)}
                     className="px-4 py-2.5 rounded-lg text-sm text-white bg-defaultOrange hover:bg-defaultOrangeHover"
                   >
                     Assign Agent
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => handleStatusUpdate(Number(id), "approve")}
                     className="text-sm text-green-500 hover:underline"
