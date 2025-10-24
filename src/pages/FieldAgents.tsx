@@ -1,30 +1,26 @@
-import { GridColDef, GridRowParams } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { GridRowParams } from "@mui/x-data-grid";
+import { useState } from "react";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import MuiTableComponent from "../components/table/TableComponent";
 import { FaPlus } from "react-icons/fa6";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { TbAward } from "react-icons/tb";
-import { generateRandomNumber } from "../helper/helperFunctions";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import AddAgentModal from "../components/modals/addAgent-modal";
-import InspectionModal from "../components/modals/inspection-modal";
+
 import { TableSearchInput } from "../components/common/TableSearchInput";
 import { StatusSelect } from "../components/common/statusSelect";
 import { useDebounce } from "../hooks/useDebounce";
 import UserService from "../api/services/userMgt.service";
 import InspectionService from "../api/services/inspection.service";
 import { usePaginatedData } from "../hooks/usePaginatedData";
-import {
-  AgentColumns,
-  InspectionColumns,
-  RequestColumns,
-} from "../components/table/columns";
+import { AgentColumns, InspectionColumns } from "../components/table/columns";
 import AssignAgentModal from "../components/modals/assignAgent";
+import InspectionModal from "../components/modals/InspectionModal";
 
 export default function FieldAgents() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { pathname, state } = location;
+  const { state } = location;
   const locationAgentType: string = state?.fieldAgent;
   const [newAgentModal, setNewAgentModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState({
@@ -36,7 +32,13 @@ export default function FieldAgents() {
   const debouncedInspectionSearchQuery = useDebounce(searchQuery.inspection);
   const [agentType, setAgentType] = useState(locationAgentType || "agent");
   const [assignAgentModal, setAssignAgentModal] = useState(false);
-  const [currentInspectionId, setCurrentInspectionId] = useState(null);
+  const [currentInspection, setCurrentInspection] = useState<Inspection | null>(
+    null
+  );
+  const [currentInspectionId, setCurrentInspectionId] = useState<number | null>(
+    null
+  );
+  // const [currentAgent, setCurrentAgent] = useState<FieldAgent | null>(null);
   const [filters, setFilters] = useState({
     agent: "",
     request: "",
@@ -59,10 +61,11 @@ export default function FieldAgents() {
     navigate(`/admin/agents/agent/${params.row.id}`);
   };
   const handleInspectionRowClick = (params: GridRowParams) => {
+    setCurrentInspection(params.row);
     setCurrentInspectionId(params.row.id);
-    if (params.row.status === "pending") {
-      setAssignAgentModal(true);
-    }
+    // if (params.row.status === "pending") {
+    //   setAssignAgentModal(true);
+    // }
   };
 
   const [agentData, setAgentData] = usePaginatedData(UserService.getAllAgents, {
@@ -107,6 +110,8 @@ export default function FieldAgents() {
         success: false,
         message: "An error occurred while assigning the agent",
       };
+    } finally {
+      setCurrentInspectionId(null);
     }
   };
 
@@ -121,12 +126,12 @@ export default function FieldAgents() {
         assignAgentModal={assignAgentModal}
         closeAssignAgentModal={() => setAssignAgentModal(false)}
       />
-      {/*
       <InspectionModal
-        inspectionModal={inspectionModal}
-        setInspectionModal={setInspectionModal}
-        currentAgent={currentAgent}
-      /> */}
+        open={Boolean(currentInspection)}
+        onClose={() => setCurrentInspection(null)}
+        inspection={currentInspection}
+        onAssignAgent={() => setAssignAgentModal(true)}
+      />
 
       <div className="w-full py-5 px-5 md:pl-[250px] md:pr-[100px] bg-white fixed z-10 left-10 top-0 border-b border-b-primaryBorder">
         <DashboardSearchBar />

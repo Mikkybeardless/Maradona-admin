@@ -49,6 +49,7 @@ export default function AssignAgentModal({
       setAssigning(false);
       closeAssignAgentModal();
       setSelectedAgentId(null);
+      window.location.reload();
       return;
     } else {
       toast.error(result.message);
@@ -58,7 +59,7 @@ export default function AssignAgentModal({
 
   return (
     assignAgentModal && (
-      <div className="w-screen h-screen flex justify-center items-center fixed top-0 left-0 z-30 bg-black/50 backdrop-blur-sm">
+      <div className="w-screen h-screen flex justify-center items-center fixed top-0 left-0 z-50 bg-black/50 backdrop-blur-sm">
         <div
           ref={assignAgentModalRef}
           className=" w-[90%] md:w-[35%] h-[70%] rounded-[24px] flex flex-col p-8 bg-white"

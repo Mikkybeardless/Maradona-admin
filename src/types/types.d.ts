@@ -337,6 +337,7 @@ declare interface Buyer extends User {
 
 declare interface ApiBuyer extends Buyer, ApiRes {}
 declare interface Inspection {
+  id: number;
   product_type: string;
   product_id: string;
   seller_id: string;
@@ -347,7 +348,7 @@ declare interface Inspection {
   assigned_at: string;
   completed_at: string;
   auction_product: null;
-  product: Product;
+  product: ApiProductDetails | null;
   agent: Agent;
   seller: Seller;
 }

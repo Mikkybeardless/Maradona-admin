@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dialog,
   DialogTitle,
@@ -11,53 +10,55 @@ import {
   TableRow,
   TableCell,
 } from "@mui/material";
-import { formatAmountToNaira } from "../../helper/helperFunctions";
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  inspection: any | null;
-  onDelete?: (id: string | number) => void;
+  inspection: Inspection | null;
+  onAssignAgent?: () => void;
 };
 
 export default function InspectionModal({
   open,
   onClose,
   inspection,
-  onDelete,
+  onAssignAgent,
 }: Props) {
   if (!inspection) return null;
 
-  const payload = inspection.data || inspection;
-  const human = payload.humanized_data ?? inspection.humanized_data ?? null;
-
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{payload.title ?? "inspection"}</DialogTitle>
+      <DialogTitle>Inspection Details</DialogTitle>
       <DialogContent dividers>
         <div className="text-sm text-gray-700">
-          {payload.message && (
-            <Typography variant="body2" gutterBottom>
-              {payload.message}
-            </Typography>
-          )}
+          <Typography variant="body2" gutterBottom>
+            <strong>Product:</strong>{" "}
+            {inspection.product
+              ? inspection.product.name
+              : "Product details not available"}
+          </Typography>
 
-          {human && typeof human === "object" && !Array.isArray(human) ? (
+          {
             <Table size="small">
               <TableBody>
-                {Object.entries(human).map(([k, v]) => (
+                {Object.entries(inspection).map(([k, v]) => (
                   <TableRow key={k}>
-                    {k === "Winning Bid" ? (
+                    {typeof v === "object" ? (
                       <>
-                        <TableCell sx={{ fontWeight: 600, width: "35%" }}>
-                          {k.replace(/_/g, " ")}
-                        </TableCell>
-                        <TableCell>{formatAmountToNaira(Number(v))}</TableCell>
+                        {Object.entries(v ?? {}).map(([key, value]) => (
+                          <div key={key}>
+                            <TableCell sx={{ fontWeight: 600, width: "35%" }}>
+                              {key}
+                            </TableCell>
+                            {/* <strong>{key}:</strong> {String(value)} */}
+                            <TableCell>{String(value)}</TableCell>
+                          </div>
+                        ))}
                       </>
                     ) : (
                       <>
                         <TableCell sx={{ fontWeight: 600, width: "35%" }}>
-                          {k.replace(/_/g, " ")}
+                          {k}
                         </TableCell>
                         <TableCell>{String(v)}</TableCell>
                       </>
@@ -66,20 +67,23 @@ export default function InspectionModal({
                 ))}
               </TableBody>
             </Table>
-          ) : (
-            <pre className="text-xs bg-gray-100 p-2 rounded">
-              {JSON.stringify(payload.data ?? payload, null, 2)}
-            </pre>
-          )}
+          }
         </div>
       </DialogContent>
       <DialogActions>
-        {onDelete && (
-          <Button color="error" onClick={() => onDelete(inspection.id)}>
-            Delete
+        {onAssignAgent && (
+          <Button
+            onClick={() => {
+              onAssignAgent();
+              onClose();
+            }}
+          >
+            Assign Agent
           </Button>
         )}
-        <Button onClick={onClose}>Close</Button>
+        <Button color="error" onClick={onClose}>
+          Close
+        </Button>
       </DialogActions>
     </Dialog>
   );
