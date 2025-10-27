@@ -1,6 +1,5 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-const API_BASE_URL = import.meta.env.VITE_API_URL;
 const systemKey = import.meta.env.VITE_SYSTEM_KEY;
 const apiClient = axios.create({
   headers: {
