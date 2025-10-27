@@ -1,28 +1,33 @@
 // vite.config.js
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 
-const API_BASE_URL = process.env.VITE_API_URL;
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      "/api": {
-        target: API_BASE_URL,
-        changeOrigin: true,
-        secure: true,
-        // ✨ KEEP `/api` in path
-        rewrite: (path) => path, // <- No replacement
-      },
+export default defineConfig(({ mode }) => {
+  // Load .env variables based on current mode
+  const env = loadEnv(mode, process.cwd(), "");
 
-      "/uploads": {
-        target: API_BASE_URL,
-        changeOrigin: true,
-        secure: false,
+  // Extract the API base URL
+  const API_BASE_URL = env.VITE_API_URL;
+
+  return {
+    plugins: [react()],
+    server: {
+      proxy: {
+        "/api": {
+          target: API_BASE_URL,
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path,
+        },
+        "/uploads": {
+          target: API_BASE_URL,
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
-  },
-  esbuild: {
-    drop: process.env.NODE_ENV === "production" ? ["console", "debugger"] : [],
-  },
+    esbuild: {
+      drop: mode === "production" ? ["console", "debugger"] : [],
+    },
+  };
 });
