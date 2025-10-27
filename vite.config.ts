@@ -2,12 +2,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 
+const API_BASE_URL = (import.meta as any).env.VITE_API_URL;
 export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
       "/api": {
-        target: "https://ds.reconnaissancetechnologies.com",
+        target: API_BASE_URL,
         changeOrigin: true,
         secure: true,
         // ✨ KEEP `/api` in path
@@ -15,7 +16,7 @@ export default defineConfig({
       },
 
       "/uploads": {
-        target: "https://ds.reconnaissancetechnologies.com",
+        target: API_BASE_URL,
         changeOrigin: true,
         secure: false,
       },

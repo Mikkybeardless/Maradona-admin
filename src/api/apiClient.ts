@@ -6,7 +6,7 @@ const apiClient = axios.create({
   headers: {
     "System-Key": systemKey,
   },
-  baseURL: API_BASE_URL,
+  baseURL: "/api",
 });
 
 // Request interceptor for adding auth token
