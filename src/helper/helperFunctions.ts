@@ -144,3 +144,8 @@ export const getCurrentYearDateRange = (): {
     end_date: formatDate(today),
   };
 };
+
+export function isISOString(str: string) {
+  const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$/;
+  return isoRegex.test(str);
+}

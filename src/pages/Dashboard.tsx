@@ -1,13 +1,5 @@
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import LineChartComponent from "../components/LineChart";
-import {
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
 import { BsArrowUp } from "react-icons/bs";
 import TEarnings from "../assets/TEarnings.svg";
 import TUser from "../assets/TUser.svg";
@@ -15,23 +7,17 @@ import TSales from "../assets/TSales.svg";
 import {
   buildCleanParams,
   formatAmountToNaira,
-  generateRandomNumber,
 } from "../helper/helperFunctions";
-// import { GridColDef } from "@mui/x-data-grid";
 import MuiTableComponent from "../components/table/TableComponent";
-// import Car2 from "../assets/Dashboard-listing-car.png";
 import { Props } from "recharts/types/component/DefaultLegendContent";
 import { useWindowResizer } from "../hooks/useWindowResize";
 import { ProgressUI } from "../components/common/progressUi";
 import { useCallback, useEffect, useState } from "react";
-// import auctionService from "../api/services/auction.service";
 import statsService from "../api/services/stats.service";
 import { ProductLoadingSkeleton } from "../components/common/SquareLoadingState";
 import CustomPeriodModal from "../components/modals/customPeriod";
-// import { DateSelect } from "../components/common/dateSelect";
 import { TableSearchInput } from "../components/common/TableSearchInput";
 import { StatusSelect } from "../components/common/statusSelect";
-import { FilterGroup } from "../components/common/FilterGroup";
 import { useDebounce } from "../hooks/useDebounce";
 import formatDayJs from "../helper/formatDateJs";
 import { Dayjs } from "dayjs";
@@ -39,7 +25,6 @@ import DefaultImg from "../assets/no-image.png";
 import { BidsColumns } from "../components/table/columns";
 import bidsService from "../api/services/bids.service";
 import { ErrorState } from "../components/common/ErrorState";
-// import { spawn } from "child_process";
 
 type IFilter = {
   category: string;
@@ -550,50 +535,22 @@ export default function Dashboard() {
               </div>
 
               {/* Filters & Search Bar */}
-              <div className="">
-                <FilterGroup
-                  filters={filters}
-                  onChange={(updated) => {
-                    setFilters((prev) => ({ ...prev, ...updated }));
-                  }}
-                  selects={[
-                    {
-                      name: "category",
-                      placeholder: "Category",
-                      options: [
-                        { label: "House", value: "HOUSE" },
-                        { label: "Car", value: "CAR" },
-                        { label: "Land", value: "LAND" },
-                      ],
-                    },
+              <div className=" flex justify-between mt-3">
+                <StatusSelect
+                  options={[
+                    { label: "Sold", value: "sold" },
+                    { label: "Pending", value: "pending" },
                   ]}
-                  extraFilters={
-                    <>
-                      <StatusSelect
-                        options={[
-                          { label: "Sold", value: "sold" },
-                          { label: "Pending", value: "pending" },
-                        ]}
-                        onChange={(value) => {
-                          setFilters((prev) => ({ ...prev, status: value }));
-                        }}
-                        value={filters.status}
-                      />
-                      {/* <DateSelect
-                        onChange={(date) => {
-                          setFilters((prev) => ({ ...prev, date }));
-                        }}
-                        value={filters.date}
-                      /> */}
-                    </>
-                  }
-                  searchNode={
-                    <TableSearchInput
-                      searchQuery={searchQuery}
-                      setSearchQuery={setSearchQuery}
-                      placeholder="Search orders"
-                    />
-                  }
+                  onChange={(value) => {
+                    setFilters((prev) => ({ ...prev, status: value }));
+                  }}
+                  value={filters.status}
+                />
+
+                <TableSearchInput
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  placeholder="Search orders"
                 />
               </div>
               {/* table */}

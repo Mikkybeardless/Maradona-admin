@@ -457,6 +457,14 @@ export const BidsColumns: GridColDef[] = [
     flex: 0.7,
   },
   {
+    field: "auction_product_id",
+    headerName: "Product ID",
+    renderCell: ({ value }) => {
+      return <span>{value}</span>;
+    },
+    flex: 0.7,
+  },
+  {
     field: "amount",
     headerName: "Price(₦)",
     renderCell: ({ value }) => <span>{formatPrice(value)}</span>,

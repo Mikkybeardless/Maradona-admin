@@ -158,21 +158,6 @@ export default function FieldAgents() {
                 {agentData.totalRowCount}
               </span>
             </button>
-            {/* <button
-              className={`${
-                agentType === "request"
-                  ? "border-b-[3px] border-b-defaultOrange"
-                  : "text-[#585858]"
-              } py-3`}
-              onClick={() =>
-                agentType !== "request" ? setAgentType("request") : null
-              }
-            >
-              Requests{" "}
-              <span className="text-xs text-defaultOrange">
-                {requestData.totalRowCount}
-              </span>
-            </button> */}
 
             <button
               className={`${
@@ -204,18 +189,6 @@ export default function FieldAgents() {
           <>
             <h1 className="text-3xl font-bold my-6">Field Agents</h1>
             <div className="flex flex-wrap gap-2 justify-end items-end w-full">
-              {/* <StatusSelect
-                options={[
-                  { label: "All", value: "" },
-                  { label: "Active", value: "active" },
-                  { label: "Inactive", value: "inactive" },
-                ]}
-                onChange={(value) => {
-                  setFilters((prev) => ({ ...prev, agent: value }));
-                }}
-                value={filters.agent}
-              /> */}
-
               <TableSearchInput
                 searchQuery={searchQuery.agent}
                 setSearchQuery={(val) =>

@@ -10,6 +10,9 @@ import {
   TableRow,
   TableCell,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { isISOString } from "../../helper/helperFunctions";
+import { formatIsoString } from "../../helper/formatIIsoString";
 
 type Props = {
   open: boolean;
@@ -24,7 +27,12 @@ export default function InspectionModal({
   inspection,
   onAssignAgent,
 }: Props) {
+  const navigate = useNavigate();
   if (!inspection) return null;
+
+  const handleViewProduct = () => {
+    navigate(`/admin/products/product/${inspection.product?.id}`);
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -45,22 +53,45 @@ export default function InspectionModal({
                   <TableRow key={k}>
                     {typeof v === "object" ? (
                       <>
-                        {Object.entries(v ?? {}).map(([key, value]) => (
-                          <div key={key}>
-                            <TableCell sx={{ fontWeight: 600, width: "35%" }}>
-                              {key}
-                            </TableCell>
-                            {/* <strong>{key}:</strong> {String(value)} */}
-                            <TableCell>{String(value)}</TableCell>
-                          </div>
-                        ))}
+                        {Object.entries(v ?? {}).map(([key, value]) => {
+                          return (
+                            <div key={key}>
+                              <TableCell sx={{ fontWeight: 600, width: "35%" }}>
+                                {key}
+                              </TableCell>
+                              {/* <strong>{key}:</strong> {String(value)} */}
+                              <TableCell>
+                                {isISOString(String(value))
+                                  ? (() => {
+                                      const res = formatIsoString(
+                                        String(value)
+                                      );
+                                      return typeof res === "string"
+                                        ? res
+                                        : `${res.formattedDate} ${res.formattedTime}`;
+                                    })()
+                                  : String(value)}
+                              </TableCell>
+                            </div>
+                          );
+                        })}
                       </>
                     ) : (
                       <>
                         <TableCell sx={{ fontWeight: 600, width: "35%" }}>
                           {k}
                         </TableCell>
-                        <TableCell>{String(v)}</TableCell>
+                        <TableCell>
+                          {" "}
+                          {isISOString(String(v))
+                            ? (() => {
+                                const res = formatIsoString(String(v));
+                                return typeof res === "string"
+                                  ? res
+                                  : `${res.formattedDate} ${res.formattedTime}`;
+                              })()
+                            : String(v)}
+                        </TableCell>
                       </>
                     )}
                   </TableRow>
@@ -81,6 +112,9 @@ export default function InspectionModal({
             Assign Agent
           </Button>
         )}
+        <Button color="secondary" onClick={handleViewProduct}>
+          View Product
+        </Button>
         <Button color="error" onClick={onClose}>
           Close
         </Button>

@@ -56,8 +56,10 @@ const FinancialSummary = () => {
 
   return (
     <div className="bg-white mt-6 rounded-2xl w-full">
-      <div className="bg-[#04979E] flex justify-between py-4 px-5 md:px-7 rounded-t-2xl items-center">
-        <p className="font-bold text-base text-white">Financial Summaries</p>
+      <div className="bg-[#04979E] flex justify-between py-4 px-3 md:px-7 rounded-t-2xl items-center">
+        <p className="font-bold text-sm md:text-base text-white">
+          Financial Summaries
+        </p>
         <div>
           <Button
             variant="outlined"
@@ -111,12 +113,22 @@ const FinancialSummary = () => {
           <p className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1">
             Total Admin Income
           </p>
-          <p className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1">
-            {financialSummaryData?.promotion_income_breakdown[0].type ?? "-"}
-          </p>
-          <p className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1">
-            {financialSummaryData?.promotion_income_breakdown[1].type ?? "-"}
-          </p>
+
+          {(financialSummaryData?.promotion_income_breakdown?.length ?? 0) >
+          0 ? (
+            financialSummaryData?.promotion_income_breakdown?.map(
+              (item, index) => (
+                <p
+                  key={index}
+                  className="text-sm font-normal text-[#040421] mb-3 flex items-center gap-1"
+                >
+                  {item.type ?? "-"}
+                </p>
+              )
+            )
+          ) : (
+            <></>
+          )}
         </div>
 
         <div className="text-right">
@@ -152,24 +164,21 @@ const FinancialSummary = () => {
           <p className="text-sm font-normal text-[#585858] mb-3">
             {financialSummaryData?.total_admin_income ?? "-"}%
           </p>
-          <p className="text-sm font-normal text-[#585858] mb-3">
-            {financialSummaryData
-              ? formatAmountToNaira(
-                  Number(
-                    financialSummaryData?.promotion_income_breakdown[0].amount
-                  )
-                )
-              : "-"}
-          </p>
-          <p className="text-sm font-normal text-[#585858] mb-3">
-            {financialSummaryData
-              ? formatAmountToNaira(
-                  Number(
-                    financialSummaryData?.promotion_income_breakdown[1].amount
-                  )
-                )
-              : "-"}
-          </p>
+
+          {financialSummaryData?.promotion_income_breakdown?.length ? (
+            financialSummaryData?.promotion_income_breakdown?.map(
+              (item, index) => (
+                <p
+                  className="text-sm font-normal text-[#585858] mb-3"
+                  key={index}
+                >
+                  {formatAmountToNaira(Number(item.amount ?? 0))}
+                </p>
+              )
+            )
+          ) : (
+            <p className="text-sm font-normal text-[#585858] mb-3">-</p>
+          )}
         </div>
       </div>
     </div>
