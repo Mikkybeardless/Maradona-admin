@@ -55,7 +55,7 @@ export const ReportTab = () => {
           </Link>
         ))}
       </div>
-      <div className="flex gap-4 flex-wrap">
+      {/* <div className="flex gap-4 flex-wrap">
         <Button
           sx={{
             padding: "5px 8px",
@@ -75,7 +75,7 @@ export const ReportTab = () => {
         <select className="p-2 text-sm sm:text-[16px] rounded-lg border border-primaryBorder bg-white outline-none text-[#5C4D58]">
           <option value="year">Year</option>
         </select>
-      </div>
+      </div> */}
     </section>
   );
 };

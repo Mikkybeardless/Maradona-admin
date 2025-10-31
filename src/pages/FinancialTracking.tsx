@@ -24,8 +24,8 @@ interface IFinancialTrackingData {
     product_name: string;
     product_id: string;
     revenue: string;
-    expenses: number;
-    net_revenue: number;
+    seller_name: string;
+    sale_type: string;
   }[];
   first_page_url: string;
   from: number;
@@ -123,8 +123,8 @@ const FinancialTrackingTable = () => {
     { field: "product_id", headerName: "Product ID", minWidth: 100 },
     { field: "product_name", headerName: "Product Name", minWidth: 150 },
     { field: "revenue", headerName: "Revenue", minWidth: 120 },
-    { field: "expenses", headerName: "Expenses", minWidth: 120 },
-    { field: "net_revenue", headerName: "Net Revenue", minWidth: 120 },
+    { field: "seller_name", headerName: "Seller Name", minWidth: 120 },
+    { field: "sale_type", headerName: "Sale Type", minWidth: 120 },
   ];
 
   return (
@@ -166,12 +166,8 @@ const FinancialTrackingTable = () => {
               <TableCell sx={{ border: "none" }}>
                 {formatPrice(Number(row.revenue))}
               </TableCell>
-              <TableCell sx={{ border: "none" }}>
-                {formatPrice(row.expenses)}
-              </TableCell>
-              <TableCell sx={{ border: "none" }}>
-                {formatPrice(row.net_revenue)}
-              </TableCell>
+              <TableCell sx={{ border: "none" }}>{row.seller_name}</TableCell>
+              <TableCell sx={{ border: "none" }}>{row.sale_type}</TableCell>
             </TableRow>
           ))}
         </TableBody>
