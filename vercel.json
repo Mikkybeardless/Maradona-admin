@@ -3,6 +3,7 @@
     {
       "source": "/api/:path*",
       "destination": "http://dsstaging.eu-north-1.elasticbeanstalk.com/api/:path*"
-    }
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

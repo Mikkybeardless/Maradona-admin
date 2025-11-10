@@ -11,18 +11,6 @@ import RevenueTracking from "../components/reports/RevenueTracking";
 import ExpensesReport from "../components/reports/ExpensesReport";
 import DateRangeSelector from "../components/common/DateRangeSelector";
 
-// Move function to utils file later
-// const formatRevenueTick = (value: number): string => {
-// 	if (value >= 1_000_000_000) {
-// 		return (value / 1_000_000_000).toFixed(1).replace(/\.0$/, "") + "b";
-// 	} else if (value >= 1_000_000) {
-// 		return (value / 1_000_000).toFixed(1).replace(/\.0$/, "") + "m";
-// 	} else if (value >= 1_000) {
-// 		return (value / 1_000).toFixed(1).replace(/\.0$/, "") + "k";
-// 	}
-// 	return value.toString();
-// };
-
 export default function Reports() {
   const [showMore, setShowMore] = useState(false);
 
