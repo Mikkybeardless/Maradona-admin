@@ -2,17 +2,15 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import DashboardSearchBar from "../components/DashboardSearchBar";
 import { FaChevronRight } from "react-icons/fa6";
 import { CiEdit } from "react-icons/ci";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useClickAway } from "react-use";
+import { useEffect, useMemo, useState } from "react";
 import ProductCarousel from "../components/ProductCarousel";
 import productService from "../api/services/product.service";
 import { DetailLoadingState } from "../components/common/detailLoadingState";
-// import { formatAmountToNaira } from "../helper/helperFunctions";
 import { DeleteButton } from "../components/modals/delete-modal";
-import AssignAgentModal from "../components/modals/assignAgent";
-import purchaseEnquiriesService from "../api/services/purchaseEnquiries.service";
 import { toast } from "react-toastify";
 import { KeyFeatures } from "../components/keyFeatures";
+import DOMPurify from "dompurify";
+import { stripOuterP } from "../helper/helperFunctions";
 
 export default function ProductDetails() {
   const location = useLocation();
@@ -265,7 +263,12 @@ export default function ProductDetails() {
 
             <div className="w-full bg-white rounded-xl p-4 flex flex-col gap-y-1.5">
               <span className="text-sm font-semibold">Description</span>
-              <span className="opacity-70 text-sm">{product.description}</span>
+              <span
+                className="opacity-70 text-sm"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(stripOuterP(product.description)),
+                }}
+              />
             </div>
 
             {/* key feature  */}
