@@ -15,7 +15,7 @@ export default function AddProducts() {
   const initialProductDetails: ProductDetails = {
     type: "LAND",
     name: "",
-    category_id: "2",
+    category_id: "",
     description: "",
     price: 0,
     sale_price: 0,

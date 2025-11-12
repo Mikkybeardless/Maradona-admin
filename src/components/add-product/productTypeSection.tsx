@@ -81,7 +81,7 @@ export const ProductTypeSection: React.FC<ProductTypeSectionProps> = ({
             };
           })
         }
-        initialValue="selected category"
+        initialValue={productDetails.category_id || "Select category"}
         isBold
       />
     </div>

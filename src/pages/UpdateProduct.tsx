@@ -18,13 +18,14 @@ export default function EditProduct() {
   const initialProductDetails = {
     type: "LAND" as ProductType,
     name: "",
-    category_id: "2",
+    category_id: "",
     description: "",
     price: 0,
     sale_price: 0,
     house_type: "",
-    address: "",
-    city: "",
+    location_address: "",
+    location_city: "",
+    location_state: "",
     // weight: 0,
     continue_selling: false,
     state: "",
@@ -134,6 +135,57 @@ export default function EditProduct() {
     navigate("/admin/products");
   };
 
+  const transformApiDataToForm = (apiData: any) => {
+    const transformedMedia =
+      apiData.media?.map((mediaItem: any) => {
+        const blob = new Blob([""], {
+          type: `image/${mediaItem.file_extension}`,
+        });
+        const file = new File([blob], mediaItem.file_name, {
+          type: `image/${mediaItem.file_extension}`,
+        });
+        Object.assign(file, {
+          preview: mediaItem.file_url,
+          existing: true,
+        });
+        return file;
+      }) || [];
+
+    const transformedDocuments =
+      apiData.documents?.map((doc: any) => {
+        const blob = new Blob([""], {
+          type: `application/${doc.file_extension}`,
+        });
+        const file = new File([blob], doc.file_name, {
+          type: `application/${doc.file_extension}`,
+        });
+        Object.assign(file, { preview: doc.file_url, existing: true });
+        return file;
+      }) || [];
+
+    const transformedTags = apiData.tags?.map((tag: any) => tag.id) || [];
+
+    return {
+      ...initialProductDetails,
+      ...apiData,
+      category_id: apiData.category_id?.toString() || "",
+      status: apiData.status || "draft",
+      tags: transformedTags,
+      media: transformedMedia,
+      documents: transformedDocuments,
+      price: Number(apiData.price) || 0,
+      sale_price: Number(apiData.sale_price) || 0,
+      inventory: Number(apiData.inventory) || 0,
+      house_size: Number(apiData.house_size) || 0,
+      house_beds: Number(apiData.house_beds) || 0,
+      land_size: Number(apiData.land_size) || 0,
+      auction_duration: Number(apiData.auction_duration) || 0,
+      location_address: apiData.location_address || "",
+      location_city: apiData.location_city || "",
+      location_state: apiData.location_state || "",
+    };
+  };
+
   // Refactored useEffect
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -145,18 +197,20 @@ export default function EditProduct() {
 
       try {
         const response = await productService.getProduct(parseInt(id));
-        console.log("Product details response:", response.data);
         const productData = response.data;
         // Set initial product details
-        setProductDetails((prev) => ({
-          ...prev,
-          ...productData,
-          documents: [],
-          address: productData.location_address || "",
-          city: productData.location_city || "",
-          state: productData.location_state || "",
-          media: [],
-        }));
+
+        const newState = transformApiDataToForm(productData);
+        setProductDetails(newState);
+        // setProductDetails((prev) => ({
+        //   ...prev,
+        //   ...productData,
+        //   documents: [],
+        //   address: productData.location_address || "",
+        //   city: productData.location_city || "",
+        //   state: productData.location_state || "",
+        //   media: [],
+        // }));
 
         // // Convert URLs to Files for both documents and media in parallel
         // const [documentFiles, mediaFiles] = await Promise.all([

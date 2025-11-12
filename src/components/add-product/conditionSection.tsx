@@ -29,7 +29,10 @@ export const ConditionSection: React.FC<ConditionSectionProps> = ({
                 onChange={() =>
                   setProductDetails((prev) => ({ ...prev, condition: "New" }))
                 }
-                checked={productDetails.condition === "New"}
+                checked={
+                  productDetails.condition === "New" ||
+                  productDetails.condition === "new"
+                }
                 type="checkbox"
               />
               <label htmlFor="new">New</label>
@@ -39,7 +42,10 @@ export const ConditionSection: React.FC<ConditionSectionProps> = ({
               <input
                 className="w-[18px] h-[18px] rounded-lg border border-primaryBorder outline-none"
                 id="old"
-                checked={productDetails.condition === "Used"}
+                checked={
+                  productDetails.condition === "Used" ||
+                  productDetails.condition === "used"
+                }
                 onChange={() =>
                   setProductDetails((prev) => ({ ...prev, condition: "Used" }))
                 }

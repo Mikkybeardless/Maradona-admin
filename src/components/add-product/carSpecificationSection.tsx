@@ -29,7 +29,10 @@ export const CarSpecificationsSection: React.FC<
                       gear_type: "Manual",
                     }))
                   }
-                  checked={productDetails.gear_type === "Manual"}
+                  checked={
+                    productDetails.gear_type === "Manual" ||
+                    productDetails.gear_type === "manual"
+                  }
                   type="checkbox"
                 />
                 <label htmlFor="manual">Manual</label>
@@ -45,7 +48,10 @@ export const CarSpecificationsSection: React.FC<
                       gear_type: "Automatic",
                     }))
                   }
-                  checked={productDetails.gear_type === "Automatic"}
+                  checked={
+                    productDetails.gear_type === "Automatic" ||
+                    productDetails.gear_type === "automatic"
+                  }
                   type="checkbox"
                 />
                 <label htmlFor="automatic">Automatic</label>

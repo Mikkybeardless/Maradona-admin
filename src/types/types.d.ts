@@ -9,11 +9,12 @@ declare type ProductTopography = "Dry land" | "Water logged" | "Swampy";
 declare type ProductLandType = "Residential" | "Commercial" | "Agricultural";
 declare type ProductDuration = "Days" | "Weeks" | "Months";
 declare type ProductAuctionType = "Auctioned" | "Non-Auctioned";
-declare type ProductCondition = "New" | "Used";
-declare type ProductGearType = "Manual" | "Automatic";
+declare type ProductCondition = "New" | "Used" | "new" | "used";
+declare type ProductGearType = "Manual" | "Automatic" | "manual" | "automatic";
 declare type WeightUnit = "kg" | "g";
 declare type Media = File[];
 declare type HouseCondition = "Newly built" | "Old" | "Needs renovation";
+declare type Category_id = string | number;
 
 declare interface Product {
   name: string;
